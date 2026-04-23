@@ -7,13 +7,12 @@ import PrescriptionForm from '@/components/features/prescriptions/PrescriptionFo
 import { notFound } from 'next/navigation';
 
 interface PrescribePageProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 }
 
 export default async function PrescribePage({ params }: PrescribePageProps) {
-  const patientId = parseInt(params.id);
+  const { id } = await params;
+  const patientId = parseInt(id);
   
   if (isNaN(patientId)) {
     notFound();

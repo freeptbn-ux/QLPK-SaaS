@@ -9,6 +9,7 @@ export interface Patient {
   medical_history: string | null;
   diagnosis: string | null;
   created_at: string;
+  updated_at?: string;
   name_normalized: string | null;
 }
 

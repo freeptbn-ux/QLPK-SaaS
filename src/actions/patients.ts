@@ -58,7 +58,7 @@ export async function getPatientById(id: number) {
 
   const { data, error } = await supabase
     .from('patients')
-    .select('*, prescriptions:prescriptions_header(*, prescription_details(*, medicines(name, unit)))')
+    .select('*, prescriptions:prescriptions_header(*, prescription_details(*, medicines(name, packing_spec)))')
     .eq('id', id)
     .single();
 

@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# QLPK-SaaS - Hệ thống Quản lý Phòng khám Thông minh
 
-## Getting Started
+QLPK-SaaS là giải pháp quản lý phòng khám hiện đại được xây dựng dưới dạng phần mềm dịch vụ (SaaS). Hệ thống giúp tối ưu hóa quy trình quản lý bệnh nhân, kho thuốc, kê đơn và theo dõi doanh thu một cách hiệu quả, chuyên nghiệp.
 
-First, run the development server:
+## 🚀 Tính năng chính
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Quản lý Bệnh nhân**: Lưu trữ hồ sơ bệnh lý, tiểu sử và thông tin liên lạc của bệnh nhân.
+- **Quản lý Thuốc & Kho**: Theo dõi số lượng tồn kho, cảnh báo thuốc sắp hết, quản lý đơn giá và quy cách đóng gói.
+- **Hệ thống Kê đơn**: Quy trình kê đơn nhanh chóng, tự động tính toán tổng chi phí và in đơn thuốc chuyên nghiệp.
+- **Công cụ Tính liều lượng**: Hỗ trợ bác sĩ tính toán liều lượng thuốc dựa trên cân nặng và các thông số lâm sàng.
+- **Báo cáo & Thống kê**: Biểu đồ trực quan về lượt khám, doanh thu và mức độ tiêu thụ thuốc theo thời gian.
+- **Giao diện Hiện đại**: Hỗ trợ chế độ Sáng/Tối (Dark Mode) và tương thích hoàn toàn với các thiết bị di động.
+
+## 🛠️ Công nghệ sử dụng
+
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router, Turbopack)
+- **UI Library**: [Material UI (MUI) v9](https://mui.com/)
+- **Backend & Auth**: [Supabase](https://supabase.com/) (Postgres, Auth, Edge Functions)
+- **State Management**: React Hook Form + Zod (Validation)
+- **Charts**: Recharts
+- **Styling**: Emotion (CSS-in-JS)
+- **Ngôn ngữ**: TypeScript
+
+## 📦 Cấu trúc thư mục
+
+```text
+.
+├── src/
+│   ├── actions/      # Server Actions xử lý logic nghiệp vụ
+│   ├── app/          # App Router (Pages, Layouts)
+│   ├── components/   # Các UI Components dùng chung
+│   ├── hooks/        # Custom React Hooks
+│   ├── lib/          # Cấu hình Supabase, utils
+│   ├── theme/        # Cấu hình MUI Theme (Light/Dark mode)
+│   └── types/        # TypeScript Definitions
+├── supabase/
+│   └── migrations/   # File SQL khởi tạo và cập nhật database
+├── public/           # Assets tĩnh (images, icons)
+└── plans/            # Tài liệu kế hoạch phát triển dự án
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ⚙️ Cài đặt
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Clone repository**:
+   ```bash
+   git clone https://github.com/freeptbn-ux/QLPK-SaaS.git
+   cd QLPK-SaaS
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. **Cài đặt dependencies**:
+   ```bash
+   npm install
+   ```
 
-## Learn More
+3. **Cấu hình biến môi trường**:
+   Tạo file `.env.local` từ mẫu `.env.example` và điền thông tin Supabase của bạn:
+   ```text
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. **Chạy dự án ở chế độ phát triển**:
+   ```bash
+   npm run dev
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+5. **Build cho production**:
+   ```bash
+   npm run build
+   npm start
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📝 Cách sử dụng
 
-## Deploy on Vercel
+- Đăng nhập vào hệ thống bằng tài khoản được cấp.
+- Sử dụng Sidebar để chuyển đổi giữa các module: Bệnh nhân, Thuốc, Thống kê, v.v.
+- Hệ thống tự động lưu trữ và đồng bộ hóa dữ liệu thời gian thực thông qua Supabase.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## ⚖️ Bản quyền
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Copyright 2026 Nguyễn Duy Trường
+
+---
+*Dự án được phát triển bởi Nguyễn Duy Trường.*
