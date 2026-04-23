@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Container, Typography, Link as MuiLink } from '@mui/material';
+import { Box, Button, Container, Typography } from '@mui/material';
 import Link from 'next/link';
 
 export default function NotFound() {
@@ -25,9 +25,9 @@ export default function NotFound() {
         <Typography variant="body1" color="text.secondary">
           Xin lỗi, trang bạn đang tìm kiếm không tồn tại hoặc đã bị di chuyển.
         </Typography>
-        <Link href="/" passHref legacyBehavior>
+        <Link href="/" style={{ textDecoration: 'none' }}>
           <Button
-            component="a"
+            component="span"
             variant="contained"
             size="large"
             sx={{ mt: 2 }}

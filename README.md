@@ -1,46 +1,46 @@
-# Quản Lý Phòng Khám Nhi (QLPK-SaaS) 🏥
+# QLPK-SaaS - Hệ thống Quản lý Phòng khám Thông minh
 
-Phần mềm quản lý phòng khám nhi khoa hiện đại, được xây dựng dưới dạng mô hình SaaS (Software as a Service) giúp các bác sĩ quản lý bệnh nhân, đơn thuốc và thống kê phòng khám một cách chuyên nghiệp và hiệu quả.
+QLPK-SaaS là một giải pháp phần mềm dạng dịch vụ (SaaS) được thiết kế hiện đại nhằm tối ưu hóa quy trình quản lý tại các phòng khám tư nhân. Hệ thống giúp bác sĩ và nhân viên y tế quản lý hồ sơ bệnh nhân, kê đơn thuốc và theo dõi số liệu thống kê một cách hiệu quả và chính xác.
 
-## 🚀 Tính năng chính
+## 🚀 Công nghệ sử dụng
 
-- **Quản lý bệnh nhân:** Lưu trữ hồ sơ, tiền sử bệnh án, thông tin liên lạc và ngày sinh (định dạng chuẩn DD/MM/YYYY).
-- **Tính toán tuổi thông minh:** Tự động hiển thị tuổi theo ngày, tuần, tháng hoặc năm tùy theo độ tuổi của bé, hỗ trợ bác sĩ nhi khoa tối ưu.
-- **Quản lý thuốc & Kho:** Theo dõi tồn kho, quy cách đóng gói và cảnh báo khi thuốc sắp hết.
-- **Kê đơn thuốc thông minh:** Tự động tính toán liều lượng, tích hợp lịch sử dùng thuốc của bệnh nhân và trừ tồn kho tự động.
-- **Máy tính liều lượng (Dose Calculator):** Hỗ trợ tính liều thuốc dựa trên cân nặng và các thông số lâm sàng.
-- **Thống kê & Báo cáo:** Biểu đồ doanh thu, lượt khám và phân bố nhóm tuổi bệnh nhân trực quan.
-- **Cài đặt phòng khám:** Tùy chỉnh thông tin phòng khám, biểu phí khám bệnh và giao diện người dùng (Light/Dark Mode).
+Hệ thống được xây dựng trên nền tảng các công nghệ hiện đại nhất:
 
-## 🛠️ Công nghệ sử dụng
+- **Frontend Framework:** [Next.js 16 (App Router)](https://nextjs.org/) với React 19.
+- **Giao diện người dùng:** [Material UI v9](https://mui.com/) đem lại trải nghiệm mượt mà, chuyên nghiệp.
+- **Backend & Database:** [Supabase](https://supabase.com/) (PostgreSQL & Auth).
+- **Ngôn ngữ:** [TypeScript](https://www.typescriptlang.org/) đảm bảo tính chặt chẽ và an toàn của mã nguồn.
+- **Quản lý biểu đồ:** [Recharts](https://recharts.org/) cho các báo cáo thống kê trực quan.
+- **Xác thực dữ liệu:** [Zod](https://zod.dev/) & React Hook Form.
+- **Kiểm thử:** Vitest.
 
-Dự án được xây dựng trên nền tảng công nghệ tiên tiến nhất:
+## ✨ Các tính năng chính
 
-- **Framework:** [Next.js 16](https://nextjs.org/) (App Router, Turbopack)
-- **UI Library:** [Material UI v9](https://mui.com/) (MUI) - Giao diện hiện đại, responsive cao.
-- **Ngôn ngữ:** [TypeScript](https://www.typescriptlang.org/) - Đảm bảo tính chặt chẽ và an toàn cho mã nguồn.
-- **Backend & Database:** [Supabase](https://supabase.com/) (PostgreSQL, Auth, SSR, Edge Functions).
-- **Quản lý Form:** [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/) cho việc xác thực dữ liệu.
-- **Biểu đồ:** [Recharts](https://recharts.org/).
-- **Xử lý thời gian:** [Day.js](https://day.js.org/).
-- **Kiểm thử:** [Vitest](https://vitest.dev/) & [React Testing Library](https://testing-library.com/).
+- **Quản lý Bệnh nhân:** Theo dõi thông tin cá nhân, lịch sử khám bệnh và hồ sơ bệnh án.
+- **Kê đơn thuốc điện tử:** Quy trình kê đơn nhanh chóng, hỗ trợ tìm kiếm thuốc thông minh và tính toán liều lượng.
+- **Thống kê & Báo cáo:** Dashboard hiển thị số lượng bệnh nhân, doanh thu và các chỉ số sức khỏe định kỳ.
+- **Quản lý kho thuốc:** Quản lý danh mục thuốc, quy cách đóng gói và giá thành.
+- **Công cụ hỗ trợ:** Máy tính liều lượng thuốc (Dose Calculator).
+- **Bảo mật:** Hệ thống phân quyền và xác thực người dùng an toàn qua Supabase Auth.
 
-## 📦 Cấu trúc thư mục chính
+## 📦 Cấu trúc thư mục
 
 ```text
-src/
-├── actions/        # Server Actions xử lý logic database (Supabase)
-├── app/            # Cấu trúc routing (Auth, Dashboard, Patients...)
-├── components/     # Các UI components (features, ui shared)
-├── hooks/          # Custom hooks (Toast, Theme, Auth...)
-├── lib/            # Cấu hình thư viện, utils và validation schemas
-├── theme/          # Cấu hình Material UI Theme
-└── types/          # Định nghĩa kiểu dữ liệu TypeScript
-plans/              # Tài liệu kế hoạch triển khai các giai đoạn
-scripts/            # Các script migration và hỗ trợ database
+├── src/
+│   ├── actions/        # Server Actions xử lý logic nghiệp vụ
+│   ├── app/           # Next.js App Router (Pages & Layouts)
+│   ├── components/    # Components dùng chung và theo tính năng
+│   ├── lib/           # Các thư viện bổ trợ, tiện ích (utils)
+│   ├── types/         # Định nghĩa TypeScript interfaces
+│   └── supabase/      # Cấu hình và client kết nối Supabase
+├── public/            # Tài sản tĩnh (images, icons)
+├── plans/             # Tài liệu kế hoạch phát triển dự án
+└── docs/              # Tài liệu hướng dẫn và đặc tả
 ```
 
-## ⚙️ Hướng dẫn cài đặt
+## 🛠️ Hướng dẫn cài đặt
+
+Để chạy dự án này ở môi trường cục bộ, hãy làm theo các bước sau:
 
 1. **Clone repository:**
    ```bash
@@ -48,42 +48,33 @@ scripts/            # Các script migration và hỗ trợ database
    cd QLPK-SaaS
    ```
 
-2. **Cài đặt dependencies:**
+2. **Cài đặt phụ thuộc:**
    ```bash
    npm install
    ```
 
-3. **Cấu hình biến môi trường:**
-   Tạo file `.env.local` từ `.env.example` và điền các thông tin từ dự án Supabase của bạn:
-   ```text
-   NEXT_PUBLIC_SUPABASE_URL=your_project_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+3. **Cấu hình môi trường:**
+   Tạo file `.env.local` dựa trên mẫu `.env.example` và điền thông tin Supabase của bạn:
+   ```bash
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
    ```
 
-4. **Chạy ứng dụng ở chế độ phát triển:**
+4. **Chạy ứng dụng:**
    ```bash
    npm run dev
    ```
+   Mở [http://localhost:3000](http://localhost:3000) trên trình duyệt để xem kết quả.
 
-5. **Build cho môi trường Production:**
-   ```bash
-   npm run build
-   npm start
-   ```
+## 📝 Hướng dẫn sử dụng
 
-## 📝 Cách sử dụng
+- Đăng nhập vào hệ thống bằng tài khoản đã cấp.
+- Sử dụng thanh điều hướng để di chuyển giữa các mục: Bệnh nhân, Thuốc, Thống kê.
+- Tại mục Bệnh nhân, bạn có thể thêm mới hoặc tìm kiếm bệnh nhân cũ để thực hiện kê đơn thuốc.
 
-- Đăng nhập bằng tài khoản bác sĩ đã được cấp thông qua hệ thống Supabase Auth.
-- Sử dụng Sidebar để chuyển đổi giữa các module:
-  - **Bệnh nhân:** Quản lý thông tin, tìm kiếm và xem lịch sử khám.
-  - **Kê đơn:** Tạo đơn thuốc mới nhanh chóng với gợi ý liều lượng.
-  - **Thống kê:** Theo dõi hiệu quả hoạt động của phòng khám qua các biểu đồ.
-  - **Máy tính liều:** Công cụ hỗ trợ tính toán liều lượng thuốc nhi khoa.
-- Hệ thống hỗ trợ phím tắt và giao diện tối ưu cho cả máy tính và thiết bị di động.
+## 📄 Bản quyền
 
-## 🛡️ Bản quyền
-
-Copyright © 2026 Nguyễn Duy Trường
+Copyright 2026 Nguyễn Duy Trường.
 
 ---
-*Dự án này được phát triển nhằm mục đích cung cấp giải pháp quản lý chuyên sâu cho các phòng khám nhi khoa hiện đại.*
+*Dự án được phát triển với sự hỗ trợ của Antigravity AI.*

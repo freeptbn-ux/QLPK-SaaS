@@ -76,12 +76,13 @@ export default function MedicineAutocomplete({ onSelect, excludeIds = [] }: Medi
           fullWidth
           size="small"
           slotProps={{
+            ...params.slotProps,
             input: {
-              ...(params as any).InputProps,
+              ...params.slotProps.input,
               endAdornment: (
                 <React.Fragment>
                   {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                  {(params as any).InputProps?.endAdornment}
+                  {params.slotProps.input.endAdornment}
                 </React.Fragment>
               ),
             },
