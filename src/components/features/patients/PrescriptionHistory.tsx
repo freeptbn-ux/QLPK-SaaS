@@ -30,6 +30,7 @@ import {
   Add as AddIcon,
   Print as PrintIcon,
   LocalHospital as HospitalIcon,
+  History as HistoryIcon,
 } from '@mui/icons-material';
 import { PrescriptionHeader, PrescriptionDetail, Medicine } from '@/types/database';
 import dayjs from 'dayjs';
@@ -37,6 +38,7 @@ import Link from 'next/link';
 import MedicineAutocomplete from '../prescriptions/MedicineAutocomplete';
 import { PrescriptionItem } from '@/types/forms';
 import { appendToPrescription } from '@/actions/prescriptions';
+import MedicineUsageDialog from './MedicineUsageDialog';
 
 interface PrescriptionWithDetails extends PrescriptionHeader {
   prescription_details: (PrescriptionDetail & { medicines: Pick<Medicine, 'name' | 'packing_spec'> })[];
@@ -44,14 +46,16 @@ interface PrescriptionWithDetails extends PrescriptionHeader {
 
 interface PrescriptionHistoryProps {
   patientId: number;
+  patientName: string;
   prescriptions: PrescriptionWithDetails[];
 }
 
-export default function PrescriptionHistory({ patientId, prescriptions }: PrescriptionHistoryProps) {
+export default function PrescriptionHistory({ patientId, patientName, prescriptions }: PrescriptionHistoryProps) {
   const [appendDialogOpen, setAppendDialogOpen] = useState(false);
   const [selectedPrescriptionId, setSelectedPrescriptionId] = useState<number | null>(null);
   const [itemsToAppend, setItemsToAppend] = useState<PrescriptionItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
 
   const isToday = (date: string) => dayjs(date).isSame(dayjs(), 'day');
 
@@ -130,14 +134,23 @@ export default function PrescriptionHistory({ patientId, prescriptions }: Prescr
         <Typography variant="h6">
           Lịch sử khám bệnh ({prescriptions.length} lần)
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          component={Link}
-          href={`/patients/${patientId}/prescribe`}
-        >
-          Kê đơn mới
-        </Button>
+        <Stack direction="row" spacing={1}>
+          <Button
+            variant="outlined"
+            startIcon={<HistoryIcon />}
+            onClick={() => setHistoryDialogOpen(true)}
+          >
+            Lịch sử dùng thuốc
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            component={Link}
+            href={`/patients/${patientId}/prescribe`}
+          >
+            Kê đơn mới
+          </Button>
+        </Stack>
       </Box>
 
       <Stack spacing={2}>
@@ -306,6 +319,13 @@ export default function PrescriptionHistory({ patientId, prescriptions }: Prescr
           </Button>
         </DialogActions>
       </Dialog>
+
+      <MedicineUsageDialog
+        open={historyDialogOpen}
+        onClose={() => setHistoryDialogOpen(false)}
+        patientId={patientId}
+        patientName={patientName}
+      />
     </Box>
   );
 }

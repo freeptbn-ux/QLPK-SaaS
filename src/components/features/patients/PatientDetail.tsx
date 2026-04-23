@@ -141,6 +141,7 @@ export default function PatientDetail({ patient }: PatientDetailProps) {
 
       <PrescriptionHistory 
         patientId={currentPatient.id} 
+        patientName={currentPatient.name}
         prescriptions={currentPatient.prescriptions || []} 
       />
 

@@ -149,3 +149,45 @@ export async function getTotalPatientCount() {
 
   return count || 0;
 }
+
+export async function getMedicineUsageByPatient(patientId: number) {
+  const supabase = await createClient();
+
+  // Lấy tất cả chi tiết đơn thuốc của bệnh nhân này
+  const { data, error } = await supabase
+    .from('prescription_details')
+    .select(`
+      medicine_id,
+      medicines(name, packing_spec),
+      prescriptions_header!inner(patient_id)
+    `)
+    .eq('prescriptions_header.patient_id', patientId);
+
+  if (error) {
+    console.error('Error fetching medicine usage:', error);
+    return [];
+  }
+
+  // Nhóm theo medicine_id và đếm số lần kê
+  const usageMap = new Map<number, { medicine_name: string; packing_spec: string; times_prescribed: number }>();
+  
+  for (const item of data || []) {
+    const id = item.medicine_id;
+    const medicine = item.medicines as unknown as { name: string; packing_spec: string } | null;
+    
+    const existing = usageMap.get(id);
+    if (existing) {
+      existing.times_prescribed += 1;
+    } else {
+      usageMap.set(id, {
+        medicine_name: medicine?.name || 'Không rõ',
+        packing_spec: medicine?.packing_spec || '',
+        times_prescribed: 1,
+      });
+    }
+  }
+
+  // Chuyển Map thành Array và sắp xếp giảm dần
+  return Array.from(usageMap.values())
+    .sort((a, b) => b.times_prescribed - a.times_prescribed);
+}
