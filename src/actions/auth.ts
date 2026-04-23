@@ -7,8 +7,14 @@ import { redirect } from 'next/navigation'
 export async function loginAction(formData: FormData) {
   const supabase = await createClient()
 
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
+  let email = formData.get('email') as string
+  let password = formData.get('password') as string
+
+  // Local dev shortcut - only works in development environment
+  if (process.env.NODE_ENV === 'development' && email === 'admin' && password === '1') {
+    email = process.env.DEV_ADMIN_EMAIL || email
+    password = process.env.DEV_ADMIN_PASSWORD || password
+  }
 
   const { error } = await supabase.auth.signInWithPassword({
     email,

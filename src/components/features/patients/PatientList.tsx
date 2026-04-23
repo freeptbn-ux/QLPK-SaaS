@@ -32,6 +32,7 @@ import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import EmptyState from '@/components/ui/EmptyState';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
 import Link from 'next/link';
+import { formatAge } from '@/lib/utils/age';
 
 export default function PatientList() {
   const theme = useTheme();
@@ -130,7 +131,7 @@ export default function PatientList() {
                   {patient.name}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {patient.gender} • {patient.dob}
+                  {patient.gender} • {formatAge(patient.dob || '') || patient.dob || 'N/A'}
                 </Typography>
               </Box>
               <Chip label={patient.phone || 'N/A'} size="small" />
@@ -192,7 +193,14 @@ export default function PatientList() {
                     {patient.name}
                   </Typography>
                 </TableCell>
-                <TableCell>{patient.dob}</TableCell>
+                <TableCell>
+                  {patient.dob || 'N/A'}
+                  {patient.dob && formatAge(patient.dob || '') && (
+                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                      {formatAge(patient.dob || '')}
+                    </Typography>
+                  )}
+                </TableCell>
                 <TableCell>{patient.gender}</TableCell>
                 <TableCell>{patient.phone}</TableCell>
                 <TableCell sx={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{patient.address}</TableCell>

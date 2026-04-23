@@ -12,7 +12,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts';
-import dayjs from 'dayjs';
+import { parseAgeParts } from '@/lib/utils/age';
 
 interface AgeGroupChartProps {
   dobs: string[];
@@ -29,20 +29,27 @@ export default function AgeGroupChart({ dobs }: AgeGroupChartProps) {
       'Người lớn': 0,
     };
 
-    const now = dayjs();
-
     dobs.forEach((dob) => {
-      let ageInMonths = 0;
-      
-      // Handle "13 tháng" format or ISO date
-      if (dob.toLowerCase().includes('tháng')) {
-        const months = parseInt(dob);
-        if (!isNaN(months)) ageInMonths = months;
-      } else {
-        const birthDate = dayjs(dob);
-        if (birthDate.isValid()) {
-          ageInMonths = now.diff(birthDate, 'month');
-        }
+      const parts = parseAgeParts(dob);
+      if (!parts) return; // Skip invalid/legacy DOBs
+
+      // Convert to months for grouping consistent with original logic
+      let ageInMonths: number;
+      switch (parts.unit) {
+        case 'day':
+          ageInMonths = 0;
+          break;
+        case 'week':
+          ageInMonths = parts.value / 4.33;
+          break;
+        case 'month':
+          ageInMonths = parts.value;
+          break;
+        case 'year':
+          ageInMonths = parts.value * 12;
+          break;
+        default:
+          return;
       }
 
       if (ageInMonths <= 2) groups['0-2 tháng']++;

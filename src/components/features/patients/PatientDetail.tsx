@@ -21,6 +21,7 @@ import PrescriptionHistory from './PrescriptionHistory';
 import PatientFormDialog from './PatientFormDialog';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { deletePatient } from '@/actions/patients';
+import { formatAge } from '@/lib/utils/age';
 
 interface PatientDetailProps {
   patient: any; // Using any for simplicity as the join makes it complex, or could define a proper type
@@ -109,7 +110,14 @@ export default function PatientDetail({ patient }: PatientDetailProps) {
               <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
                 Ngày sinh / Tuổi
               </Typography>
-              <Typography variant="body1">{currentPatient.dob || 'N/A'}</Typography>
+              <Typography variant="body1">
+                {currentPatient.dob || 'N/A'}
+                {currentPatient.dob && formatAge(currentPatient.dob || '') && (
+                  <Typography variant="caption" color="primary" sx={{ ml: 1 }}>
+                    ({formatAge(currentPatient.dob || '')})
+                  </Typography>
+                )}
+              </Typography>
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>

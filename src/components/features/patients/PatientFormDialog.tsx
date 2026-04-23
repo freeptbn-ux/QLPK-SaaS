@@ -22,6 +22,10 @@ import { patientSchema, PatientSchemaType } from '@/lib/validations/patient';
 import { Patient } from '@/types/database';
 import { addPatient, updatePatient } from '@/actions/patients';
 import { useToast } from '@/hooks/useToast';
+import DateInput from '@/components/ui/DateInput';
+import { Typography, Box } from '@mui/material';
+import { InfoOutlined } from '@mui/icons-material';
+
 
 interface PatientFormDialogProps {
   open: boolean;
@@ -58,9 +62,13 @@ export default function PatientFormDialog({
 
   useEffect(() => {
     if (patient && open) {
+      // Nếu patient.dob là format cũ (VD: "1990", "12 tháng")
+      // → không set vào DateInput (để trống), hiển thị warning
+      const isOldFormat = patient.dob && !/^\d{2}\/\d{2}\/\d{4}$/.test(patient.dob);
+      
       reset({
         name: patient.name || '',
-        dob: patient.dob || '',
+        dob: isOldFormat ? '' : (patient.dob || ''),
         gender: (patient.gender as 'Nam' | 'Nữ' | '') || 'Nam',
         address: patient.address || '',
         phone: patient.phone || '',
@@ -129,12 +137,23 @@ export default function PatientFormDialog({
                 name="dob"
                 control={control}
                 render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Ngày sinh / Tuổi (Ví dụ: 1990 hoặc 12 tháng)"
-                    fullWidth
-                    slotProps={{ inputLabel: { shrink: true } }}
-                  />
+                  <Box>
+                    <DateInput
+                      value={field.value || ''}
+                      onChange={field.onChange}
+                      label="Ngày sinh"
+                      error={!!errors.dob}
+                      helperText={errors.dob?.message}
+                    />
+                    {patient && patient.dob && !/^\d{2}\/\d{2}\/\d{4}$/.test(patient.dob) && (
+                      <Box sx={{ mt: 1, display: 'flex', alignItems: 'center', color: 'warning.main', gap: 0.5 }}>
+                        <InfoOutlined fontSize="small" />
+                        <Typography variant="caption">
+                          Format cũ: "{patient.dob}". Vui lòng nhập lại.
+                        </Typography>
+                      </Box>
+                    )}
+                  </Box>
                 )}
               />
             </Grid>

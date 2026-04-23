@@ -27,6 +27,7 @@ import PrescriptionItemRow from './PrescriptionItemRow';
 import { PrescriptionItem, CreatePrescriptionData } from '@/types/forms';
 import { Patient, Medicine } from '@/types/database';
 import { createPrescription } from '@/actions/prescriptions';
+import { formatAge } from '@/lib/utils/age';
 
 interface PrescriptionFormProps {
   patient: Patient;
@@ -210,7 +211,7 @@ export default function PrescriptionForm({ patient, consultationFee }: Prescript
                   {patient.name}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {patient.gender} • {patient.dob ? `${new Date().getFullYear() - new Date(patient.dob).getFullYear()} tuổi` : 'Không rõ tuổi'}
+                  {patient.gender} • {formatAge(patient.dob || '') || 'Không rõ tuổi'}
                 </Typography>
                 {patient.weight && (
                   <Typography variant="body2" color="text.secondary">
