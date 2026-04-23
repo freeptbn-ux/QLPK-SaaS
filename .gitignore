@@ -46,3 +46,5 @@ clinic.db.backup-*
 venv/
 scripts/__pycache__/
 *.txt
+!/.brain/
+!/.brain/**

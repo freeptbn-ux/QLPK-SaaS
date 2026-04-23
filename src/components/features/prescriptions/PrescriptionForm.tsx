@@ -28,6 +28,9 @@ import { PrescriptionItem, CreatePrescriptionData } from '@/types/forms';
 import { Patient, Medicine } from '@/types/database';
 import { createPrescription } from '@/actions/prescriptions';
 import { formatAge } from '@/lib/utils/age';
+import { GLASSMORPHISM } from '@/theme/constants';
+import CountUp from '@/components/ui/CountUp';
+
 
 interface PrescriptionFormProps {
   patient: Patient;
@@ -221,11 +224,25 @@ export default function PrescriptionForm({ patient, consultationFee }: Prescript
               </CardContent>
             </Card>
 
-            <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider' }}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
+            <Card 
+              elevation={0} 
+              sx={{ 
+                background: (theme) => theme.palette.mode === 'dark' ? GLASSMORPHISM.backgroundColorDark : GLASSMORPHISM.backgroundColor,
+                backdropFilter: GLASSMORPHISM.blur,
+                WebkitBackdropFilter: GLASSMORPHISM.blur,
+                border: '1px solid',
+                borderColor: (theme) => theme.palette.mode === 'dark' ? GLASSMORPHISM.borderColorDark : GLASSMORPHISM.borderColor,
+                boxShadow: GLASSMORPHISM.boxShadow,
+                borderRadius: 3,
+              }}
+            >
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" gutterBottom sx={{ fontWeight: 700, mb: 3 }}>
                   Thanh toán
                 </Typography>
+                
+                {/* Chi tiết phí được ẩn theo yêu cầu Phase 02 */}
+                {/* 
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography color="text.secondary">Tiền thuốc:</Typography>
                   <Typography>{new Intl.NumberFormat('vi-VN').format(subtotal)} đ</Typography>
@@ -235,10 +252,12 @@ export default function PrescriptionForm({ patient, consultationFee }: Prescript
                   <Typography>{new Intl.NumberFormat('vi-VN').format(consultationFee)} đ</Typography>
                 </Box>
                 <Divider sx={{ my: 1 }} />
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                  <Typography variant="h6">Tổng cộng:</Typography>
-                  <Typography variant="h6" color="primary">
-                    {new Intl.NumberFormat('vi-VN').format(total)} đ
+                */}
+
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4, alignItems: 'center' }}>
+                  <Typography variant="h6" sx={{ fontWeight: 600 }}>Tổng cộng:</Typography>
+                  <Typography variant="h4" sx={{ fontWeight: 800, color: 'primary.main' }}>
+                    <CountUp value={total} />
                   </Typography>
                 </Box>
 
@@ -252,10 +271,21 @@ export default function PrescriptionForm({ patient, consultationFee }: Prescript
                   variant="contained"
                   fullWidth
                   size="large"
-                  startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
+                  startIcon={loading ? <CircularProgress size={24} color="inherit" /> : <SaveIcon />}
                   disabled={loading}
                   onClick={handleSubmit}
-                  sx={{ mb: 1 }}
+                  sx={{ 
+                    mb: 2, 
+                    py: 1.5,
+                    fontSize: '1.05rem',
+                    borderRadius: 2,
+                    background: 'linear-gradient(45deg, #2563eb 30%, #3b82f6 90%)',
+                    boxShadow: '0 8px 16px rgba(37, 99, 235, 0.25)',
+                    '&:hover': {
+                      background: 'linear-gradient(45deg, #1e40af 30%, #2563eb 90%)',
+                      boxShadow: '0 12px 20px rgba(37, 99, 235, 0.35)',
+                    }
+                  }}
                 >
                   Lưu đơn thuốc
                 </Button>
@@ -265,6 +295,7 @@ export default function PrescriptionForm({ patient, consultationFee }: Prescript
                   startIcon={<ArrowBackIcon />}
                   onClick={() => router.back()}
                   disabled={loading}
+                  sx={{ borderRadius: 2 }}
                 >
                   Quay lại
                 </Button>

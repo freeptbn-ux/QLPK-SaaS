@@ -1,0 +1,2 @@
+[16:04] RUN SUCCESS: App running at http://localhost:3000
+[16:11] DEBUG SUCCESS: Fixed missing Supabase keys. App is running.
