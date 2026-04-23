@@ -21,6 +21,7 @@ import {
 import { patientSchema, PatientSchemaType } from '@/lib/validations/patient';
 import { Patient } from '@/types/database';
 import { addPatient, updatePatient } from '@/actions/patients';
+import { useToast } from '@/hooks/useToast';
 
 interface PatientFormDialogProps {
   open: boolean;
@@ -36,6 +37,7 @@ export default function PatientFormDialog({
   onSuccess,
 }: PatientFormDialogProps) {
   const isEdit = !!patient;
+  const { showToast } = useToast();
   const {
     control,
     handleSubmit,
@@ -82,14 +84,20 @@ export default function PatientFormDialog({
     try {
       if (isEdit && patient) {
         await updatePatient(patient.id, data);
+        showToast('Cập nhật bệnh nhân thành công', 'success');
       } else {
-        await addPatient(data);
+        const result = await addPatient(data);
+        if (result.isExisting) {
+          showToast('Bệnh nhân đã tồn tại trong hệ thống, đã cập nhật thông tin.', 'info');
+        } else {
+          showToast('Thêm bệnh nhân thành công', 'success');
+        }
       }
       onSuccess();
       onClose();
     } catch (error) {
       console.error('Error saving patient:', error);
-      // You might want to show a toast message here
+      showToast('Có lỗi xảy ra khi lưu thông tin', 'error');
     }
   };
 

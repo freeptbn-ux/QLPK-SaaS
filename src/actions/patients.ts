@@ -72,10 +72,26 @@ export async function getPatientById(id: number) {
 
 export async function addPatient(data: PatientFormData) {
   const supabase = await createClient();
+  const nameNormalized = removeDiacritics(data.name);
 
+  // Check existing patient (same normalized name and DOB)
+  const { data: existing } = await supabase
+    .from('patients')
+    .select('id')
+    .eq('name_normalized', nameNormalized)
+    .eq('dob', data.dob || '')
+    .maybeSingle();
+
+  if (existing) {
+    // Patient already exists, update info and return
+    const updated = await updatePatient(existing.id, data);
+    return { data: updated as Patient, isExisting: true };
+  }
+
+  // New patient - insert as normal
   const patientData = {
     ...data,
-    name_normalized: removeDiacritics(data.name),
+    name_normalized: nameNormalized,
   };
 
   const { data: insertedData, error } = await supabase
@@ -90,7 +106,7 @@ export async function addPatient(data: PatientFormData) {
   }
 
   revalidatePath('/patients');
-  return insertedData;
+  return { data: insertedData as Patient, isExisting: false };
 }
 
 export async function updatePatient(id: number, data: PatientFormData) {

@@ -1,86 +1,71 @@
-# QLPK-SaaS - Hệ thống Quản lý Phòng khám Thông minh
+# QLPK-SaaS - Phần Mềm Quản Lý Phòng Khám Nhi Khoa
 
-QLPK-SaaS là một giải pháp quản lý phòng khám hiện đại được xây dựng dưới dạng phần mềm dịch vụ (SaaS). Hệ thống giúp tối ưu hóa quy trình quản lý bệnh nhân, kho thuốc, kê đơn và theo dõi doanh thu một cách hiệu quả, chuyên nghiệp.
+Hệ thống quản lý phòng khám hiện đại, đa nền tảng, được xây dựng trên nền tảng Web SaaS, giúp tối ưu hóa quy trình khám chữa bệnh, quản lý bệnh nhân và kho thuốc.
 
-## 🚀 Tính năng chính
+## 🌟 Tính Năng Chính
 
-- **Quản lý Bệnh nhân**: Lưu trữ hồ sơ bệnh lý, tiểu sử, cân nặng và thông tin liên lạc của bệnh nhân. Tìm kiếm thông minh theo tên (không dấu) hoặc số điện thoại.
-- **Lịch sử Dùng thuốc**: Tính năng mới cho phép bác sĩ xem tổng hợp tất cả các loại thuốc mà bệnh nhân đã từng sử dụng, kèm theo số lần kê mỗi loại, giúp đưa ra quyết định điều trị chính xác hơn.
-- **Quản lý Thuốc & Kho**: Theo dõi số lượng tồn kho theo thời gian thực, cảnh báo thuốc sắp hết (Low Stock), quản lý đơn giá và quy cách đóng gói.
-- **Hệ thống Kê đơn**: Quy trình kê đơn nhanh chóng thông qua RPC database, tự động tính toán tổng chi phí và in đơn thuốc chuyên nghiệp.
-- **Công cụ Tính liều lượng**: Hỗ trợ bác sĩ tính toán liều lượng thuốc dựa trên cân nặng và các thông số lâm sàng với các bộ preset định sẵn.
-- **Báo cáo & Thống kê**: Biểu đồ trực quan về lượt khám, doanh thu và mức độ tiêu thụ thuốc theo thời gian bằng Recharts.
-- **Giao diện Hiện đại**: Hỗ trợ chế độ Sáng/Tối (Dark Mode) và tương thích hoàn toàn với các thiết bị di động (Responsive).
+- **Quản Lý Bệnh Nhân**: Lưu trữ thông tin chi tiết, lịch sử khám bệnh, tìm kiếm thông minh không dấu.
+- **Kê Đơn Thuốc**: Giao diện kê đơn nhanh chóng, gợi ý thuốc thông minh, tự động tính toán liều lượng.
+- **Quản Lý Kho Thuốc**: Theo dõi tồn kho, giá nhập/bán, cảnh báo thuốc sắp hết.
+- **Thống Kê & Báo Cáo**: Biểu đồ trực quan về doanh thu, số lượng bệnh nhân và tình hình sử dụng thuốc.
+- **Tùy Chỉnh Linh Hoạt**: Thay đổi thông tin phòng khám, cấu hình phí khám, hỗ trợ giao diện Sáng/Tối (Dark Mode).
 
-## 🛠️ Công nghệ sử dụng
+## 🛠 Công Nghệ Sử Dụng
 
-- **Framework**: [Next.js 16](https://nextjs.org/) (App Router, Turbopack)
-- **UI Library**: [Material UI (MUI) v9](https://mui.com/)
-- **Backend & Auth**: [Supabase](https://supabase.com/) (Postgres, Auth, RLS)
-- **State Management**: React Hook Form + Zod (Validation)
-- **Charts**: Recharts
-- **Styling**: Vanilla CSS + Emotion
-- **Ngôn ngữ**: TypeScript
+- **Frontend**: [Next.js 16](https://nextjs.org/) (App Router), [React 19](https://react.dev/)
+- **UI Framework**: [Material UI (MUI) v9](https://mui.com/)
+- **Database & Auth**: [Supabase](https://supabase.com/) (PostgreSQL)
+- **State Management**: React Hooks, Server Actions
+- **Validation**: [Zod](https://zod.dev/), React Hook Form
+- **Charts**: [Recharts](https://recharts.org/)
+- **Styling**: Vanilla CSS + MUI System
 
-## 📦 Cấu trúc thư mục
+## 🚀 Hướng Dẫn Cài Đặt
 
-```text
-.
-├── src/
-│   ├── actions/      # Server Actions xử lý logic nghiệp vụ (Patients, Medicines, Prescriptions)
-│   ├── app/          # App Router (Dashboard, Login, Patients, Statistics, etc.)
-│   ├── components/   # Các UI Components (Features, UI elements)
-│   ├── hooks/        # Custom React Hooks
-│   ├── lib/          # Cấu hình Supabase, utils chuẩn hóa dữ liệu
-│   ├── theme/        # Cấu hình MUI Theme (Light/Dark mode)
-│   └── types/        # TypeScript Definitions & Database Interfaces
-├── supabase/
-│   └── migrations/   # File SQL khởi tạo schema và RLS policies
-├── public/           # Assets tĩnh (images, icons)
-├── plans/            # Tài liệu kế hoạch và tiến độ phát triển
-└── scratch/          # Scripts kiểm thử và công cụ hỗ trợ
+### 1. Yêu cầu hệ thống
+- Node.js 20.x trở lên
+- Tài khoản Supabase
+
+### 2. Clone dự án
+```bash
+git clone https://github.com/freeptbn-ux/QLPK-SaaS.git
+cd QLPK-SaaS
 ```
 
-## ⚙️ Cài đặt
+### 3. Cài đặt dependencies
+```bash
+npm install
+```
 
-1. **Clone repository**:
-   ```bash
-   git clone https://github.com/freeptbn-ux/QLPK-SaaS.git
-   cd QLPK-SaaS
-   ```
+### 4. Cấu hình biến môi trường
+Tạo file `.env.local` tại thư mục gốc và cấu hình các thông số Supabase:
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+```
 
-2. **Cài đặt dependencies**:
-   ```bash
-   npm install
-   ```
+### 5. Khởi tạo Database
+Sử dụng các file migration trong thư mục `supabase/migrations` hoặc chạy SQL schema trực tiếp trên Supabase Dashboard.
 
-3. **Cấu hình biến môi trường**:
-   Tạo file `.env.local` từ mẫu `.env.example` và điền thông tin Supabase của bạn:
-   ```text
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   ```
+### 6. Chạy dự án
+```bash
+npm run dev
+```
+Mở [http://localhost:3000](http://localhost:3000) trên trình duyệt để xem kết quả.
 
-4. **Chạy dự án ở chế độ phát triển**:
-   ```bash
-   npm run dev
-   ```
+## 📁 Cấu Trúc Thư Mục
 
-5. **Build cho production**:
-   ```bash
-   npm run build
-   npm start
-   ```
+- `src/actions`: Các hàm tương tác với cơ sở dữ liệu (Server Actions).
+- `src/app`: Định nghĩa các routes, layouts và giao diện chính.
+- `src/components`: Các thành phần giao diện tái sử dụng (UI & Features).
+- `src/lib`: Thư viện dùng chung, cấu hình Supabase, utils.
+- `src/theme`: Cấu hình giao diện Material UI.
+- `src/types`: Các định nghĩa TypeScript interfaces.
+- `supabase`: Chứa các file migration và cấu hình database.
 
-## 📝 Cách sử dụng
-
-- Đăng nhập vào hệ thống bằng tài khoản email/mật khẩu thông qua Supabase Auth.
-- Sử dụng Sidebar (Desktop) hoặc Bottom Nav (Mobile) để chuyển đổi giữa các module.
-- Hệ thống hỗ trợ phím tắt để thao tác nhanh hơn trong quá trình khám bệnh.
-
-## ⚖️ Bản quyền
-
-Copyright 2026 Nguyễn Duy Trường
+## 📝 Ghi Chú
+Dự án được chuyển đổi từ phiên bản Desktop (Python/SQLite) sang nền tảng Web SaaS để tăng tính linh hoạt và khả năng truy cập từ nhiều thiết bị.
 
 ---
-*Dự án được phát triển bởi Nguyễn Duy Trường.*
+Copyright 2026 Nguyễn Duy Trường
