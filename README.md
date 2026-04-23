@@ -1,71 +1,82 @@
-# QLPK-SaaS - Phần Mềm Quản Lý Phòng Khám Nhi Khoa
+# Quản Lý Phòng Khám Nhi (QLPK-SaaS) 🏥
 
-Hệ thống quản lý phòng khám hiện đại, đa nền tảng, được xây dựng trên nền tảng Web SaaS, giúp tối ưu hóa quy trình khám chữa bệnh, quản lý bệnh nhân và kho thuốc.
+Phần mềm quản lý phòng khám nhi khoa hiện đại, được xây dựng dưới dạng mô hình SaaS (Software as a Service) giúp các bác sĩ quản lý bệnh nhân, đơn thuốc và thống kê phòng khám một cách chuyên nghiệp và hiệu quả.
 
-## 🌟 Tính Năng Chính
+## 🚀 Tính năng chính
 
-- **Quản Lý Bệnh Nhân**: Lưu trữ thông tin chi tiết, lịch sử khám bệnh, tìm kiếm thông minh không dấu.
-- **Kê Đơn Thuốc**: Giao diện kê đơn nhanh chóng, gợi ý thuốc thông minh, tự động tính toán liều lượng.
-- **Quản Lý Kho Thuốc**: Theo dõi tồn kho, giá nhập/bán, cảnh báo thuốc sắp hết.
-- **Thống Kê & Báo Cáo**: Biểu đồ trực quan về doanh thu, số lượng bệnh nhân và tình hình sử dụng thuốc.
-- **Tùy Chỉnh Linh Hoạt**: Thay đổi thông tin phòng khám, cấu hình phí khám, hỗ trợ giao diện Sáng/Tối (Dark Mode).
+- **Quản lý bệnh nhân:** Lưu trữ hồ sơ, tiền sử bệnh án, thông tin liên lạc và cân nặng của bé.
+- **Quản lý thuốc & Kho:** Theo dõi tồn kho, quy cách đóng gói và cảnh báo khi thuốc sắp hết.
+- **Kê đơn thuốc thông minh:** Tự động tính toán liều lượng, tích hợp lịch sử dùng thuốc và trừ tồn kho tự động.
+- **Máy tính liều lượng (Dose Calculator):** Hỗ trợ tính liều thuốc dựa trên cân nặng và độ tuổi của bé.
+- **Thống kê & Báo cáo:** Biểu đồ doanh thu, lượt khám và xu hướng sử dụng thuốc trực quan.
+- **Cài đặt phòng khám:** Tùy chỉnh thông tin phòng khám, biểu phí khám bệnh và giao diện (Light/Dark Mode).
 
-## 🛠 Công Nghệ Sử Dụng
+## 🛠️ Công nghệ sử dụng
 
-- **Frontend**: [Next.js 16](https://nextjs.org/) (App Router), [React 19](https://react.dev/)
-- **UI Framework**: [Material UI (MUI) v9](https://mui.com/)
-- **Database & Auth**: [Supabase](https://supabase.com/) (PostgreSQL)
-- **State Management**: React Hooks, Server Actions
-- **Validation**: [Zod](https://zod.dev/), React Hook Form
-- **Charts**: [Recharts](https://recharts.org/)
-- **Styling**: Vanilla CSS + MUI System
+Dự án được xây dựng trên nền tảng công nghệ tiên tiến nhất năm 2026:
 
-## 🚀 Hướng Dẫn Cài Đặt
+- **Framework:** [Next.js 16](https://nextjs.org/) (App Router, Turbopack)
+- **UI Library:** [Material UI v9](https://mui.com/) (MUI) - Giao diện hiện đại, responsive.
+- **Ngôn ngữ:** [TypeScript](https://www.typescriptlang.org/) - Đảm bảo tính chặt chẽ và an toàn cho mã nguồn.
+- **Backend & Database:** [Supabase](https://supabase.com/) (PostgreSQL, Auth, SSR).
+- **Quản lý Form:** [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/).
+- **Biểu đồ:** [Recharts](https://recharts.org/).
+- **Xử lý thời gian:** [Day.js](https://day.js.org/).
 
-### 1. Yêu cầu hệ thống
-- Node.js 20.x trở lên
-- Tài khoản Supabase
+## 📦 Cấu trúc thư mục
 
-### 2. Clone dự án
-```bash
-git clone https://github.com/freeptbn-ux/QLPK-SaaS.git
-cd QLPK-SaaS
+```text
+src/
+├── actions/        # Server Actions xử lý logic database (Supabase)
+├── app/            # Cấu trúc routing (Auth, Dashboard, Pages)
+├── components/     # Các UI components (theo tính năng và dùng chung)
+├── hooks/          # Custom hooks (Toast, Theme...)
+├── lib/            # Cấu hình thư viện và validation schemas
+├── theme/          # Cấu hình giao diện (ThemeRegistry, ThemeContext)
+└── types/          # Định nghĩa kiểu dữ liệu (TypeScript Interfaces)
 ```
 
-### 3. Cài đặt dependencies
-```bash
-npm install
-```
+## ⚙️ Hướng dẫn cài đặt
 
-### 4. Cấu hình biến môi trường
-Tạo file `.env.local` tại thư mục gốc và cấu hình các thông số Supabase:
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-```
+1. **Clone repository:**
+   ```bash
+   git clone https://github.com/freeptbn-ux/QLPK-SaaS.git
+   cd QLPK-SaaS
+   ```
 
-### 5. Khởi tạo Database
-Sử dụng các file migration trong thư mục `supabase/migrations` hoặc chạy SQL schema trực tiếp trên Supabase Dashboard.
+2. **Cài đặt dependencies:**
+   ```bash
+   npm install
+   ```
 
-### 6. Chạy dự án
-```bash
-npm run dev
-```
-Mở [http://localhost:3000](http://localhost:3000) trên trình duyệt để xem kết quả.
+3. **Cấu hình biến môi trường:**
+   Tạo file `.env.local` từ `.env.example` và điền các thông tin từ Supabase Project của bạn:
+   ```text
+   NEXT_PUBLIC_SUPABASE_URL=your_project_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+   ```
 
-## 📁 Cấu Trúc Thư Mục
+4. **Chạy ứng dụng ở chế độ phát triển:**
+   ```bash
+   npm run dev
+   ```
 
-- `src/actions`: Các hàm tương tác với cơ sở dữ liệu (Server Actions).
-- `src/app`: Định nghĩa các routes, layouts và giao diện chính.
-- `src/components`: Các thành phần giao diện tái sử dụng (UI & Features).
-- `src/lib`: Thư viện dùng chung, cấu hình Supabase, utils.
-- `src/theme`: Cấu hình giao diện Material UI.
-- `src/types`: Các định nghĩa TypeScript interfaces.
-- `supabase`: Chứa các file migration và cấu hình database.
+5. **Build cho môi trường Production:**
+   ```bash
+   npm run build
+   npm start
+   ```
 
-## 📝 Ghi Chú
-Dự án được chuyển đổi từ phiên bản Desktop (Python/SQLite) sang nền tảng Web SaaS để tăng tính linh hoạt và khả năng truy cập từ nhiều thiết bị.
+## 📝 Cách sử dụng
+
+- Đăng nhập bằng tài khoản bác sĩ đã được cấp.
+- Sử dụng Sidebar để chuyển đổi giữa các module: Bệnh nhân, Thuốc, Thống kê, Máy tính liều.
+- Trong module Bệnh nhân, bạn có thể xem chi tiết lịch sử khám và kê đơn thuốc mới.
+- Hệ thống tự động lưu trữ và đồng bộ hóa dữ liệu lên Cloud (Supabase).
+
+## 🛡️ Bản quyền
+
+Copyright © 2026 Nguyễn Duy Trường
 
 ---
-Copyright 2026 Nguyễn Duy Trường
+*Ghi chú: Dự án này được phát triển để phục vụ công tác quản lý phòng khám nhi khoa chuyên sâu.*

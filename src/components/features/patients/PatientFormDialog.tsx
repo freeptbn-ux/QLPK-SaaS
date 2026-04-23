@@ -119,6 +119,7 @@ export default function PatientFormDialog({
                     required
                     error={!!errors.name}
                     helperText={errors.name?.message}
+                    slotProps={{ inputLabel: { shrink: true } }}
                   />
                 )}
               />
@@ -130,9 +131,9 @@ export default function PatientFormDialog({
                 render={({ field }) => (
                   <TextField
                     {...field}
-                    label="Ngày sinh / Tuổi"
+                    label="Ngày sinh / Tuổi (Ví dụ: 1990 hoặc 12 tháng)"
                     fullWidth
-                    placeholder="Ví dụ: 1990 hoặc 12 tháng"
+                    slotProps={{ inputLabel: { shrink: true } }}
                   />
                 )}
               />
@@ -156,21 +157,21 @@ export default function PatientFormDialog({
               <Controller
                 name="phone"
                 control={control}
-                render={({ field }) => <TextField {...field} label="Số điện thoại" fullWidth />}
+                render={({ field }) => <TextField {...field} label="Số điện thoại" fullWidth slotProps={{ inputLabel: { shrink: true } }} />}
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
               <Controller
                 name="weight"
                 control={control}
-                render={({ field }) => <TextField {...field} label="Cân nặng (kg)" fullWidth />}
+                render={({ field }) => <TextField {...field} label="Cân nặng (kg)" fullWidth slotProps={{ inputLabel: { shrink: true } }} />}
               />
             </Grid>
             <Grid size={{ xs: 12 }}>
               <Controller
                 name="address"
                 control={control}
-                render={({ field }) => <TextField {...field} label="Địa chỉ" fullWidth multiline rows={2} />}
+                render={({ field }) => <TextField {...field} label="Địa chỉ" fullWidth multiline rows={2} slotProps={{ inputLabel: { shrink: true } }} />}
               />
             </Grid>
             <Grid size={{ xs: 12 }}>
@@ -178,7 +179,7 @@ export default function PatientFormDialog({
                 name="diagnosis"
                 control={control}
                 render={({ field }) => (
-                  <TextField {...field} label="Chẩn đoán / Ghi chú" fullWidth multiline rows={3} />
+                  <TextField {...field} label="Chẩn đoán / Ghi chú" fullWidth multiline rows={3} slotProps={{ inputLabel: { shrink: true } }} />
                 )}
               />
             </Grid>
