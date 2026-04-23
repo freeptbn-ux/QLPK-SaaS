@@ -31,12 +31,16 @@ export default async function PrescribePage({ params }: PrescribePageProps) {
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ mb: 4 }}>
         <Breadcrumbs sx={{ mb: 2 }}>
-          <MuiLink component={Link} href="/patients" underline="hover" color="inherit">
-            Bệnh nhân
-          </MuiLink>
-          <MuiLink component={Link} href={`/patients/${patientId}`} underline="hover" color="inherit">
-            {patient.name}
-          </MuiLink>
+          <Link href="/patients" passHref legacyBehavior>
+            <MuiLink underline="hover" color="inherit">
+              Bệnh nhân
+            </MuiLink>
+          </Link>
+          <Link href={`/patients/${patientId}`} passHref legacyBehavior>
+            <MuiLink underline="hover" color="inherit">
+              {patient.name}
+            </MuiLink>
+          </Link>
           <Typography color="text.primary">Kê đơn thuốc</Typography>
         </Breadcrumbs>
         <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
