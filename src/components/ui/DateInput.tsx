@@ -1,15 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, KeyboardEvent, ClipboardEvent } from 'react';
-import {
-  Box,
-  Typography,
-  FormControl,
-  InputLabel,
-  FormHelperText,
-  styled,
-  useTheme,
-} from '@mui/material';
+import { cn } from '@/lib/utils/cn';
 
 interface DateInputProps {
   value: string; // "DD/MM/YYYY" hoặc ""
@@ -26,65 +18,6 @@ interface DateInputProps {
   };
 }
 
-const InputContainer = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'error' && prop !== 'focused' && prop !== 'disabled',
-})<{ error?: boolean; focused?: boolean; disabled?: boolean }>(({ theme, error, focused, disabled }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  padding: '8.5px 14px',
-  borderRadius: theme.shape.borderRadius,
-  border: '1px solid',
-  borderColor: error
-    ? theme.palette.error.main
-    : focused
-    ? theme.palette.primary.main
-    : theme.palette.mode === 'light'
-    ? 'rgba(0, 0, 0, 0.23)'
-    : 'rgba(255, 255, 255, 0.23)',
-  backgroundColor: disabled ? (theme.palette.mode === 'light' ? '#f5f5f5' : '#1e293b') : 'transparent',
-  cursor: disabled ? 'not-allowed' : 'text',
-  transition: theme.transitions.create(['border-color', 'box-shadow']),
-  '&:hover': {
-    borderColor: error
-      ? theme.palette.error.main
-      : focused
-      ? theme.palette.primary.main
-      : theme.palette.mode === 'light'
-      ? 'rgba(0, 0, 0, 0.87)'
-      : 'rgba(255, 255, 255, 0.87)',
-  },
-  ...(focused && {
-    boxShadow: `0 0 0 1px ${error ? theme.palette.error.main : theme.palette.primary.main}`,
-  }),
-}));
-
-const StyledInput = styled('input')(({ theme }) => ({
-  border: 'none',
-  outline: 'none',
-  padding: 0,
-  margin: 0,
-  width: '100%',
-  background: 'transparent',
-  textAlign: 'center',
-  fontSize: '1rem',
-  fontFamily: theme.typography.fontFamily,
-  color: theme.palette.text.primary,
-  '&::placeholder': {
-    color: theme.palette.text.disabled,
-    opacity: 1,
-  },
-  '&:disabled': {
-    cursor: 'not-allowed',
-    color: theme.palette.text.disabled,
-  },
-}));
-
-const Separator = styled(Typography)(({ theme }) => ({
-  margin: '0 4px',
-  color: theme.palette.text.secondary,
-  userSelect: 'none',
-}));
-
 export const DateInput: React.FC<DateInputProps> = ({
   value = '',
   onChange,
@@ -95,16 +28,24 @@ export const DateInput: React.FC<DateInputProps> = ({
   disabled = false,
   placeholder = {},
 }) => {
-  const theme = useTheme();
-  
   // Use a ref to track the last value we emitted to avoid loops
   const lastEmittedValue = useRef(value);
 
-  // Split value into parts
-  const parts = value.includes('/') ? value.split('/') : ['', '', ''];
-  const day = parts[0] || '';
-  const month = parts[1] || '';
-  const year = parts[2] || '';
+  // Local state for segments to handle rapid input and testing environments
+  const getParts = (v: string) => (v && v.includes('/') ? v.split('/') : ['', '', '']);
+  const [segments, setSegments] = useState(() => getParts(value));
+
+  // Sync with prop value
+  useEffect(() => {
+    if (value !== lastEmittedValue.current) {
+      setSegments(getParts(value));
+      lastEmittedValue.current = value;
+    }
+  }, [value]);
+
+  const day = segments[0] || '';
+  const month = segments[1] || '';
+  const year = segments[2] || '';
 
   const [focused, setFocused] = useState(false);
 
@@ -113,6 +54,7 @@ export const DateInput: React.FC<DateInputProps> = ({
   const yearRef = useRef<HTMLInputElement>(null);
 
   const updateParent = (d: string, m: string, y: string) => {
+    setSegments([d, m, y]);
     const newValue = (d || m || y) ? `${d}/${m}/${y}` : '';
     if (newValue !== lastEmittedValue.current) {
       lastEmittedValue.current = newValue;
@@ -181,34 +123,39 @@ export const DateInput: React.FC<DateInputProps> = ({
   }, [value]);
 
   return (
-    <FormControl error={error} required={required} disabled={disabled} fullWidth variant="standard">
+    <div className="w-full">
       {label && (
-        <InputLabel
-          shrink
-          sx={{
-            position: 'relative',
-            transform: 'none',
-            marginBottom: '8px',
-            color: error ? theme.palette.error.main : focused ? theme.palette.primary.main : theme.palette.text.secondary,
-            fontWeight: 500,
-            fontSize: '0.875rem',
-          }}
+        <label 
+          className={cn(
+            "block text-sm font-semibold mb-2 transition-colors",
+            error ? "text-red-500" : focused ? "text-primary-600" : "text-gray-500 dark:text-gray-400",
+            disabled && "opacity-50"
+          )}
         >
           {label}
-        </InputLabel>
+          {required && <span className="ml-1 text-red-500">*</span>}
+        </label>
       )}
-      <InputContainer
-        focused={focused}
-        error={error}
-        disabled={disabled}
+      
+      <div
         onClick={() => {
+          if (disabled) return;
           if (!day) dayRef.current?.focus();
           else if (!month) monthRef.current?.focus();
           else yearRef.current?.focus();
         }}
+        className={cn(
+          "flex items-center px-4 py-2.5 rounded-xl border transition-all cursor-text",
+          disabled ? "bg-gray-50 dark:bg-slate-900/50 cursor-not-allowed opacity-50" : "bg-white dark:bg-slate-900",
+          error
+            ? "border-red-500 ring-4 ring-red-500/10"
+            : focused
+            ? "border-primary-500 ring-4 ring-primary-500/10"
+            : "border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700"
+        )}
       >
-        <Box sx={{ width: '35px' }}>
-          <StyledInput
+        <div className="w-10">
+          <input
             ref={dayRef}
             value={day}
             onChange={handleDayChange}
@@ -219,11 +166,14 @@ export const DateInput: React.FC<DateInputProps> = ({
             placeholder={placeholder.day || 'DD'}
             disabled={disabled}
             inputMode="numeric"
+            className="w-full bg-transparent border-none outline-none text-center text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-600 font-medium"
           />
-        </Box>
-        <Separator>/</Separator>
-        <Box sx={{ width: '35px' }}>
-          <StyledInput
+        </div>
+        
+        <span className="mx-1 text-gray-400 select-none">/</span>
+        
+        <div className="w-10">
+          <input
             ref={monthRef}
             value={month}
             onChange={handleMonthChange}
@@ -234,11 +184,14 @@ export const DateInput: React.FC<DateInputProps> = ({
             placeholder={placeholder.month || 'MM'}
             disabled={disabled}
             inputMode="numeric"
+            className="w-full bg-transparent border-none outline-none text-center text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-600 font-medium"
           />
-        </Box>
-        <Separator>/</Separator>
-        <Box sx={{ width: '55px' }}>
-          <StyledInput
+        </div>
+        
+        <span className="mx-1 text-gray-400 select-none">/</span>
+        
+        <div className="w-14">
+          <input
             ref={yearRef}
             value={year}
             onChange={handleYearChange}
@@ -249,11 +202,17 @@ export const DateInput: React.FC<DateInputProps> = ({
             placeholder={placeholder.year || 'YYYY'}
             disabled={disabled}
             inputMode="numeric"
+            className="w-full bg-transparent border-none outline-none text-center text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-600 font-medium"
           />
-        </Box>
-      </InputContainer>
-      {helperText && <FormHelperText>{helperText}</FormHelperText>}
-    </FormControl>
+        </div>
+      </div>
+
+      {(helperText || error) && (
+        <p className={cn("text-xs mt-1.5 font-medium px-1", error ? "text-red-500" : "text-gray-500")}>
+          {helperText}
+        </p>
+      )}
+    </div>
   );
 };
 

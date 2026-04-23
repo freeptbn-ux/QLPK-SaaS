@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Container, Grid, Typography, Box, Skeleton } from '@mui/material';
 import PageHeader from '@/components/ui/PageHeader';
 import StatsOverview from '@/components/features/statistics/StatsOverview';
 import StatsFilter from '@/components/features/statistics/StatsFilter';
@@ -33,14 +32,19 @@ export default function StatisticsClient({ availableMonths }: StatisticsClientPr
   const [selectedMonth, setSelectedMonth] = useState(availableMonths[0] || dayjs().format('YYYY-MM'));
   const [timeRange, setTimeRange] = useState<'day' | 'week' | 'month' | 'year'>('day');
   
-  const [overview, setOverview] = useState<any>(null);
-  const [visitData, setVisitData] = useState<any[]>([]);
-  const [revenueData, setRevenueData] = useState<any[]>([]);
-  const [genderData, setGenderData] = useState<any[]>([]);
+  const [overview, setOverview] = useState<{
+    totalPatients: number;
+    monthlyVisits: number;
+    monthlyRevenue: number;
+    lowStockCount: number;
+  } | null>(null);
+  const [visitData, setVisitData] = useState<{ name: string; count: number }[]>([]);
+  const [revenueData, setRevenueData] = useState<{ name: string; revenue: number }[]>([]);
+  const [genderData, setGenderData] = useState<{ name: string; value: number }[]>([]);
   const [dobData, setDobData] = useState<string[]>([]);
-  const [locationData, setLocationData] = useState<any[]>([]);
-  const [medicineData, setMedicineData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [locationData, setLocationData] = useState<{ name: string; count: number }[]>([]);
+  const [medicineData, setMedicineData] = useState<{ name: string; totalQuantity: number; totalRevenue: number }[]>([]);
+  const [, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -87,8 +91,7 @@ export default function StatisticsClient({ availableMonths }: StatisticsClientPr
       }
       setVisitData(visits);
       setRevenueData(revenue);
-      setDobData(dobs);
-      setMedicineData(medicineData.length > 0 ? medicineData : medicines); // Keep medicine data if already fetched or update
+      setDobData(dobs.filter((d): d is string => d !== null));
       setMedicineData(medicines);
     } catch (error) {
       console.error('Error fetching statistics:', error);
@@ -98,16 +101,20 @@ export default function StatisticsClient({ availableMonths }: StatisticsClientPr
   }, [timeRange, selectedMonth]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
   }, [fetchData]);
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
-      <PageHeader title="Thống kê báo cáo" subtitle="Theo dõi tình hình hoạt động của phòng khám" />
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <PageHeader 
+        title="Thống kê báo cáo" 
+        subtitle="Theo dõi tình hình hoạt động của phòng khám" 
+      />
       
       <StatsOverview stats={overview} />
       
-      <Box sx={{ mt: 4 }}>
+      <div className="space-y-6">
         <StatsFilter 
           availableMonths={availableMonths}
           selectedMonth={selectedMonth}
@@ -116,37 +123,37 @@ export default function StatisticsClient({ availableMonths }: StatisticsClientPr
           onTimeRangeChange={setTimeRange}
         />
         
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 8 }}>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-8">
             <VisitChart 
               data={visitData} 
               title={`Lượt khám ${timeRange === 'day' ? `tháng ${selectedMonth}` : 
                 timeRange === 'week' ? '8 tuần gần nhất' : 
                 timeRange === 'month' ? '12 tháng gần nhất' : 'Theo năm'}`} 
             />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
+          </div>
+          <div className="lg:col-span-4">
             <GenderPieChart data={genderData} />
-          </Grid>
+          </div>
           
-          <Grid size={{ xs: 12, md: 8 }}>
+          <div className="lg:col-span-8">
             <RevenueChart 
               data={revenueData} 
               title="Doanh thu (Đơn thuốc + Phí khám)" 
             />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
+          </div>
+          <div className="lg:col-span-4">
             <AgeGroupChart dobs={dobData} />
-          </Grid>
+          </div>
           
-          <Grid size={{ xs: 12, md: 6 }}>
+          <div className="lg:col-span-6">
             <TopLocations data={locationData} />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
+          </div>
+          <div className="lg:col-span-6">
             <MedicineUsageTable data={medicineData} />
-          </Grid>
-        </Grid>
-      </Box>
-    </Container>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

@@ -8,6 +8,7 @@ vi.mock('framer-motion', async () => {
   const actual = await vi.importActual('framer-motion');
   return {
     ...actual,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     animate: (value: any, target: number, options: any) => {
       if (options?.onUpdate) options.onUpdate(target);
       if (value?.set) value.set(target);

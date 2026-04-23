@@ -1,6 +1,5 @@
 import React from 'react';
-import { Box, Typography, Button, Stack } from '@mui/material';
-import InboxIcon from '@mui/icons-material/Inbox';
+import { HiInbox } from 'react-icons/hi2';
 
 interface EmptyStateProps {
   title: string;
@@ -10,30 +9,29 @@ interface EmptyStateProps {
 
 export default function EmptyState({ title, description, action }: EmptyStateProps) {
   return (
-    <Box
-      sx={{
-        py: 10,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        textAlign: 'center',
-        border: '1px dashed',
-        borderColor: 'divider',
-        borderRadius: 2,
-        bgcolor: 'background.paper',
-      }}
-    >
-      <InboxIcon sx={{ fontSize: 64, color: 'text.disabled', mb: 2 }} />
-      <Typography variant="h6" gutterBottom>
+    <div className="flex flex-col items-center justify-center py-16 px-4 text-center border-2 border-dashed border-gray-100 dark:border-gray-800 rounded-3xl bg-white dark:bg-slate-900/50 transition-all">
+      <div className="mb-6 relative">
+        <div className="absolute inset-0 bg-primary-500/10 blur-2xl rounded-full" />
+        <div className="relative p-6 rounded-full bg-gray-50 dark:bg-gray-800 text-gray-300 dark:text-gray-600">
+          <HiInbox className="text-6xl" />
+        </div>
+      </div>
+      
+      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
         {title}
-      </Typography>
+      </h3>
+      
       {description && (
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 3, maxWidth: 400 }}>
+        <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-sm mx-auto text-sm leading-relaxed">
           {description}
-        </Typography>
+        </p>
       )}
-      {action}
-    </Box>
+      
+      {action && (
+        <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+          {action}
+        </div>
+      )}
+    </div>
   );
 }

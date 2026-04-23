@@ -14,13 +14,12 @@ export default function CountUp({
   duration = 0.5, 
   suffix = ' đ' 
 }: CountUpProps) {
-  const [display, setDisplay] = useState('');
-  const motionValue = useMotionValue(value); // Start with current value to avoid 0 jump on update
+  const [display, setDisplay] = useState(() => 
+    new Intl.NumberFormat('vi-VN').format(Math.floor(value)) + suffix
+  );
+  const motionValue = useMotionValue(value);
 
   useEffect(() => {
-    // Initial format
-    setDisplay(new Intl.NumberFormat('vi-VN').format(Math.floor(value)) + suffix);
-
     const controls = animate(motionValue, value, {
       duration: duration,
       ease: 'easeOut',

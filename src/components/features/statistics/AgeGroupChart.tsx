@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { Card, CardContent, Typography, Box } from '@mui/material';
 import {
   BarChart,
   Bar,
@@ -64,30 +63,50 @@ export default function AgeGroupChart({ dobs }: AgeGroupChartProps) {
   }, [dobs]);
 
   return (
-    <Card elevation={2} sx={{ borderRadius: 4, height: '100%' }}>
-      <CardContent>
-        <Typography variant="h6" gutterBottom>
+    <div className="card h-full">
+      <div className="p-6">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">
           Phân bố nhóm tuổi
-        </Typography>
-        <Box sx={{ width: '100%', height: 300, mt: 2 }}>
+        </h3>
+        <div className="w-full h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} layout="vertical" margin={{ left: 40 }}>
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-              <XAxis type="number" fontSize={12} tickLine={false} axisLine={false} />
-              <YAxis dataKey="name" type="category" fontSize={11} width={100} tickLine={false} axisLine={false} />
-              <Tooltip 
-                contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                cursor={{ fill: '#f5f5f5' }}
+            <BarChart data={chartData} layout="vertical" margin={{ left: 10 }}>
+              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e5e7eb" className="dark:stroke-gray-800" />
+              <XAxis 
+                type="number" 
+                fontSize={11} 
+                tickLine={false} 
+                axisLine={false} 
+                tick={{ fill: '#9ca3af' }}
               />
-              <Bar dataKey="count" radius={[0, 4, 4, 0]} barSize={20}>
+              <YAxis 
+                dataKey="name" 
+                type="category" 
+                fontSize={11} 
+                width={110} 
+                tickLine={false} 
+                axisLine={false}
+                tick={{ fill: '#9ca3af' }}
+              />
+              <Tooltip 
+                contentStyle={{ 
+                  borderRadius: '12px', 
+                  border: 'none', 
+                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                  padding: '12px'
+                }}
+                cursor={{ fill: 'rgba(168, 85, 247, 0.05)' }}
+              />
+              <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={20} animationDuration={1500}>
                 {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill="#ab47bc" fillOpacity={0.8} />
+                  <Cell key={`cell-${index}`} fill="#a855f7" />
                 ))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
-        </Box>
-      </CardContent>
-    </Card>
+        </div>
+      </div>
+    </div>
   );
 }

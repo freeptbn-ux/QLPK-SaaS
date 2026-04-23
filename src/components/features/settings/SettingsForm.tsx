@@ -4,29 +4,16 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Divider,
-  Grid,
-  TextField,
-  Typography,
-  Switch,
-  FormControlLabel,
-  InputAdornment,
-  CircularProgress,
-} from '@mui/material';
+import { HiOutlineCheck, HiOutlineKey, HiOutlineComputerDesktop, HiOutlineCurrencyDollar } from 'react-icons/hi2';
 import { useToast } from '@/hooks/useToast';
 import { updateMultipleSettings, changePassword } from '@/actions/settings';
 import { useThemeContext } from '@/theme/ThemeContext';
+import { cn } from '@/lib/utils/cn';
 
 const settingsSchema = z.object({
   clinic_name: z.string().min(1, 'Tên phòng khám là bắt buộc'),
   doctor_name: z.string().min(1, 'Tên bác sĩ là bắt buộc'),
-  consultation_fee: z.coerce.number().min(0, 'Phí khám không được âm'),
+  consultation_fee: z.number().min(0, 'Phí khám không được âm'),
 });
 
 const passwordSchema = z.object({
@@ -55,7 +42,7 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({
+  } = useForm<SettingsValues>({
     resolver: zodResolver(settingsSchema),
     defaultValues: {
       clinic_name: initialSettings.clinic_name || '',
@@ -73,8 +60,8 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
     resolver: zodResolver(passwordSchema),
   });
 
-  const onSettingsSubmit = async (data: any) => {
-    const values = data as SettingsValues;
+  const onSettingsSubmit = async (data: SettingsValues) => {
+    const values = data;
     setIsSubmitting(true);
     try {
       await updateMultipleSettings({
@@ -83,7 +70,7 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
         consultation_fee: values.consultation_fee.toString(),
       });
       showToast('Cập nhật cài đặt thành công', 'success');
-    } catch (error) {
+    } catch {
       showToast('Lỗi khi cập nhật cài đặt', 'error');
     } finally {
       setIsSubmitting(false);
@@ -96,153 +83,200 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
       await changePassword(data.currentPassword, data.newPassword);
       showToast('Đổi mật khẩu thành công', 'success');
       resetPassword();
-    } catch (error: any) {
-      showToast(error.message || 'Lỗi khi đổi mật khẩu', 'error');
+    } catch (error: unknown) {
+      const err = error as Error;
+      showToast(err.message || 'Lỗi khi đổi mật khẩu', 'error');
     } finally {
       setIsChangingPassword(false);
     }
   };
 
   return (
-    <Grid container spacing={3}>
-      <Grid size={{ xs: 12, md: 8 }}>
-        <form onSubmit={handleSubmit(onSettingsSubmit)}>
-          <Card sx={{ mb: 3 }}>
-            <CardHeader title="Thông tin phòng khám" />
-            <Divider />
-            <CardContent>
-              <Grid container spacing={2}>
-                <Grid size={12}>
-                  <TextField
-                    fullWidth
-                    label="Tên phòng khám"
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="lg:col-span-8 space-y-6">
+        <form onSubmit={handleSubmit(onSettingsSubmit)} className="space-y-6">
+          <div className="card">
+            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center gap-2">
+              <HiOutlineComputerDesktop className="w-5 h-5 text-primary-600" />
+              <h3 className="text-base font-bold text-gray-900 dark:text-white">
+                Thông tin phòng khám
+              </h3>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="grid grid-cols-1 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Tên phòng khám
+                  </label>
+                  <input
                     {...register('clinic_name')}
-                    error={!!errors.clinic_name}
-                    helperText={errors.clinic_name?.message}
+                    className={cn("input-field", errors.clinic_name && "border-red-500 focus:border-red-500")}
                   />
-                </Grid>
-                <Grid size={12}>
-                  <TextField
-                    fullWidth
-                    label="Tên bác sĩ"
+                  {errors.clinic_name && (
+                    <p className="text-xs text-red-500 font-medium">{errors.clinic_name.message}</p>
+                  )}
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Tên bác sĩ
+                  </label>
+                  <input
                     {...register('doctor_name')}
-                    error={!!errors.doctor_name}
-                    helperText={errors.doctor_name?.message}
+                    className={cn("input-field", errors.doctor_name && "border-red-500 focus:border-red-500")}
                   />
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
+                  {errors.doctor_name && (
+                    <p className="text-xs text-red-500 font-medium">{errors.doctor_name.message}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
 
-          <Card sx={{ mb: 3 }}>
-            <CardHeader title="Tài chính" />
-            <Divider />
-            <CardContent>
-              <Grid container spacing={2}>
-                <Grid size={{ xs: 12, sm: 6 }}>
-                  <TextField
-                    fullWidth
-                    label="Phí khám"
+          <div className="card">
+            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center gap-2">
+              <HiOutlineCurrencyDollar className="w-5 h-5 text-emerald-600" />
+              <h3 className="text-base font-bold text-gray-900 dark:text-white">
+                Tài chính
+              </h3>
+            </div>
+            <div className="p-6">
+              <div className="space-y-1.5 max-w-xs">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Phí khám mặc định
+                </label>
+                <div className="relative">
+                  <input
                     type="number"
-                    {...register('consultation_fee')}
-                    error={!!errors.consultation_fee}
-                    helperText={errors.consultation_fee?.message}
-                    slotProps={{
-                      input: {
-                        endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
-                      },
-                    }}
+                    {...register('consultation_fee', { valueAsNumber: true })}
+                    className={cn("input-field pr-12", errors.consultation_fee && "border-red-500 focus:border-red-500")}
                   />
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400">
+                    VNĐ
+                  </div>
+                </div>
+                {errors.consultation_fee && (
+                  <p className="text-xs text-red-500 font-medium">{errors.consultation_fee.message}</p>
+                )}
+              </div>
+            </div>
+          </div>
 
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 3 }}>
-            <Button
+          <div className="flex justify-end">
+            <button
               type="submit"
-              variant="contained"
-              size="large"
               disabled={isSubmitting}
-              startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : null}
+              className="btn-primary min-w-[160px] flex items-center justify-center gap-2 py-3"
             >
+              {isSubmitting ? (
+                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              ) : (
+                <HiOutlineCheck className="w-5 h-5" />
+              )}
               Lưu thay đổi
-            </Button>
-          </Box>
+            </button>
+          </div>
         </form>
 
-        <Card sx={{ mb: 3 }}>
-          <CardHeader title="Giao diện" />
-          <Divider />
-          <CardContent>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={mode === 'dark'}
-                  onChange={toggleTheme}
-                  color="primary"
+        <div className="card">
+          <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center gap-2">
+            <h3 className="text-base font-bold text-gray-900 dark:text-white">
+              Giao diện & Trải nghiệm
+            </h3>
+          </div>
+          <div className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <p className="text-sm font-bold text-gray-900 dark:text-white">Chế độ hiển thị</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Chuyển đổi giữa giao diện sáng và tối</p>
+              </div>
+              <button
+                onClick={toggleTheme}
+                className={cn(
+                  "relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ring-2 ring-transparent focus:ring-primary-500/20",
+                  mode === 'dark' ? "bg-primary-600" : "bg-gray-200 dark:bg-gray-700"
+                )}
+              >
+                <span
+                  className={cn(
+                    "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
+                    mode === 'dark' ? "translate-x-6" : "translate-x-1"
+                  )}
                 />
-              }
-              label={mode === 'dark' ? 'Chế độ tối' : 'Chế độ sáng'}
-            />
-          </CardContent>
-        </Card>
-      </Grid>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <Grid size={{ xs: 12, md: 4 }}>
-        <Card>
-          <CardHeader title="Đổi mật khẩu" />
-          <Divider />
-          <CardContent>
-            <form onSubmit={handleSubmitPassword(onPasswordSubmit)}>
-              <Grid container spacing={2}>
-                <Grid size={12}>
-                  <TextField
-                    fullWidth
-                    label="Mật khẩu hiện tại"
-                    type="password"
-                    {...registerPassword('currentPassword')}
-                    error={!!passwordErrors.currentPassword}
-                    helperText={passwordErrors.currentPassword?.message}
-                  />
-                </Grid>
-                <Grid size={12}>
-                  <TextField
-                    fullWidth
-                    label="Mật khẩu mới"
-                    type="password"
-                    {...registerPassword('newPassword')}
-                    error={!!passwordErrors.newPassword}
-                    helperText={passwordErrors.newPassword?.message}
-                  />
-                </Grid>
-                <Grid size={12}>
-                  <TextField
-                    fullWidth
-                    label="Xác nhận mật khẩu mới"
-                    type="password"
-                    {...registerPassword('confirmPassword')}
-                    error={!!passwordErrors.confirmPassword}
-                    helperText={passwordErrors.confirmPassword?.message}
-                  />
-                </Grid>
-                <Grid size={12}>
-                  <Button
-                    fullWidth
-                    type="submit"
-                    variant="outlined"
-                    color="primary"
-                    disabled={isChangingPassword}
-                    startIcon={isChangingPassword ? <CircularProgress size={20} color="inherit" /> : null}
-                  >
-                    Cập nhật mật khẩu
-                  </Button>
-                </Grid>
-              </Grid>
+      <div className="lg:col-span-4">
+        <div className="card">
+          <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center gap-2">
+            <HiOutlineKey className="w-5 h-5 text-amber-500" />
+            <h3 className="text-base font-bold text-gray-900 dark:text-white">
+              Bảo mật
+            </h3>
+          </div>
+          <div className="p-6">
+            <form onSubmit={handleSubmitPassword(onPasswordSubmit)} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Mật khẩu hiện tại
+                </label>
+                <input
+                  type="password"
+                  {...registerPassword('currentPassword')}
+                  className={cn("input-field", passwordErrors.currentPassword && "border-red-500 focus:border-red-500")}
+                />
+                {passwordErrors.currentPassword && (
+                  <p className="text-xs text-red-500 font-medium">{passwordErrors.currentPassword.message}</p>
+                )}
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Mật khẩu mới
+                </label>
+                <input
+                  type="password"
+                  {...registerPassword('newPassword')}
+                  className={cn("input-field", passwordErrors.newPassword && "border-red-500 focus:border-red-500")}
+                />
+                {passwordErrors.newPassword && (
+                  <p className="text-xs text-red-500 font-medium">{passwordErrors.newPassword.message}</p>
+                )}
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Xác nhận mật khẩu
+                </label>
+                <input
+                  type="password"
+                  {...registerPassword('confirmPassword')}
+                  className={cn("input-field", passwordErrors.confirmPassword && "border-red-500 focus:border-red-500")}
+                />
+                {passwordErrors.confirmPassword && (
+                  <p className="text-xs text-red-500 font-medium">{passwordErrors.confirmPassword.message}</p>
+                )}
+              </div>
+              <button
+                type="submit"
+                disabled={isChangingPassword}
+                className="w-full btn-outlined flex items-center justify-center gap-2 mt-2"
+              >
+                {isChangingPassword ? (
+                  <svg className="animate-spin h-4 w-4 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                ) : null}
+                Cập nhật mật khẩu
+              </button>
             </form>
-          </CardContent>
-        </Card>
-      </Grid>
-    </Grid>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

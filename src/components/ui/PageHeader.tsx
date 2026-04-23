@@ -1,5 +1,4 @@
 import React from 'react';
-import { Box, Typography, Button, Stack } from '@mui/material';
 
 interface PageHeaderProps {
   title: string;
@@ -9,27 +8,22 @@ interface PageHeaderProps {
 
 export default function PageHeader({ title, subtitle, action }: PageHeaderProps) {
   return (
-    <Box sx={{ mb: 4 }}>
-      <Stack
-        direction={{ xs: 'column', sm: 'row' }}
-        spacing={2}
-        sx={{
-          justifyContent: 'space-between',
-          alignItems: { xs: 'flex-start', sm: 'center' },
-        }}
-      >
-        <Box>
-          <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
-            {title}
-          </Typography>
-          {subtitle && (
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-              {subtitle}
-            </Typography>
-          )}
-        </Box>
-        {action && <Box>{action}</Box>}
-      </Stack>
-    </Box>
+    <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+      <div className="space-y-1">
+        <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight sm:text-4xl">
+          {title}
+        </h1>
+        {subtitle && (
+          <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 font-medium max-w-2xl">
+            {subtitle}
+          </p>
+        )}
+      </div>
+      {action && (
+        <div className="flex shrink-0 items-center gap-3">
+          {action}
+        </div>
+      )}
+    </div>
   );
 }

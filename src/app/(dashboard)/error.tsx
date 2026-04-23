@@ -1,8 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Box, Button, Typography, Paper } from '@mui/material';
-import { Error as ErrorIcon } from '@mui/icons-material';
+import { HiExclamationTriangle, HiArrowPath } from 'react-icons/hi2';
 
 export default function DashboardError({
   error,
@@ -11,41 +10,32 @@ export default function DashboardError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  React.useEffect(() => {
+    console.error('Dashboard error:', error);
+  }, [error]);
+
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        p: 4,
-        minHeight: '60vh',
-      }}
-    >
-      <Paper
-        elevation={0}
-        sx={{
-          p: 4,
-          textAlign: 'center',
-          maxWidth: 500,
-          border: '1px dashed',
-          borderColor: 'divider',
-        }}
-      >
-        <ErrorIcon color="error" sx={{ fontSize: 64, mb: 2 }} />
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold' }}>
-          Lỗi tải trang
-        </Typography>
-        <Typography variant="body1" color="text.secondary" gutterBottom>
-          Chúng tôi gặp sự cố khi hiển thị nội dung này. Bạn có thể thử tải lại trang.
-        </Typography>
-        <Button
-          variant="contained"
+    <div className="flex items-center justify-center p-8 min-h-[60vh]">
+      <div className="p-10 text-center max-w-lg w-full bg-surface dark:bg-surface-dark border border-gray-200 dark:border-gray-800 rounded-3xl shadow-xl">
+        <div className="flex justify-center mb-6">
+          <div className="p-4 bg-red-100 dark:bg-red-900/30 rounded-full">
+            <HiExclamationTriangle className="w-12 h-12 text-error" />
+          </div>
+        </div>
+        <h2 className="text-2xl font-extrabold text-foreground dark:text-white mb-3">
+          Lỗi tải dữ liệu
+        </h2>
+        <p className="text-slate-500 dark:text-slate-400 mb-8 leading-relaxed">
+          Chúng tôi gặp sự cố khi tải nội dung này. Bạn có thể thử tải lại hoặc liên hệ quản trị viên nếu sự cố tiếp diễn.
+        </p>
+        <button
           onClick={() => reset()}
-          sx={{ mt: 2 }}
+          className="flex items-center justify-center gap-2 mx-auto px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-2xl transition-all shadow-lg shadow-primary-600/25 active:scale-95"
         >
-          Tải lại
-        </Button>
-      </Paper>
-    </Box>
+          <HiArrowPath className="w-5 h-5" />
+          Tải lại trang
+        </button>
+      </div>
+    </div>
   );
 }

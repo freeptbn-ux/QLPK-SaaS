@@ -1,4 +1,3 @@
-import { Container, Typography, Box } from '@mui/material';
 import PageHeader from '@/components/ui/PageHeader';
 import DoseCalculator from '@/components/features/dose-calculator/DoseCalculator';
 import DrugPresetManager from '@/components/features/dose-calculator/DrugPresetManager';
@@ -9,17 +8,19 @@ export const metadata = {
 
 export default function DoseCalculatorPage() {
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <PageHeader 
         title="Tính liều thuốc nhi khoa" 
         subtitle="Công cụ hỗ trợ tính liều siro/hỗn dịch cho trẻ em" 
       />
       
-      <DoseCalculator />
+      <div className="mt-8">
+        <DoseCalculator />
+      </div>
       
-      <Box sx={{ mt: 6 }}>
+      <div className="mt-12">
         <DrugPresetManager />
-      </Box>
-    </Container>
+      </div>
+    </div>
   );
 }

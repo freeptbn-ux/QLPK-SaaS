@@ -1,18 +1,6 @@
 'use client';
 
 import React from 'react';
-import { 
-  Card, 
-  CardContent, 
-  Typography, 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
-  TableRow,
-  Box
-} from '@mui/material';
 
 interface MedicineUsageTableProps {
   data: { name: string; totalQuantity: number; totalRevenue: number }[];
@@ -20,41 +8,47 @@ interface MedicineUsageTableProps {
 
 export default function MedicineUsageTable({ data }: MedicineUsageTableProps) {
   return (
-    <Card elevation={2} sx={{ borderRadius: 4, height: '100%' }}>
-      <CardContent>
-        <Typography variant="h6" gutterBottom>
+    <div className="card h-full flex flex-col">
+      <div className="p-6 pb-2">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white">
           Thuốc sử dụng nhiều nhất
-        </Typography>
-        <TableContainer sx={{ maxHeight: 400 }}>
-          <Table stickyHeader size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 'bold' }}>Tên thuốc</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 'bold' }}>Tổng SL</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 'bold' }}>Tổng tiền</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
+        </h3>
+      </div>
+      <div className="flex-1 overflow-hidden">
+        <div className="overflow-x-auto max-h-[350px]">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-gray-50 dark:bg-gray-800/50 sticky top-0 z-10">
+              <tr className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+                <th className="px-6 py-4">Tên thuốc</th>
+                <th className="px-6 py-4 text-right">Tổng SL</th>
+                <th className="px-6 py-4 text-right">Tổng tiền</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">
               {data.map((row, index) => (
-                <TableRow key={index} hover>
-                  <TableCell>{row.name}</TableCell>
-                  <TableCell align="right">{row.totalQuantity}</TableCell>
-                  <TableCell align="right">
+                <tr key={index} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors">
+                  <td className="px-6 py-3.5 text-gray-700 dark:text-gray-300 font-medium">
+                    {row.name}
+                  </td>
+                  <td className="px-6 py-3.5 text-right font-bold text-gray-900 dark:text-white">
+                    {row.totalQuantity}
+                  </td>
+                  <td className="px-6 py-3.5 text-right font-bold text-emerald-600 dark:text-emerald-400">
                     {row.totalRevenue.toLocaleString('vi-VN')} đ
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ))}
               {data.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={3} align="center" sx={{ py: 3, color: 'text.secondary' }}>
+                <tr>
+                  <td colSpan={3} className="px-6 py-10 text-center text-gray-400 italic">
                     Chưa có dữ liệu
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </CardContent>
-    </Card>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   );
 }

@@ -1,25 +1,25 @@
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
-// Mock MUI useTheme if needed or other global mocks
-vi.mock('@mui/material/styles', async () => {
-  const actual = await vi.importActual('@mui/material/styles');
-  return {
-    ...actual,
-    useTheme: () => ({
-      palette: {
-        mode: 'light',
-        primary: { main: '#2563eb' },
-        error: { main: '#ef4444' },
-        text: { primary: '#000', secondary: '#666', disabled: '#999' },
-      },
-      shape: { borderRadius: 12 },
-      transitions: {
-        create: () => 'none',
-      },
-      typography: {
-        fontFamily: 'Inter',
-      },
-    }),
-  };
-});
+// Global mocks
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+    back: vi.fn(),
+  }),
+  usePathname: () => '/',
+  useSearchParams: () => new URLSearchParams(),
+  notFound: vi.fn(),
+}));
+
+// Mock ThemeContext if needed
+vi.mock('@/theme/ThemeContext', () => ({
+  useThemeContext: () => ({
+    mode: 'light',
+    toggleTheme: vi.fn(),
+  }),
+}));
+
+// Add any other global mocks here

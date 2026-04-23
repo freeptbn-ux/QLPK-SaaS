@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import PatientFormDialog from '../PatientFormDialog';
-import { useToast } from '@/hooks/useToast';
-import { addPatient, updatePatient } from '@/actions/patients';
+import { Patient } from '@/types/database';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock dependencies
 vi.mock('@/hooks/useToast', () => ({
@@ -14,9 +14,14 @@ vi.mock('@/actions/patients', () => ({
   updatePatient: vi.fn(),
 }));
 
-// Mock MUI icons to avoid issues
-vi.mock('@mui/icons-material', () => ({
-  InfoOutlined: () => <div data-testid="info-icon" />,
+// Mock framer-motion to avoid animation issues in tests
+vi.mock('framer-motion', () => ({
+  motion: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+  },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 
 describe('PatientFormDialog', () => {
@@ -37,7 +42,7 @@ describe('PatientFormDialog', () => {
     );
 
     expect(screen.getByText('Thêm bệnh nhân mới')).toBeInTheDocument();
-    expect(screen.getByLabelText('Họ và tên *')).toBeInTheDocument();
+    expect(screen.getByLabelText(/Họ và tên/)).toBeInTheDocument();
     // DateInput labels
     expect(screen.getByPlaceholderText('DD')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('MM')).toBeInTheDocument();
@@ -63,7 +68,7 @@ describe('PatientFormDialog', () => {
         open={true}
         onClose={mockOnClose}
         onSuccess={mockOnSuccess}
-        patient={oldPatient as any}
+        patient={oldPatient as unknown as Patient}
       />
     );
 
@@ -93,7 +98,7 @@ describe('PatientFormDialog', () => {
         open={true}
         onClose={mockOnClose}
         onSuccess={mockOnSuccess}
-        patient={modernPatient as any}
+        patient={modernPatient as unknown as Patient}
       />
     );
 
@@ -114,7 +119,7 @@ describe('PatientFormDialog', () => {
       />
     );
 
-    const nameInput = screen.getByLabelText('Họ và tên *');
+    const nameInput = screen.getByLabelText(/Họ và tên/);
     fireEvent.change(nameInput, { target: { value: 'Test Patient' } });
 
     const dayInput = screen.getByPlaceholderText('DD');

@@ -169,7 +169,7 @@ export async function getPatientDobsByTime(filterType: string, timeValue: string
   const { data, error } = await query;
   if (error) return [];
 
-  return data.map((item: any) => item.patients?.dob).filter(Boolean);
+  return (data as unknown as { patients: { dob: string | null } }[]).map((item) => item.patients?.dob).filter(Boolean);
 }
 
 export async function getMedicineUsageStats(yearMonth?: string) {
@@ -197,7 +197,7 @@ export async function getMedicineUsageStats(yearMonth?: string) {
   if (error) return [];
 
   const stats: Record<string, { totalQuantity: number; totalRevenue: number }> = {};
-  data.forEach((item: any) => {
+  (data as unknown as { quantity: number; unit_price: number; medicines: { name: string } }[]).forEach((item) => {
     const name = item.medicines?.name || 'Unknown';
     if (!stats[name]) {
       stats[name] = { totalQuantity: 0, totalRevenue: 0 };

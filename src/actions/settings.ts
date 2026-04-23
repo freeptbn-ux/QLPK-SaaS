@@ -84,12 +84,12 @@ export async function getDrugPresets() {
 
   try {
     return JSON.parse(data.value);
-  } catch (e) {
+  } catch {
     return [];
   }
 }
 
-export async function saveDrugPresets(presets: any[]) {
+export async function saveDrugPresets(presets: unknown[]) {
   const supabase = await createClient();
   const { error } = await supabase
     .from('settings')

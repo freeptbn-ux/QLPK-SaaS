@@ -13,6 +13,10 @@ export interface Patient {
   name_normalized: string | null;
 }
 
+export interface PatientWithPrescriptions extends Patient {
+  prescriptions?: PrescriptionWithDetails[];
+}
+
 export interface Medicine {
   id: number;
   name: string;
@@ -41,6 +45,10 @@ export interface PrescriptionDetail {
   // Joined fields
   medicine_name?: string;
   packing_spec?: string;
+}
+
+export interface PrescriptionWithDetails extends PrescriptionHeader {
+  prescription_details: (PrescriptionDetail & { medicines: Pick<Medicine, 'name' | 'packing_spec'> })[];
 }
 
 export interface Setting {

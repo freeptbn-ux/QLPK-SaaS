@@ -1,26 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  TextField,
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Divider,
-  Grid,
-  Alert,
-  CircularProgress,
-} from '@mui/material';
-import { Save as SaveIcon, Add as AddIcon, ArrowBack as ArrowBackIcon } from '@mui/icons-material';
+import { HiOutlineCheck, HiOutlineArrowLeft } from 'react-icons/hi2';
 import { useRouter } from 'next/navigation';
 import MedicineAutocomplete from './MedicineAutocomplete';
 import PrescriptionItemRow from './PrescriptionItemRow';
@@ -28,9 +9,8 @@ import { PrescriptionItem, CreatePrescriptionData } from '@/types/forms';
 import { Patient, Medicine } from '@/types/database';
 import { createPrescription } from '@/actions/prescriptions';
 import { formatAge } from '@/lib/utils/age';
-import { GLASSMORPHISM } from '@/theme/constants';
 import CountUp from '@/components/ui/CountUp';
-
+import { cn } from '@/lib/utils/cn';
 
 interface PrescriptionFormProps {
   patient: Patient;
@@ -113,7 +93,7 @@ export default function PrescriptionForm({ patient, consultationFee }: Prescript
       } else {
         setError(result.error || 'Có lỗi xảy ra khi lưu đơn thuốc');
       }
-    } catch (err) {
+    } catch {
       setError('Lỗi kết nối máy chủ');
     } finally {
       setLoading(false);
@@ -121,189 +101,178 @@ export default function PrescriptionForm({ patient, consultationFee }: Prescript
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit}>
-      <Grid container spacing={3}>
+    <div className="max-w-7xl mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Column: Form Details */}
-        <Grid size={{ xs: 12, md: 8 }}>
-          <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider' }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Thông tin đơn thuốc
-              </Typography>
-              <Grid container spacing={2}>
-                <Grid size={{ xs: 12 }}>
-                  <TextField
-                    label="Chẩn đoán"
-                    fullWidth
-                    required
-                    multiline
-                    rows={2}
-                    value={diagnosis}
-                    onChange={(e) => setDiagnosis(e.target.value)}
-                    placeholder="Ví dụ: Viêm họng cấp, Sốt siêu vi..."
-                  />
-                </Grid>
-                <Grid size={{ xs: 12 }}>
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle2" gutterBottom>
+        <div className="lg:col-span-8 space-y-6">
+          <div className="card">
+            <div className="p-6 space-y-6">
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+                  Thông tin đơn thuốc
+                </h3>
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Chẩn đoán <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                      required
+                      rows={2}
+                      value={diagnosis}
+                      onChange={(e) => setDiagnosis(e.target.value)}
+                      placeholder="Ví dụ: Viêm họng cấp, Sốt siêu vi..."
+                      className="input-field"
+                    />
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                       Chọn thuốc
-                    </Typography>
+                    </label>
                     <MedicineAutocomplete
                       onSelect={handleAddMedicine}
                       excludeIds={items.map((i) => i.medicine_id)}
                     />
-                  </Box>
+                  </div>
 
-                  <TableContainer component={Paper} variant="outlined">
-                    <Table size="small">
-                      <TableHead sx={{ bgcolor: 'action.hover' }}>
-                        <TableRow>
-                          <TableCell>Tên thuốc</TableCell>
-                          <TableCell>SL</TableCell>
-                          <TableCell>Đơn giá</TableCell>
-                          <TableCell align="right">Thành tiền</TableCell>
-                          <TableCell></TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {items.length === 0 ? (
-                          <TableRow>
-                            <TableCell colSpan={5} align="center" sx={{ py: 3 }}>
-                              <Typography color="text.secondary">Chưa có thuốc nào được chọn</Typography>
-                            </TableCell>
-                          </TableRow>
-                        ) : (
-                          items.map((item, index) => (
-                            <PrescriptionItemRow
-                              key={item.medicine_id}
-                              item={item}
-                              index={index}
-                              onUpdate={handleUpdateItem}
-                              onRemove={handleRemoveItem}
-                            />
-                          ))
-                        )}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Grid>
-                <Grid size={{ xs: 12 }}>
-                  <TextField
-                    label="Ghi chú thêm"
-                    fullWidth
-                    multiline
-                    rows={2}
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                  />
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
+                  <div className="overflow-hidden border border-gray-100 dark:border-gray-800 rounded-xl">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm text-left">
+                        <thead className="bg-gray-50 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider text-[11px]">
+                          <tr>
+                            <th className="px-4 py-3">Tên thuốc</th>
+                            <th className="px-4 py-3 w-[100px]">SL</th>
+                            <th className="px-4 py-3 w-[140px]">Đơn giá</th>
+                            <th className="px-4 py-3 text-right">Thành tiền</th>
+                            <th className="px-4 py-3 w-[50px]"></th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">
+                          {items.length === 0 ? (
+                            <tr>
+                              <td colSpan={5} className="px-4 py-10 text-center text-gray-400 italic">
+                                Chưa có thuốc nào được chọn
+                              </td>
+                            </tr>
+                          ) : (
+                            items.map((item, index) => (
+                              <PrescriptionItemRow
+                                key={item.medicine_id}
+                                item={item}
+                                index={index}
+                                onUpdate={handleUpdateItem}
+                                onRemove={handleRemoveItem}
+                              />
+                            ))
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Ghi chú thêm
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      placeholder="Ghi chú về cách dùng, liều lượng..."
+                      className="input-field"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Right Column: Summary & Actions */}
-        <Grid size={{ xs: 12, md: 4 }}>
-          <Box sx={{ position: 'sticky', top: 24 }}>
-            <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider', mb: 2 }}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
+        <div className="lg:col-span-4 space-y-6">
+          <div className="sticky top-6 space-y-6">
+            <div className="card">
+              <div className="p-5">
+                <h3 className="text-base font-bold text-gray-900 dark:text-white mb-3">
                   Bệnh nhân
-                </Typography>
-                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                  {patient.name}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {patient.gender} • {formatAge(patient.dob || '') || 'Không rõ tuổi'}
-                </Typography>
-                {patient.weight && (
-                  <Typography variant="body2" color="text.secondary">
-                    Cân nặng: {patient.weight} kg
-                  </Typography>
-                )}
-              </CardContent>
-            </Card>
+                </h3>
+                <div className="space-y-1">
+                  <p className="text-lg font-extrabold text-primary-600 dark:text-primary-400">
+                    {patient.name}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                    <span>{patient.gender}</span>
+                    <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-700" />
+                    <span>{formatAge(patient.dob || '') || 'Không rõ tuổi'}</span>
+                  </p>
+                  {patient.weight && (
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Cân nặng: <span className="font-medium text-gray-700 dark:text-gray-300">{patient.weight} kg</span>
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
 
-            <Card 
-              elevation={0} 
-              sx={{ 
-                background: (theme) => theme.palette.mode === 'dark' ? GLASSMORPHISM.backgroundColorDark : GLASSMORPHISM.backgroundColor,
-                backdropFilter: GLASSMORPHISM.blur,
-                WebkitBackdropFilter: GLASSMORPHISM.blur,
-                border: '1px solid',
-                borderColor: (theme) => theme.palette.mode === 'dark' ? GLASSMORPHISM.borderColorDark : GLASSMORPHISM.borderColor,
-                boxShadow: GLASSMORPHISM.boxShadow,
-                borderRadius: 3,
-              }}
-            >
-              <CardContent sx={{ p: 3 }}>
-                <Typography variant="h6" gutterBottom sx={{ fontWeight: 700, mb: 3 }}>
+            <div className="glass rounded-2xl overflow-hidden border-0">
+              <div className="p-6">
+                <h3 className="text-lg font-extrabold text-gray-900 dark:text-white mb-6">
                   Thanh toán
-                </Typography>
+                </h3>
                 
-                {/* Chi tiết phí được ẩn theo yêu cầu Phase 02 */}
-                {/* 
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography color="text.secondary">Tiền thuốc:</Typography>
-                  <Typography>{new Intl.NumberFormat('vi-VN').format(subtotal)} đ</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography color="text.secondary">Phí khám:</Typography>
-                  <Typography>{new Intl.NumberFormat('vi-VN').format(consultationFee)} đ</Typography>
-                </Box>
-                <Divider sx={{ my: 1 }} />
-                */}
-
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4, alignItems: 'center' }}>
-                  <Typography variant="h6" sx={{ fontWeight: 600 }}>Tổng cộng:</Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 800, color: 'primary.main' }}>
-                    <CountUp value={total} />
-                  </Typography>
-                </Box>
+                <div className="flex justify-between items-end mb-8">
+                  <span className="text-sm font-bold text-gray-500 dark:text-gray-400 pb-1">Tổng cộng:</span>
+                  <div className="text-right">
+                    <div className="text-3xl font-black text-primary-600 dark:text-primary-400 tracking-tight">
+                      <CountUp value={total} />
+                    </div>
+                    <span className="text-xs font-bold text-primary-500/50 uppercase tracking-widest">Việt Nam Đồng</span>
+                  </div>
+                </div>
 
                 {error && (
-                  <Alert severity="error" sx={{ mb: 2 }}>
+                  <div className="mb-4 p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 text-sm font-medium">
                     {error}
-                  </Alert>
+                  </div>
                 )}
 
-                <Button
-                  variant="contained"
-                  fullWidth
-                  size="large"
-                  startIcon={loading ? <CircularProgress size={24} color="inherit" /> : <SaveIcon />}
-                  disabled={loading}
-                  onClick={handleSubmit}
-                  sx={{ 
-                    mb: 2, 
-                    py: 1.5,
-                    fontSize: '1.05rem',
-                    borderRadius: 2,
-                    background: 'linear-gradient(45deg, #2563eb 30%, #3b82f6 90%)',
-                    boxShadow: '0 8px 16px rgba(37, 99, 235, 0.25)',
-                    '&:hover': {
-                      background: 'linear-gradient(45deg, #1e40af 30%, #2563eb 90%)',
-                      boxShadow: '0 12px 20px rgba(37, 99, 235, 0.35)',
-                    }
-                  }}
-                >
-                  Lưu đơn thuốc
-                </Button>
-                <Button
-                  variant="outlined"
-                  fullWidth
-                  startIcon={<ArrowBackIcon />}
-                  onClick={() => router.back()}
-                  disabled={loading}
-                  sx={{ borderRadius: 2 }}
-                >
-                  Quay lại
-                </Button>
-              </CardContent>
-            </Card>
-          </Box>
-        </Grid>
-      </Grid>
-    </Box>
+                <div className="space-y-3">
+                  <button
+                    onClick={handleSubmit}
+                    disabled={loading}
+                    className={cn(
+                      "w-full py-4 rounded-xl font-bold text-white shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2",
+                      "bg-gradient-to-r from-primary-600 to-blue-500 hover:from-primary-700 hover:to-blue-600",
+                      "shadow-primary-500/25 hover:shadow-primary-500/40",
+                      "disabled:opacity-50 disabled:pointer-events-none"
+                    )}
+                  >
+                    {loading ? (
+                      <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    ) : (
+                      <HiOutlineCheck className="w-5 h-5" />
+                    )}
+                    Lưu đơn thuốc
+                  </button>
+
+                  <button
+                    onClick={() => router.back()}
+                    disabled={loading}
+                    className="w-full py-3.5 rounded-xl font-semibold text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                  >
+                    <HiOutlineArrowLeft className="w-5 h-5" />
+                    Quay lại
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

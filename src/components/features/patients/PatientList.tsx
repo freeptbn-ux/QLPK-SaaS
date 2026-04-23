@@ -1,29 +1,14 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  TablePagination,
-  IconButton,
-  Tooltip,
-  Typography,
-  Chip,
-  Box,
-  Card,
-  CardContent,
-  Stack,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import { 
+  HiOutlinePencil, 
+  HiOutlineTrash, 
+  HiOutlineEye,
+  HiOutlineChevronLeft,
+  HiOutlineChevronRight,
+  HiOutlinePlus
+} from 'react-icons/hi2';
 import { Patient } from '@/types/database';
 import { getPatientsPaginated, searchPatients, deletePatient } from '@/actions/patients';
 import PatientSearch from './PatientSearch';
@@ -35,9 +20,6 @@ import Link from 'next/link';
 import { formatAge } from '@/lib/utils/age';
 
 export default function PatientList() {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-
   const [patients, setPatients] = useState<Patient[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(0);
@@ -70,15 +52,16 @@ export default function PatientList() {
   }, [page, rowsPerPage, searchTerm]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchPatients();
   }, [fetchPatients]);
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (newPage: number) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
+  const handleChangeRowsPerPage = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setRowsPerPage(parseInt(e.target.value, 10));
     setPage(0);
   };
 
@@ -116,155 +99,206 @@ export default function PatientList() {
     }
   };
 
-  const renderMobileList = () => (
-    <Stack spacing={2}>
-      {patients.map((patient) => (
-        <Card key={patient.id} variant="outlined">
-          <CardContent>
-            <Stack
-              direction="row"
-              spacing={2}
-              sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}
-            >
-              <Box>
-                <Typography variant="h6" component="div">
-                  {patient.name}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {patient.gender} • {formatAge(patient.dob || '') || patient.dob || 'N/A'}
-                </Typography>
-              </Box>
-              <Chip label={patient.phone || 'N/A'} size="small" />
-            </Stack>
-            <Typography variant="body2" sx={{ mt: 1 }}>
-              <strong>Chẩn đoán:</strong> {patient.diagnosis || 'Chưa có'}
-            </Typography>
-            <Stack
-              direction="row"
-              spacing={1}
-              sx={{ justifyContent: 'flex-end', mt: 2 }}
-            >
-              <IconButton size="small" component={Link} href={`/patients/${patient.id}`}>
-                <VisibilityIcon />
-              </IconButton>
-              <IconButton size="small" onClick={() => handleEditPatient(patient)}>
-                <EditIcon />
-              </IconButton>
-              <IconButton size="small" color="error" onClick={() => handleDeleteClick(patient)}>
-                <DeleteIcon />
-              </IconButton>
-            </Stack>
-          </CardContent>
-        </Card>
-      ))}
-    </Stack>
-  );
-
-  const renderDesktopTable = () => (
-    <TableContainer component={Paper} variant="outlined">
-      <Table sx={{ minWidth: 650 }}>
-        <TableHead>
-          <TableRow>
-            <TableCell width={60}>STT</TableCell>
-            <TableCell>Họ và tên</TableCell>
-            <TableCell>Ngày sinh</TableCell>
-            <TableCell>Giới tính</TableCell>
-            <TableCell>SĐT</TableCell>
-            <TableCell>Địa chỉ</TableCell>
-            <TableCell>Chẩn đoán</TableCell>
-            <TableCell align="right">Thao tác</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {loading ? (
-            <LoadingSkeleton columns={8} rows={10} />
-          ) : patients.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={8} align="center" sx={{ py: 3 }}>
-                <EmptyState title="Không tìm thấy bệnh nhân nào" description="Thử thay đổi từ khóa tìm kiếm" />
-              </TableCell>
-            </TableRow>
-          ) : (
-            patients.map((patient, index) => (
-              <TableRow key={patient.id} hover>
-                <TableCell>{page * rowsPerPage + index + 1}</TableCell>
-                <TableCell>
-                  <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                    {patient.name}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  {patient.dob || 'N/A'}
-                  {patient.dob && formatAge(patient.dob || '') && (
-                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
-                      {formatAge(patient.dob || '')}
-                    </Typography>
-                  )}
-                </TableCell>
-                <TableCell>{patient.gender}</TableCell>
-                <TableCell>{patient.phone}</TableCell>
-                <TableCell sx={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{patient.address}</TableCell>
-                <TableCell sx={{ maxWidth: 250, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{patient.diagnosis}</TableCell>
-                <TableCell align="right">
-                  <Stack
-                    direction="row"
-                    spacing={0.5}
-                    sx={{ justifyContent: 'flex-end' }}
-                  >
-                    <Tooltip title="Xem chi tiết">
-                      <IconButton size="small" component={Link} href={`/patients/${patient.id}`}>
-                        <VisibilityIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Chỉnh sửa">
-                      <IconButton size="small" onClick={() => handleEditPatient(patient)}>
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Xóa">
-                      <IconButton size="small" color="error" onClick={() => handleDeleteClick(patient)}>
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  </Stack>
-                </TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
+  const totalPages = Math.ceil(totalCount / rowsPerPage);
 
   return (
-    <Box>
-      <Box sx={{ mb: 3, display: 'flex', gap: 2, alignItems: 'center' }}>
-        <Box sx={{ flexGrow: 1 }}>
+    <div className="space-y-4">
+      {/* Search and Add Action */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+        <div className="flex-grow">
           <PatientSearch onSearch={handleSearch} />
-        </Box>
-        <Box>
-          <button
-            onClick={handleAddPatient}
-            className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md font-medium transition-colors"
-            style={{ backgroundColor: theme.palette.primary.main, color: 'white', padding: '8px 16px', borderRadius: '4px', border: 'none', cursor: 'pointer' }}
-          >
-            Thêm bệnh nhân
-          </button>
-        </Box>
-      </Box>
+        </div>
+        <button
+          onClick={handleAddPatient}
+          className="btn-primary flex items-center justify-center gap-2 whitespace-nowrap"
+        >
+          <HiOutlinePlus className="w-5 h-5" />
+          Thêm bệnh nhân
+        </button>
+      </div>
 
-      {isMobile ? renderMobileList() : renderDesktopTable()}
+      {/* Table / Mobile Cards */}
+      <div className="card overflow-hidden">
+        {/* Desktop Table */}
+        <div className="hidden md:block overflow-x-auto">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-gray-50 dark:bg-gray-800/50 text-gray-600 dark:text-gray-400 font-medium border-b border-gray-100 dark:border-gray-800">
+              <tr>
+                <th className="px-4 py-3 w-16">STT</th>
+                <th className="px-4 py-3">Họ và tên</th>
+                <th className="px-4 py-3">Ngày sinh</th>
+                <th className="px-4 py-3">Giới tính</th>
+                <th className="px-4 py-3">SĐT</th>
+                <th className="px-4 py-3">Địa chỉ</th>
+                <th className="px-4 py-3">Chẩn đoán</th>
+                <th className="px-4 py-3 text-right">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              {loading ? (
+                <LoadingSkeleton columns={8} rows={10} />
+              ) : patients.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="px-4 py-12 text-center">
+                    <EmptyState 
+                      title="Không tìm thấy bệnh nhân nào" 
+                      description="Thử thay đổi từ khóa tìm kiếm hoặc thêm mới bệnh nhân" 
+                    />
+                  </td>
+                </tr>
+              ) : (
+                patients.map((patient, index) => (
+                  <tr key={patient.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors">
+                    <td className="px-4 py-3 text-gray-500">
+                      {page * rowsPerPage + index + 1}
+                    </td>
+                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">
+                      {patient.name}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div>{patient.dob || 'N/A'}</div>
+                      {patient.dob && (
+                        <div className="text-xs text-gray-500">
+                          {formatAge(patient.dob)}
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">{patient.gender}</td>
+                    <td className="px-4 py-3">{patient.phone || 'N/A'}</td>
+                    <td className="px-4 py-3 truncate max-w-[200px]" title={patient.address || ''}>
+                      {patient.address || 'N/A'}
+                    </td>
+                    <td className="px-4 py-3 truncate max-w-[200px]" title={patient.diagnosis || ''}>
+                      {patient.diagnosis || 'Chưa có'}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex justify-end gap-1">
+                        <Link
+                          href={`/patients/${patient.id}`}
+                          className="p-1.5 text-gray-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
+                          title="Xem chi tiết"
+                        >
+                          <HiOutlineEye className="w-5 h-5" />
+                        </Link>
+                        <button
+                          onClick={() => handleEditPatient(patient)}
+                          className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                          title="Chỉnh sửa"
+                        >
+                          <HiOutlinePencil className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(patient)}
+                          className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                          title="Xóa"
+                        >
+                          <HiOutlineTrash className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
 
-      <TablePagination
-        rowsPerPageOptions={[25, 50, 100]}
-        component="div"
-        count={totalCount}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        labelRowsPerPage="Số hàng mỗi trang:"
-      />
+        {/* Mobile Cards */}
+        <div className="md:hidden divide-y divide-gray-100 dark:divide-gray-800">
+          {loading ? (
+             <div className="p-4 space-y-4">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="h-24 bg-gray-100 dark:bg-gray-800 animate-pulse rounded-xl" />
+                ))}
+             </div>
+          ) : patients.length === 0 ? (
+            <div className="p-8 text-center">
+              <EmptyState title="Không tìm thấy bệnh nhân nào" />
+            </div>
+          ) : (
+            patients.map((patient) => (
+              <div key={patient.id} className="p-4 space-y-3">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">{patient.name}</h3>
+                    <p className="text-sm text-gray-500">
+                      {patient.gender} • {patient.dob ? formatAge(patient.dob) : 'N/A'}
+                    </p>
+                  </div>
+                  <span className="px-2 py-1 text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-lg">
+                    {patient.phone || 'No phone'}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-1">
+                  <span className="font-medium">Chẩn đoán:</span> {patient.diagnosis || 'Chưa có'}
+                </p>
+                <div className="flex justify-end gap-2 pt-2 border-t border-gray-50 dark:border-gray-800/50">
+                   <Link
+                    href={`/patients/${patient.id}`}
+                    className="p-2 text-gray-500 hover:text-primary-600 transition-colors"
+                  >
+                    <HiOutlineEye className="w-5 h-5" />
+                  </Link>
+                  <button
+                    onClick={() => handleEditPatient(patient)}
+                    className="p-2 text-gray-500 hover:text-blue-600 transition-colors"
+                  >
+                    <HiOutlinePencil className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteClick(patient)}
+                    className="p-2 text-gray-500 hover:text-red-600 transition-colors"
+                  >
+                    <HiOutlineTrash className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Pagination */}
+      {!loading && patients.length > 0 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-1">
+          <div className="text-sm text-gray-500 order-2 sm:order-1">
+            Hiển thị <span className="font-medium text-gray-900 dark:text-gray-100">{page * rowsPerPage + 1}</span> đến <span className="font-medium text-gray-900 dark:text-gray-100">{Math.min((page + 1) * rowsPerPage, totalCount)}</span> trong <span className="font-medium text-gray-900 dark:text-gray-100">{totalCount}</span> bệnh nhân
+          </div>
+          <div className="flex items-center gap-4 order-1 sm:order-2">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-500">Số hàng:</span>
+              <select
+                value={rowsPerPage}
+                onChange={handleChangeRowsPerPage}
+                className="bg-transparent text-sm font-medium focus:outline-none cursor-pointer"
+              >
+                {[25, 50, 100].map((option) => (
+                  <option key={option} value={option}>{option}</option>
+                ))}
+              </select>
+            </div>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => handleChangePage(page - 1)}
+                disabled={page === 0}
+                className="p-1.5 rounded-lg border border-gray-200 dark:border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >
+                <HiOutlineChevronLeft className="w-5 h-5" />
+              </button>
+              <div className="px-3 text-sm font-medium">
+                Trang {page + 1} / {totalPages || 1}
+              </div>
+              <button
+                onClick={() => handleChangePage(page + 1)}
+                disabled={page >= totalPages - 1}
+                className="p-1.5 rounded-lg border border-gray-200 dark:border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >
+                <HiOutlineChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <PatientFormDialog
         open={formOpen}
@@ -280,6 +314,6 @@ export default function PatientList() {
         onConfirm={handleConfirmDelete}
         onCancel={() => setDeleteConfirmOpen(false)}
       />
-    </Box>
+    </div>
   );
 }

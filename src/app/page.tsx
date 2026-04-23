@@ -2,93 +2,83 @@
 
 import React from 'react';
 import { 
-  Container, 
-  Typography, 
-  Button, 
-  Box, 
-  Paper, 
-  IconButton, 
-  Stack,
-  useTheme
-} from '@mui/material';
-import { 
-  Brightness4 as DarkIcon, 
-  Brightness7 as LightIcon,
-  CheckCircle as SuccessIcon,
-  Error as ErrorIcon
-} from '@mui/icons-material';
+  HiMoon, 
+  HiSun,
+  HiCheckCircle,
+  HiExclamationCircle
+} from 'react-icons/hi2';
 import { useThemeContext } from '@/theme/ThemeContext';
+import Link from 'next/link';
 
 export default function Home() {
   const { mode, toggleTheme } = useThemeContext();
-  const theme = useTheme();
 
   const hasSupabaseKeys = 
     !!process.env.NEXT_PUBLIC_SUPABASE_URL && 
     !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   return (
-    <Container maxWidth="md">
-      <Box sx={{ my: 8 }}>
-        <Paper 
-          elevation={0} 
-          sx={{ 
-            p: 4, 
-            textAlign: 'center', 
-            borderRadius: 4,
-            border: '1px solid',
-            borderColor: 'divider',
-            background: mode === 'light' 
-              ? 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)'
-              : 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)'
-          }}
-        >
-          <Stack direction="row" sx={{ justifyContent: 'flex-end', mb: 2 }}>
-            <IconButton onClick={toggleTheme} color="inherit">
-              {mode === 'dark' ? <LightIcon /> : <DarkIcon />}
-            </IconButton>
-          </Stack>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4">
+      <div className="max-w-3xl w-full">
+        <div className="bg-white dark:bg-slate-900 shadow-xl rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 transition-all duration-300">
+          <div className={`p-8 md:p-12 text-center relative ${
+            mode === 'light' 
+              ? 'bg-gradient-to-br from-white to-slate-50'
+              : 'bg-gradient-to-br from-slate-900 to-slate-950'
+          }`}>
+            <div className="absolute top-6 right-6">
+              <button 
+                onClick={toggleTheme}
+                className="p-3 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+              >
+                {mode === 'dark' ? <HiSun className="w-6 h-6" /> : <HiMoon className="w-6 h-6" />}
+              </button>
+            </div>
 
-          <Typography variant="h3" sx={{ mb: 2, fontWeight: 800 }}>
-            QLPK SaaS
-          </Typography>
-          
-          <Typography variant="h6" color="text.secondary" sx={{ mb: 3 }}>
-            Hệ thống quản lý phòng khám Nhi khoa thông minh.
-          </Typography>
+            <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 dark:text-white mb-4 tracking-tight">
+              QLPK <span className="text-blue-600 dark:text-blue-400">SaaS</span>
+            </h1>
+            
+            <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-8 max-w-2xl mx-auto">
+              Hệ thống quản lý phòng khám Nhi khoa thông minh, hiện đại và hiệu quả.
+            </p>
 
-          <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center', gap: 2 }}>
-            <Button variant="contained" size="large" color="primary">
-              Bắt đầu ngay
-            </Button>
-            <Button variant="outlined" size="large">
-              Tài liệu hướng dẫn
-            </Button>
-          </Box>
+            <div className="flex flex-col sm:flex-row justify-center gap-4 mb-12">
+              <Link 
+                href="/login"
+                className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-500/30 transition-all transform hover:-translate-y-1 active:translate-y-0"
+              >
+                Bắt đầu ngay
+              </Link>
+              <button className="px-8 py-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">
+                Tài liệu hướng dẫn
+              </button>
+            </div>
 
-          <Box sx={{ mt: 6, pt: 4, borderTop: '1px solid', borderColor: 'divider' }}>
-            <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, textTransform: 'uppercase', letterSpacing: 1 }}>
-              Trạng thái hệ thống
-            </Typography>
-            <Stack direction="row" sx={{ spacing: 3, justifyContent: 'center', mt: 2 }}>
-              <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
-                <SuccessIcon color="success" fontSize="small" />
-                <Typography variant="body2">MUI Theme: Ready</Typography>
-              </Stack>
-              <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
-                {hasSupabaseKeys ? (
-                  <SuccessIcon color="success" fontSize="small" />
-                ) : (
-                  <ErrorIcon color="warning" fontSize="small" />
-                )}
-                <Typography variant="body2">
-                  Supabase: {hasSupabaseKeys ? 'Configured' : 'Missing Keys in .env.local'}
-                </Typography>
-              </Stack>
-            </Stack>
-          </Box>
-        </Paper>
-      </Box>
-    </Container>
+            <div className="pt-8 border-t border-slate-200 dark:border-slate-800">
+              <h2 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-6">
+                Trạng thái hệ thống
+              </h2>
+              <div className="flex flex-wrap justify-center gap-8">
+                <div className="flex items-center gap-2">
+                  <HiCheckCircle className="w-5 h-5 text-green-500" />
+                  <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Tailwind CSS: Ready</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {hasSupabaseKeys ? (
+                    <HiCheckCircle className="w-5 h-5 text-green-500" />
+                  ) : (
+                    <HiExclamationCircle className="w-5 h-5 text-amber-500" />
+                  )}
+                  <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
+                    Supabase: {hasSupabaseKeys ? 'Configured' : 'Missing Keys'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

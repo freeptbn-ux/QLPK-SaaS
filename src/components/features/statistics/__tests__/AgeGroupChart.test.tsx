@@ -6,7 +6,9 @@ import dayjs from 'dayjs';
 
 // Mock Recharts because it's hard to test in JSDOM
 vi.mock('recharts', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ResponsiveContainer: ({ children }: any) => <div>{children}</div>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   BarChart: ({ data, children }: any) => <div data-testid="bar-chart" data-data={JSON.stringify(data)}>{children}</div>,
   Bar: () => <div />,
   XAxis: () => <div />,
@@ -40,7 +42,7 @@ describe('AgeGroupChart', () => {
     const chart = screen.getByTestId('bar-chart');
     const data = JSON.parse(chart.getAttribute('data-data') || '[]');
     
-    const getCount = (name: string) => data.find((d: any) => d.name === name)?.count;
+    const getCount = (name: string) => (data as { name: string; count: number }[]).find((d) => d.name === name)?.count;
 
     expect(getCount('0-2 tháng')).toBe(2);
     expect(getCount('2-6 tháng')).toBe(1);
@@ -56,7 +58,7 @@ describe('AgeGroupChart', () => {
     render(<AgeGroupChart dobs={[]} />);
     const chart = screen.getByTestId('bar-chart');
     const data = JSON.parse(chart.getAttribute('data-data') || '[]');
-    data.forEach((group: any) => {
+    (data as { count: number }[]).forEach((group) => {
       expect(group.count).toBe(0);
     });
   });

@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { Card, CardContent, Typography, Box } from '@mui/material';
 import {
   PieChart,
   Pie,
@@ -15,26 +14,27 @@ interface GenderPieChartProps {
   data: { name: string; value: number }[];
 }
 
-const COLORS = ['#0088FE', '#FF8042', '#FFBB28', '#00C49F'];
+const COLORS = ['#3b82f6', '#f43f5e', '#eab308', '#10b981'];
 
 export default function GenderPieChart({ data }: GenderPieChartProps) {
   return (
-    <Card elevation={2} sx={{ borderRadius: 4, height: '100%' }}>
-      <CardContent>
-        <Typography variant="h6" gutterBottom>
+    <div className="card h-full">
+      <div className="p-6">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">
           Phân bố giới tính
-        </Typography>
-        <Box sx={{ width: '100%', height: 300 }}>
+        </h3>
+        <div className="w-full h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={data}
                 cx="50%"
                 cy="50%"
-                labelLine={false}
-                outerRadius={80}
-                fill="#8884d8"
+                innerRadius={60}
+                outerRadius={90}
+                paddingAngle={5}
                 dataKey="value"
+                animationDuration={1500}
                 label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
               >
                 {data.map((entry, index) => (
@@ -42,13 +42,24 @@ export default function GenderPieChart({ data }: GenderPieChartProps) {
                 ))}
               </Pie>
               <Tooltip 
-                contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                contentStyle={{ 
+                  borderRadius: '12px', 
+                  border: 'none', 
+                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                  padding: '12px'
+                }}
               />
-              <Legend verticalAlign="bottom" height={36}/>
+              <Legend 
+                verticalAlign="bottom" 
+                height={36} 
+                iconType="circle"
+                wrapperStyle={{ paddingTop: '20px' }}
+              />
             </PieChart>
           </ResponsiveContainer>
-        </Box>
-      </CardContent>
-    </Card>
+        </div>
+      </div>
+    </div>
   );
 }

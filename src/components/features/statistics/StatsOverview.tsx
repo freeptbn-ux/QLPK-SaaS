@@ -1,12 +1,7 @@
 'use client';
 
-import { Card, CardContent, Grid, Typography, Box, Skeleton } from '@mui/material';
-import { 
-  People as PeopleIcon, 
-  Receipt as ReceiptIcon, 
-  AttachMoney as MoneyIcon, 
-  Warning as WarningIcon 
-} from '@mui/icons-material';
+import React from 'react';
+import { HiOutlineUsers, HiOutlineDocumentText, HiOutlineBanknotes, HiOutlineExclamationTriangle } from 'react-icons/hi2';
 
 interface StatsOverviewProps {
   stats: {
@@ -22,58 +17,50 @@ export default function StatsOverview({ stats }: StatsOverviewProps) {
     {
       title: 'Tổng bệnh nhân',
       value: stats?.totalPatients ?? 0,
-      icon: <PeopleIcon sx={{ fontSize: 40, color: 'primary.main' }} />,
-      color: 'primary.light',
+      icon: HiOutlineUsers,
+      colorClass: 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400',
     },
     {
       title: 'Lượt khám tháng này',
       value: stats?.monthlyVisits ?? 0,
-      icon: <ReceiptIcon sx={{ fontSize: 40, color: 'success.main' }} />,
-      color: 'success.light',
+      icon: HiOutlineDocumentText,
+      colorClass: 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400',
     },
     {
       title: 'Doanh thu tháng này',
       value: (stats?.monthlyRevenue ?? 0).toLocaleString('vi-VN') + ' đ',
-      icon: <MoneyIcon sx={{ fontSize: 40, color: 'info.main' }} />,
-      color: 'info.light',
+      icon: HiOutlineBanknotes,
+      colorClass: 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400',
     },
     {
       title: 'Thuốc sắp hết',
       value: stats?.lowStockCount ?? 0,
-      icon: <WarningIcon sx={{ fontSize: 40, color: 'warning.main' }} />,
-      color: 'warning.light',
+      icon: HiOutlineExclamationTriangle,
+      colorClass: 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400',
     },
   ];
 
   return (
-    <Grid container spacing={3}>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {items.map((item, index) => (
-        <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
-          <Card elevation={2} sx={{ borderRadius: 4 }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Box>
-                  <Typography variant="overline" color="text.secondary" gutterBottom>
-                    {item.title}
-                  </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-                    {stats ? item.value : <Skeleton width={100} />}
-                  </Typography>
-                </Box>
-                <Box sx={{ 
-                  backgroundColor: item.color, 
-                  borderRadius: '50%', 
-                  p: 1.5, 
-                  display: 'flex',
-                  opacity: 0.8
-                }}>
-                  {item.icon}
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+        <div key={index} className="card group hover:shadow-lg transition-all duration-300">
+          <div className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                  {item.title}
+                </span>
+                <div className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
+                  {stats ? item.value : <div className="h-8 w-24 bg-gray-100 dark:bg-gray-800 animate-pulse rounded" />}
+                </div>
+              </div>
+              <div className={`p-3 rounded-2xl transition-transform group-hover:scale-110 duration-300 ${item.colorClass}`}>
+                <item.icon className="w-7 h-7" />
+              </div>
+            </div>
+          </div>
+        </div>
       ))}
-    </Grid>
+    </div>
   );
 }

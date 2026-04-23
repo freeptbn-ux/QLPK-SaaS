@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { Card, CardContent, Typography, Box } from '@mui/material';
 import {
   BarChart,
   Bar,
@@ -20,30 +19,47 @@ interface VisitChartProps {
 
 export default function VisitChart({ data, title }: VisitChartProps) {
   return (
-    <Card elevation={2} sx={{ borderRadius: 4, height: '100%' }}>
-      <CardContent>
-        <Typography variant="h6" gutterBottom>
+    <div className="card h-full">
+      <div className="p-6">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">
           {title}
-        </Typography>
-        <Box sx={{ width: '100%', height: 300, mt: 2 }}>
+        </h3>
+        <div className="w-full h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
-              <YAxis fontSize={12} tickLine={false} axisLine={false} />
-              <Tooltip 
-                contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                cursor={{ fill: '#f5f5f5' }}
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" className="dark:stroke-gray-800" />
+              <XAxis 
+                dataKey="name" 
+                fontSize={11} 
+                tickLine={false} 
+                axisLine={false} 
+                tick={{ fill: '#9ca3af' }}
               />
-              <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+              <YAxis 
+                fontSize={11} 
+                tickLine={false} 
+                axisLine={false}
+                tick={{ fill: '#9ca3af' }}
+              />
+              <Tooltip 
+                contentStyle={{ 
+                  borderRadius: '12px', 
+                  border: 'none', 
+                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                  padding: '12px'
+                }}
+                cursor={{ fill: 'rgba(59, 130, 246, 0.05)' }}
+              />
+              <Bar dataKey="count" radius={[6, 6, 0, 0]} animationDuration={1500}>
                 {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill="#1976d2" fillOpacity={0.8} />
+                  <Cell key={`cell-${index}`} fill="#3b82f6" />
                 ))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
-        </Box>
-      </CardContent>
-    </Card>
+        </div>
+      </div>
+    </div>
   );
 }
