@@ -28,7 +28,7 @@ export default function DashboardLayout({
       />
 
       {/* Main Content */}
-      <main className="flex-1 p-4 md:p-6 md:ml-60 pt-20 mb-16 md:mb-0 transition-all duration-300">
+      <main className="flex-1 px-4 pb-4 pt-24 md:px-6 md:pb-6 md:pt-24 md:ml-60 mb-16 md:mb-0 transition-all duration-300">
         <div className="max-w-7xl mx-auto">
           {children}
         </div>
