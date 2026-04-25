@@ -3,10 +3,10 @@ import { z } from 'zod';
 export const patientSchema = z.object({
   name: z.string().min(1, 'Tên bệnh nhân không được để trống'),
   dob: z.string()
-    .optional()
+    .min(1, 'Ngày sinh không được để trống')
     .refine(
       (val) => {
-        if (!val || val === '') return true; // Cho phép trống
+        if (!val || val === '') return true; // Sẽ bị bắt bởi .min(1) ở trên, nhưng giữ lại refine logic
         // Phải đúng format DD/MM/YYYY
         const regex = /^\d{2}\/\d{2}\/\d{4}$/;
         if (!regex.test(val)) return false;
@@ -21,9 +21,9 @@ export const patientSchema = z.object({
       },
       { message: 'Ngày sinh không hợp lệ (DD/MM/YYYY)' }
     ),
-  gender: z.enum(['Nam', 'Nữ', '']).optional(),
+  gender: z.enum(['Nam', 'Nữ']),
   address: z.string().optional(),
-  phone: z.string().optional(),
+  phone: z.string().min(1, 'Số điện thoại không được để trống'),
   weight: z.string().optional(),
   diagnosis: z.string().optional(),
 });

@@ -159,7 +159,7 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
                     </span>
                   )}
                   <span className="px-2 py-0.5 text-xs font-bold bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400 border border-primary-100 dark:border-primary-800 rounded-md">
-                    {p.total_amount.toLocaleString()} đ
+                    {p.total_amount.toLocaleString('vi-VN')} đ
                   </span>
                   <HiOutlineChevronDown className={cn(
                     "w-5 h-5 text-gray-400 transition-transform duration-200",
@@ -197,9 +197,9 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
                                   <div className="text-xs text-gray-500">{detail.medicines?.packing_spec}</div>
                                 </td>
                                 <td className="px-4 py-2.5 text-right font-medium">{detail.quantity}</td>
-                                <td className="px-4 py-2.5 text-right text-gray-500">{(detail.unit_price || 0).toLocaleString()}</td>
+                                <td className="px-4 py-2.5 text-right text-gray-500">{(detail.unit_price || 0).toLocaleString('vi-VN')}</td>
                                 <td className="px-4 py-2.5 text-right font-semibold">
-                                  {(detail.quantity * (detail.unit_price || 0)).toLocaleString()}
+                                  {(detail.quantity * (detail.unit_price || 0)).toLocaleString('vi-VN')}
                                 </td>
                               </tr>
                             ))}
@@ -207,17 +207,17 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
                           <tfoot className="bg-gray-50/50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700">
                             <tr>
                               <td colSpan={3} className="px-4 py-2 text-right text-gray-500">Tiền thuốc:</td>
-                              <td className="px-4 py-2 text-right font-bold">{(p.total_amount - (p.consultation_fee || 0)).toLocaleString()} đ</td>
+                              <td className="px-4 py-2 text-right font-bold">{(p.total_amount - (p.consultation_fee || 0)).toLocaleString('vi-VN')} đ</td>
                             </tr>
                             {p.consultation_fee > 0 && (
                               <tr>
                                 <td colSpan={3} className="px-4 py-2 text-right text-gray-500">Phí khám:</td>
-                                <td className="px-4 py-2 text-right text-gray-500">{p.consultation_fee.toLocaleString()} đ</td>
+                                <td className="px-4 py-2 text-right text-gray-500">{p.consultation_fee.toLocaleString('vi-VN')} đ</td>
                               </tr>
                             )}
                             <tr className="border-t border-gray-200 dark:border-gray-700">
                               <td colSpan={3} className="px-4 py-3 text-right font-bold text-primary-600">Tổng cộng:</td>
-                              <td className="px-4 py-3 text-right font-bold text-primary-600 text-lg">{p.total_amount.toLocaleString()} đ</td>
+                              <td className="px-4 py-3 text-right font-bold text-primary-600 text-lg">{p.total_amount.toLocaleString('vi-VN')} đ</td>
                             </tr>
                           </tfoot>
                         </table>

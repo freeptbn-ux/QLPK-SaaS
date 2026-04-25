@@ -18,7 +18,7 @@ from dotenv import load_dotenv
 load_dotenv(os.path.join(os.path.dirname(__file__), '../.env.local'))
 
 # === CONFIGURATION ===
-SQLITE_PATH = "/home/skul9x/Desktop/Test_code/QLPK-SaaS/clinic.db"
+SQLITE_PATH = os.path.join(os.path.dirname(__file__), '../clinic.db')
 SUPABASE_URL = os.getenv("NEXT_PUBLIC_SUPABASE_URL")
 # IMPORTANT: Need SERVICE_ROLE_KEY to bypass RLS for migration
 SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
@@ -51,9 +51,12 @@ def main():
         sys.exit(1)
 
     print("=" * 60)
-    print("CLINIC.DB → SUPABASE MIGRATION")
+    print("CLINIC.DB -> SUPABASE MIGRATION")
     print(f"Target URL: {SUPABASE_URL}")
     print("=" * 60)
+
+    # 0. Clear existing data (Optional but requested by user)
+    clear_supabase_tables(supabase)
 
     # 1. Migrate Medicines (must be first - FK dependency)
     migrate_medicines(conn, supabase)
@@ -71,7 +74,20 @@ def main():
     verify_migration(conn, supabase)
 
     conn.close()
-    print("\n✅ MIGRATION COMPLETE!")
+    print("\n[OK] MIGRATION COMPLETE!")
+
+def clear_supabase_tables(supabase):
+    print("\n[0/4] Clearing existing data in Supabase...")
+    # Order matters due to Foreign Key constraints
+    tables = ['prescription_details', 'prescriptions_header', 'patients', 'medicines']
+    for table in tables:
+        try:
+            # Delete all rows. In Supabase Python client, we can use delete().neq('id', -1) or similar
+            # Since we use Service Role Key, RLS is bypassed.
+            supabase.table(table).delete().neq('id', -1).execute()
+            print(f"  Cleared table: {table}")
+        except Exception as e:
+            print(f"  [WARN] Warning: Could not clear {table}: {e}")
 
 def migrate_medicines(conn, supabase):
     print("\n[1/4] Migrating MEDICINES...")
@@ -168,16 +184,16 @@ def verify_migration(conn, supabase):
             all_ok = False
             continue
 
-        status = "✅" if local_count == cloud_count else "❌"
+        status = "[OK]" if local_count == cloud_count else "[FAIL]"
         if local_count != cloud_count:
             all_ok = False
 
         print(f"  {status} {table}: Local={local_count}, Cloud={cloud_count}")
 
     if all_ok:
-        print("\n🎉 All tables verified! Migration successful.")
+        print("\n[SUCCESS] All tables verified! Migration successful.")
     else:
-        print("\n⚠️ MISMATCH DETECTED! Check logs above.")
+        print("\n[WARN] MISMATCH DETECTED! Check logs above.")
 
 if __name__ == "__main__":
     main()

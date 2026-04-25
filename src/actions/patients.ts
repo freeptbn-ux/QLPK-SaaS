@@ -60,10 +60,10 @@ export async function getPatientById(id: number) {
     .from('patients')
     .select('*, prescriptions:prescriptions_header(*, prescription_details(*, medicines(name, packing_spec)))')
     .eq('id', id)
-    .single();
+    .maybeSingle();
 
   if (error) {
-    console.error('Error fetching patient by id:', error);
+    console.error('Error fetching patient by id:', error.message || error);
     return null;
   }
 
@@ -206,4 +206,48 @@ export async function getMedicineUsageByPatient(patientId: number) {
   // Chuyển Map thành Array và sắp xếp giảm dần
   return Array.from(usageMap.values())
     .sort((a, b) => b.times_prescribed - a.times_prescribed);
+}
+
+export async function getPotentialDuplicates() {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.rpc('get_potential_duplicates');
+
+  if (error) {
+    console.error('Error fetching potential duplicates:', error);
+    throw new Error('Failed to fetch potential duplicates');
+  }
+
+  return data as {
+    name_normalized: string;
+    dob: string;
+    phone: string;
+    patient_ids: number[];
+    patient_names: string[];
+    patient_addresses: string[];
+  }[];
+}
+
+export async function mergePatients(masterId: number, duplicateIds: number[]) {
+  const supabase = await createClient();
+
+  // duplicateIds should not include masterId
+  const idsToDelete = duplicateIds.filter(id => id !== masterId);
+
+  if (idsToDelete.length === 0) {
+    return { success: true, message: 'No duplicates to merge' };
+  }
+
+  const { error } = await supabase.rpc('merge_patients', {
+    master_id: masterId,
+    duplicate_ids: idsToDelete
+  });
+
+  if (error) {
+    console.error('Error merging patients:', error);
+    throw new Error(`Failed to merge patients: ${error.message || JSON.stringify(error)}`);
+  }
+
+  revalidatePath('/patients');
+  return { success: true };
 }

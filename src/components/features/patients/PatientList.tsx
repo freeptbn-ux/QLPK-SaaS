@@ -13,6 +13,7 @@ import { Patient } from '@/types/database';
 import { getPatientsPaginated, searchPatients, deletePatient } from '@/actions/patients';
 import PatientSearch from './PatientSearch';
 import PatientFormDialog from './PatientFormDialog';
+import MergePatientDialog from './MergePatientDialog';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import EmptyState from '@/components/ui/EmptyState';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
@@ -29,6 +30,7 @@ export default function PatientList() {
 
   // Dialog states
   const [formOpen, setFormOpen] = useState(false);
+  const [mergeOpen, setMergeOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null);
@@ -75,6 +77,10 @@ export default function PatientList() {
     setFormOpen(true);
   };
 
+  const handleOpenMerge = () => {
+    setMergeOpen(true);
+  };
+
   const handleEditPatient = (patient: Patient) => {
     setSelectedPatient(patient);
     setFormOpen(true);
@@ -108,13 +114,23 @@ export default function PatientList() {
         <div className="flex-grow">
           <PatientSearch onSearch={handleSearch} />
         </div>
-        <button
-          onClick={handleAddPatient}
-          className="btn-primary flex items-center justify-center gap-2 whitespace-nowrap"
-        >
-          <HiOutlinePlus className="w-5 h-5" />
-          Thêm bệnh nhân
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleOpenMerge}
+            className="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-all flex items-center gap-2 whitespace-nowrap shadow-sm"
+            title="Dọn dẹp hồ sơ trùng lặp"
+          >
+            <HiOutlineTrash className="w-5 h-5 text-red-500" />
+            <span className="hidden sm:inline">Dọn trùng</span>
+          </button>
+          <button
+            onClick={handleAddPatient}
+            className="btn-primary flex items-center justify-center gap-2 whitespace-nowrap"
+          >
+            <HiOutlinePlus className="w-5 h-5" />
+            Thêm bệnh nhân
+          </button>
+        </div>
       </div>
 
       {/* Table / Mobile Cards */}
@@ -304,6 +320,12 @@ export default function PatientList() {
         open={formOpen}
         onClose={() => setFormOpen(false)}
         patient={selectedPatient}
+        onSuccess={fetchPatients}
+      />
+
+      <MergePatientDialog
+        open={mergeOpen}
+        onClose={() => setMergeOpen(false)}
         onSuccess={fetchPatients}
       />
 

@@ -51,9 +51,11 @@ Truy cập ứng dụng tại: `http://localhost:3000`
 - `src/app`: Chứa các routes và layout của ứng dụng (Next.js App Router).
 - `src/components`: Các thành phần giao diện dùng chung và theo tính năng.
 - `src/actions`: Các Server Actions xử lý logic backend và tương tác với Database.
+- `src/hooks`: Các custom hooks dùng cho logic UI.
 - `src/lib`: Các cấu hình thư viện bên thứ ba (Supabase, utils).
 - `src/theme`: Quản lý cấu hình giao diện và chế độ sáng/tối.
-- `public`: Chứa các tài sản tĩnh như hình ảnh, fonts.
+- `src/types`: Định nghĩa kiểu dữ liệu TypeScript.
+- `supabase`: Chứa các file migration và cấu hình database.
 
 ## 📝 Sử dụng
 

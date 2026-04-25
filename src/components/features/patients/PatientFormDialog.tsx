@@ -51,7 +51,7 @@ export default function PatientFormDialog({
       reset({
         name: patient.name || '',
         dob: isOldFormat ? '' : (patient.dob || ''),
-        gender: (patient.gender as 'Nam' | 'Nữ' | '') || 'Nam',
+        gender: (patient.gender as 'Nam' | 'Nữ') || 'Nam',
         address: patient.address || '',
         phone: patient.phone || '',
         weight: patient.weight || '',
@@ -171,6 +171,7 @@ export default function PatientFormDialog({
                             value={field.value || ''}
                             onChange={field.onChange}
                             label="Ngày sinh"
+                            required
                             error={!!errors.dob}
                             helperText={errors.dob?.message}
                           />
@@ -190,7 +191,7 @@ export default function PatientFormDialog({
                   {/* Gender */}
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      Giới tính
+                      Giới tính <span className="text-red-500">*</span>
                     </label>
                     <Controller
                       name="gender"
@@ -219,7 +220,7 @@ export default function PatientFormDialog({
                   {/* Phone */}
                   <div>
                     <label htmlFor="patient-phone" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
-                      Số điện thoại
+                      Số điện thoại <span className="text-red-500">*</span>
                     </label>
                     <Controller
                       name="phone"
@@ -228,11 +229,17 @@ export default function PatientFormDialog({
                         <input
                           {...field}
                           id="patient-phone"
-                          className="input-field"
+                          className={cn(
+                            "input-field",
+                            errors.phone && "border-red-500 focus:border-red-500 focus:ring-red-500/20"
+                          )}
                           placeholder="0123 456 789"
                         />
                       )}
                     />
+                    {errors.phone && (
+                      <p className="mt-1 text-sm text-red-500">{errors.phone.message}</p>
+                    )}
                   </div>
 
                   {/* Weight */}
