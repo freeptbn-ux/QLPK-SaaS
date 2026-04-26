@@ -16,5 +16,15 @@ export const createPrescriptionSchema = z.object({
   consultation_fee: z.number().nonnegative(),
 });
 
+export const updatePrescriptionSchema = z.object({
+  prescription_id: z.number().int().positive(),
+  patient_id: z.number().int().positive(),
+  diagnosis: z.string().min(1, 'Vui lòng nhập chẩn đoán'),
+  items: z.array(prescriptionItemSchema).min(1, 'Cần ít nhất 1 loại thuốc'),
+  notes: z.string().optional().default(''),
+  prescription_date: z.string().min(1, 'Vui lòng chọn ngày kê đơn'),
+});
+
+export type ValidatedUpdatePrescriptionData = z.infer<typeof updatePrescriptionSchema>;
 export type ValidatedPrescriptionData = z.infer<typeof createPrescriptionSchema>;
 export type ValidatedPrescriptionItem = z.infer<typeof prescriptionItemSchema>;

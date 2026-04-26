@@ -23,3 +23,12 @@ export interface CreatePrescriptionData {
   notes?: string;
   consultation_fee: number;
 }
+
+export interface UpdatePrescriptionData {
+  prescription_id: number;
+  patient_id: number;
+  diagnosis: string;
+  items: PrescriptionItem[];
+  notes?: string;
+  prescription_date: string;
+}

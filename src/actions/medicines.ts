@@ -182,3 +182,18 @@ export async function getMedicines(query: string) {
 
   return data as Medicine[];
 }
+
+export async function getMedicineStockByIds(ids: number[]) {
+  const supabase = await createClient();
+  
+  const { data, error } = await supabase
+    .from('medicines')
+    .select('id, name, stock_quantity')
+    .in('id', ids);
+
+  if (error) {
+    console.error('Error fetching medicine stock:', error);
+    return [];
+  }
+  return data;
+}

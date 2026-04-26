@@ -1,69 +1,78 @@
 # QLPK-SaaS - Hệ thống Quản lý Phòng khám Thông minh
 
-QLPK-SaaS là một giải pháp phần mềm hiện đại được thiết kế để tối ưu hóa quy trình quản lý tại các phòng khám vừa và nhỏ. Hệ thống cung cấp các công cụ mạnh mẽ từ việc quản lý bệnh nhân, kê đơn thuốc điện tử đến theo dõi doanh thu và thống kê báo cáo.
+QLPK-SaaS là giải pháp phần mềm hiện đại, toàn diện được thiết kế để tối ưu hóa quy trình vận hành và quản lý dành cho các phòng khám vừa và nhỏ. Hệ thống tích hợp các công nghệ tiên tiến để đảm bảo hiệu suất cao, giao diện thân thiện và tính bảo mật tuyệt đối cho dữ liệu y tế.
 
 ## ✨ Tính năng chính
 
-- **Quản lý Bệnh nhân**: Lưu trữ thông tin chi tiết, lịch sử khám bệnh và đơn thuốc của từng bệnh nhân.
-- **Kê đơn thuốc thông minh**: Giao diện kê đơn nhanh chóng, hỗ trợ gợi ý thuốc và tự động tính toán tổng tiền.
-- **Quản lý Kho thuốc**: Theo dõi số lượng tồn kho, giá nhập, giá bán và cảnh báo khi thuốc sắp hết.
-- **Thống kê & Báo cáo**: Biểu đồ trực quan về doanh thu, số lượng bệnh nhân theo ngày/tháng/năm.
-- **Công cụ tính liều lượng**: Hỗ trợ bác sĩ tính toán liều lượng thuốc chính xác dựa trên thông tin bệnh nhân.
-- **Bảo mật & Phân quyền**: Đăng nhập an toàn, bảo vệ dữ liệu y tế nhạy cảm.
+- **Quản lý Bệnh nhân**: Lưu trữ hồ sơ chi tiết, lịch sử khám bệnh, chẩn đoán và đơn thuốc. Tìm kiếm bệnh nhân nhanh chóng.
+- **Kê đơn thuốc điện tử**: Giao diện kê đơn thông minh, hỗ trợ gợi ý thuốc, liều dùng và tự động tính toán tổng chi phí đơn thuốc.
+- **Quản lý Kho dược**: Theo dõi tồn kho thực tế, giá nhập, giá bán, cảnh báo khi thuốc sắp hết hạn hoặc sắp hết hàng.
+- **Công cụ tính liều (Dose Calculator)**: Hỗ trợ bác sĩ tính toán liều lượng thuốc chính xác dựa trên cân nặng và độ tuổi bệnh nhân.
+- **Thống kê & Báo cáo**: Tổng hợp doanh thu, số lượng bệnh nhân, phân tích tình hình hoạt động theo ngày, tháng, năm thông qua biểu đồ trực quan.
+- **Bảo mật & Phân quyền**: Hệ thống xác thực an toàn, đảm bảo chỉ nhân viên có thẩm quyền mới có thể truy cập dữ liệu nhạy cảm.
 
 ## 🚀 Công nghệ sử dụng
 
-Hệ thống được xây dựng trên những công nghệ hiện đại nhất hiện nay:
+Hệ thống được phát triển trên nền tảng công nghệ State-of-the-art:
 
 - **Frontend**: [Next.js 16+](https://nextjs.org/) (App Router), [React 19](https://reactjs.org/)
-- **Backend-as-a-Service**: [Supabase](https://supabase.com/) (Auth, Database, Storage, RPC)
-- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
-- **Animation**: [Framer Motion](https://www.framer.com/motion/)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/) & [Framer Motion](https://www.framer.com/motion/) (Animation)
+- **Backend-as-a-Service**: [Supabase](https://supabase.com/) (Database, Auth, Storage, Edge Functions)
 - **Form Management**: [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/)
 - **Data Visualization**: [Recharts](https://recharts.org/)
 - **Date Handling**: [Day.js](https://day.js.org/)
+- **Testing**: [Vitest](https://vitest.dev/) & [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
 
 ## 🛠️ Hướng dẫn cài đặt
 
-Để chạy dự án local, hãy thực hiện theo các bước sau:
+Để triển khai dự án tại môi trường local, vui lòng thực hiện các bước sau:
 
-1. **Clone repository:**
-   ```bash
-   git clone https://github.com/freeptbn-ux/QLPK-SaaS.git
-   cd QLPK-SaaS
-   ```
+### 1. Clone Repository
+```bash
+git clone https://github.com/freeptbn-ux/QLPK-SaaS.git
+cd QLPK-SaaS
+```
 
-2. **Cài đặt thư viện:**
-   ```bash
-   npm install
-   ```
+### 2. Cài đặt Dependencies
+```bash
+npm install
+```
 
-3. **Cấu hình biến môi trường:**
-   Tạo file `.env.local` trong thư mục gốc và thêm các thông tin sau (lấy từ Supabase project của bạn):
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   ```
+### 3. Cấu hình biến môi trường
+Tạo file `.env.local` tại thư mục gốc với các nội dung sau (lấy từ bảng điều khiển Supabase):
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+DB_PASSWORD=your_database_password
+```
 
-4. **Chạy dự án:**
-   ```bash
-   npm run dev
-   ```
-   Truy cập `http://localhost:3000` để xem kết quả.
+### 4. Khởi chạy ứng dụng
+```bash
+npm run dev
+```
+Sau đó truy cập [http://localhost:3000](http://localhost:3000) trên trình duyệt.
+
+## 📖 Cách sử dụng
+
+1. **Đăng nhập**: Sử dụng tài khoản được cấp để truy cập vào hệ thống dashboard.
+2. **Tiếp nhận bệnh nhân**: Vào mục "Bệnh nhân" để tạo hồ sơ mới hoặc tìm kiếm bệnh nhân cũ.
+3. **Kê đơn**: Tại trang chi tiết bệnh nhân, chọn "Tạo đơn thuốc", thêm thuốc từ kho và nhập chẩn đoán.
+4. **Quản lý kho**: Cập nhật danh mục thuốc, điều chỉnh số lượng tồn kho tại mục "Thuốc".
+5. **Xem báo cáo**: Truy cập "Thống kê" để theo dõi hiệu quả hoạt động của phòng khám.
 
 ## 📁 Cấu trúc thư mục
 
 ```text
 src/
-├── actions/        # Các Server Actions xử lý logic backend
-├── app/            # Các trang và route (App Router)
-├── components/     # Các UI components tái sử dụng
-├── hooks/          # Custom React hooks
-├── lib/            # Tiện ích, cấu hình database và validation
-├── theme/          # Cấu hình màu sắc và giao diện
-└── types/          # Định nghĩa TypeScript interfaces
+├── actions/        # Server Actions xử lý logic nghiệp vụ backend
+├── app/            # Next.js App Router (Pages, Layouts, API)
+├── components/     # UI Components (Atom, Molecule, Organism)
+├── hooks/          # Custom React Hooks
+├── lib/            # Utilities, Supabase Config, Validations
+├── theme/          # Cấu hình giao diện và màu sắc
+└── types/          # Định nghĩa kiểu dữ liệu TypeScript
 ```
 
 ## 📜 Bản quyền
 
-Copyright © 2026 Nguyễn Duy Trường. All rights reserved.
+Copyright 2026 Nguyễn Duy Trường. All rights reserved.

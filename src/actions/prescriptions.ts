@@ -1,9 +1,9 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
-import { CreatePrescriptionData, PrescriptionItem } from '@/types/forms';
+import { CreatePrescriptionData, PrescriptionItem, UpdatePrescriptionData } from '@/types/forms';
 import { revalidatePath } from 'next/cache';
-import { createPrescriptionSchema } from '@/lib/validations/prescription';
+import { createPrescriptionSchema, updatePrescriptionSchema } from '@/lib/validations/prescription';
 import { formatZodError } from '@/lib/validations/helpers';
 
 export async function createPrescription(rawData: CreatePrescriptionData) {
@@ -135,5 +135,38 @@ export async function deletePrescription(prescriptionId: number, patientId: numb
   }
 
   revalidatePath(`/patients/${patientId}`);
+  return { success: true };
+}
+
+export async function updatePrescription(rawData: UpdatePrescriptionData) {
+  const supabase = await createClient();
+
+  // Validate
+  const validation = updatePrescriptionSchema.safeParse(rawData);
+  if (!validation.success) {
+    return { success: false, error: formatZodError(validation.error) };
+  }
+  const data = validation.data;
+
+  // Sanitize monetary values
+  const sanitizedItems = data.items.map(item => ({
+    ...item,
+    unit_price: Math.round(item.unit_price)
+  }));
+
+  const { error } = await supabase.rpc('update_prescription', {
+    p_prescription_id: data.prescription_id,
+    p_diagnosis: data.diagnosis,
+    p_notes: data.notes || '',
+    p_prescription_date: data.prescription_date,
+    p_items: sanitizedItems,
+  });
+
+  if (error) {
+    console.error('Error updating prescription:', error);
+    return { success: false, error: error.message };
+  }
+
+  revalidatePath(`/patients/${data.patient_id}`);
   return { success: true };
 }

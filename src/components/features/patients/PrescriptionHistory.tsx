@@ -8,7 +8,8 @@ import {
   HiOutlineBuildingOffice2,
   HiOutlineQueueList,
   HiOutlineXMark,
-  HiOutlineTrash
+  HiOutlineTrash,
+  HiOutlinePencilSquare
 } from 'react-icons/hi2';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Medicine, PrescriptionWithDetails } from '@/types/database';
@@ -16,7 +17,8 @@ import dayjs from 'dayjs';
 import Link from 'next/link';
 import MedicineAutocomplete from '../prescriptions/MedicineAutocomplete';
 import { PrescriptionItem } from '@/types/forms';
-import { appendToPrescription, deletePrescription } from '@/actions/prescriptions';
+import { appendToPrescription, deletePrescription, updatePrescription } from '@/actions/prescriptions';
+import { getMedicineStockByIds } from '@/actions/medicines';
 import MedicineUsageDialog from './MedicineUsageDialog';
 import { cn } from '@/lib/utils/cn';
 import { getPatientPrescriptionsPaginated } from '@/actions/patients';
@@ -39,6 +41,17 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [prescriptionToDelete, setPrescriptionToDelete] = useState<PrescriptionWithDetails | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Edit Dialog States
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [prescriptionToEdit, setPrescriptionToEdit] = useState<PrescriptionWithDetails | null>(null);
+  const [editDiagnosis, setEditDiagnosis] = useState('');
+  const [editNotes, setEditNotes] = useState('');
+  const [editDate, setEditDate] = useState('');
+  const [editItems, setEditItems] = useState<PrescriptionItem[]>([]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
+  const [stockWarnings, setStockWarnings] = useState<string[]>([]);
 
   // Pagination state
   const [prescriptions, setPrescriptions] = useState<PrescriptionWithDetails[]>(initialPrescriptions);
@@ -133,6 +146,157 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
       alert('Đã xảy ra lỗi khi kết nối với máy chủ');
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  // Edit Handlers
+  const handleOpenEdit = (p: PrescriptionWithDetails) => {
+    setPrescriptionToEdit(p);
+    setEditDiagnosis(p.diagnosis || '');
+    setEditNotes(p.notes || '');
+    setEditDate(dayjs(p.prescription_date).format('YYYY-MM-DD'));
+    setEditItems(
+      p.prescription_details.map(d => ({
+        medicine_id: d.medicine_id,
+        medicine_name: d.medicines?.name || '',
+        packing_spec: d.medicines?.packing_spec || '',
+        quantity: d.quantity,
+        unit_price: d.unit_price || 0,
+      }))
+    );
+    setEditError(null);
+    setStockWarnings([]);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleEditAddMedicine = (medicine: Medicine | null) => {
+    if (!medicine) return;
+    if (editItems.some(i => i.medicine_id === medicine.id)) return;
+
+    const newItem: PrescriptionItem = {
+      medicine_id: medicine.id,
+      medicine_name: medicine.name,
+      packing_spec: medicine.packing_spec || '',
+      quantity: 1,
+      unit_price: medicine.price,
+    };
+    
+    const updatedItems = [...editItems, newItem];
+    setEditItems(updatedItems);
+    checkStockWarnings(updatedItems);
+  };
+
+  const handleEditRemoveItem = (medicineId: number) => {
+    const updatedItems = editItems.filter(i => i.medicine_id !== medicineId);
+    setEditItems(updatedItems);
+    checkStockWarnings(updatedItems);
+  };
+
+  const handleEditUpdateQuantity = (medicineId: number, quantity: number) => {
+    const updatedItems = editItems.map(i => 
+      i.medicine_id === medicineId ? { ...i, quantity: Math.max(1, quantity) } : i
+    );
+    setEditItems(updatedItems);
+    checkStockWarnings(updatedItems);
+  };
+
+  const checkStockWarnings = async (currentItems: PrescriptionItem[]) => {
+    if (!prescriptionToEdit) return;
+
+    try {
+      const ids = currentItems.map(i => i.medicine_id);
+      if (ids.length === 0) {
+        setStockWarnings([]);
+        return;
+      }
+
+      const currentStock = await getMedicineStockByIds(ids);
+      const warnings: string[] = [];
+
+      currentItems.forEach(item => {
+        const stockInfo = currentStock.find(s => s.id === item.medicine_id);
+        if (stockInfo) {
+          // Calculate the net change in quantity
+          const oldDetail = prescriptionToEdit.prescription_details.find(d => d.medicine_id === item.medicine_id);
+          const oldQuantity = oldDetail ? oldDetail.quantity : 0;
+          const diff = item.quantity - oldQuantity;
+
+          // If we are increasing quantity or adding new medicine, check if enough stock
+          if (diff > stockInfo.stock_quantity) {
+            warnings.push(`Kho không đủ ${item.medicine_name} (Hiện có: ${stockInfo.stock_quantity}, Cần thêm: ${diff})`);
+          }
+        }
+      });
+
+      setStockWarnings(warnings);
+    } catch (error) {
+      console.error('Failed to check stock warnings:', error);
+    }
+  };
+
+  const handleEditSubmit = async () => {
+    if (!prescriptionToEdit) return;
+    if (!editDiagnosis.trim()) {
+      setEditError('Vui lòng nhập chẩn đoán');
+      return;
+    }
+    if (editItems.length === 0) {
+      setEditError('Đơn thuốc phải có ít nhất một loại thuốc');
+      return;
+    }
+
+    setIsEditing(true);
+    setEditError(null);
+
+    try {
+      const result = await updatePrescription({
+        prescription_id: prescriptionToEdit.id,
+        patient_id: patientId,
+        diagnosis: editDiagnosis,
+        notes: editNotes,
+        prescription_date: new Date(editDate).toISOString(),
+        items: editItems,
+      });
+
+      if (result.success) {
+        // Calculate new total amount for the local state update
+        const medicineTotal = editItems.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0);
+        const newTotalAmount = medicineTotal + (prescriptionToEdit.consultation_fee || 0);
+
+        setPrescriptions(prev => prev.map(p => 
+          p.id === prescriptionToEdit.id 
+            ? { 
+                ...p, 
+                diagnosis: editDiagnosis,
+                notes: editNotes,
+                prescription_date: new Date(editDate).toISOString(),
+                total_amount: newTotalAmount,
+                // We'd ideally want to refresh the details too, but for simplicity we can just update the header
+                // and maybe trigger a full refresh or update the details list if we have all info.
+                // Re-mapping details to match the structure in PrescriptionWithDetails:
+                prescription_details: editItems.map(item => ({
+                  id: p.prescription_details.find(d => d.medicine_id === item.medicine_id)?.id || 0, // Placeholder ID if new
+                  prescription_id: p.id,
+                  medicine_id: item.medicine_id,
+                  quantity: item.quantity,
+                  unit_price: item.unit_price,
+                  medicines: {
+                    name: item.medicine_name,
+                    packing_spec: item.packing_spec
+                  }
+                }))
+              } as PrescriptionWithDetails
+            : p
+        ));
+        setIsEditDialogOpen(false);
+      } else {
+        setEditError(result.error || 'Lỗi khi cập nhật đơn thuốc');
+      }
+    } catch (error) {
+      console.error('Update error:', error);
+      setEditError('Đã xảy ra lỗi khi kết nối với máy chủ');
+    } finally {
+      setIsEditing(false);
     }
   };
 
@@ -291,6 +455,13 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
                           >
                             <HiOutlineTrash className="w-4 h-4" />
                             Xóa đơn
+                          </button>
+                          <button 
+                            onClick={() => handleOpenEdit(p)}
+                            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all active:scale-95"
+                          >
+                            <HiOutlinePencilSquare className="w-4 h-4" />
+                            Sửa đơn
                           </button>
                           <button className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl transition-all active:scale-95">
                             <HiOutlinePrinter className="w-4 h-4" />
@@ -477,6 +648,187 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
                     'Xác nhận xóa'
                   )}
                 </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Edit Prescription Dialog */}
+      <AnimatePresence>
+        {isEditDialogOpen && prescriptionToEdit && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => !isEditing && setIsEditDialogOpen(false)}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]"
+            >
+              <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">Sửa đơn thuốc #{prescriptionToEdit.id}</h3>
+                  <p className="text-sm text-gray-500">Chỉnh sửa thông tin và danh sách thuốc</p>
+                </div>
+                <button 
+                  onClick={() => setIsEditDialogOpen(false)}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+                >
+                  <HiOutlineXMark className="w-6 h-6 text-gray-500" />
+                </button>
+              </div>
+
+              <div className="p-6 space-y-6 overflow-y-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Ngày kê đơn</label>
+                    <input
+                      type="date"
+                      value={editDate}
+                      onChange={(e) => setEditDate(e.target.value)}
+                      className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Chẩn đoán *</label>
+                  <textarea
+                    value={editDiagnosis}
+                    onChange={(e) => setEditDiagnosis(e.target.value)}
+                    rows={2}
+                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                    placeholder="Nhập chẩn đoán..."
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Danh sách thuốc</label>
+                    <span className="text-xs font-medium text-gray-500">{editItems.length} loại</span>
+                  </div>
+                  
+                  <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
+                    <table className="w-full text-sm">
+                      <thead className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+                        <tr>
+                          <th className="px-4 py-2 text-left font-semibold">Tên thuốc</th>
+                          <th className="px-4 py-2 text-right font-semibold w-24">SL</th>
+                          <th className="px-4 py-2 text-right font-semibold">Đơn giá</th>
+                          <th className="px-4 py-2 text-right font-semibold">Thành tiền</th>
+                          <th className="px-4 py-2 text-right font-semibold w-12"></th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100 dark:divide-gray-800 bg-white dark:bg-transparent">
+                        {editItems.map((item) => (
+                          <tr key={item.medicine_id}>
+                            <td className="px-4 py-3">
+                              <div className="font-medium">{item.medicine_name}</div>
+                              <div className="text-[10px] text-gray-500">{item.packing_spec}</div>
+                            </td>
+                            <td className="px-4 py-3">
+                              <input
+                                type="number"
+                                value={item.quantity}
+                                min="1"
+                                onChange={(e) => handleEditUpdateQuantity(item.medicine_id, parseInt(e.target.value) || 1)}
+                                className="w-full px-2 py-1 text-right bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                              />
+                            </td>
+                            <td className="px-4 py-3 text-right text-gray-500">{item.unit_price.toLocaleString('vi-VN')}</td>
+                            <td className="px-4 py-3 text-right font-semibold">{(item.quantity * item.unit_price).toLocaleString('vi-VN')}</td>
+                            <td className="px-4 py-3 text-right">
+                              <button 
+                                onClick={() => handleEditRemoveItem(item.medicine_id)}
+                                className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                              >
+                                <HiOutlineTrash className="w-5 h-5" />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                        {editItems.length === 0 && (
+                          <tr>
+                            <td colSpan={5} className="px-4 py-8 text-center text-gray-500 italic">
+                              Chưa có thuốc nào trong đơn.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="mt-4">
+                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Thêm thuốc mới:</label>
+                    <MedicineAutocomplete onSelect={handleEditAddMedicine} />
+                  </div>
+                </div>
+
+                {stockWarnings.length > 0 && (
+                  <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl space-y-1">
+                    <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-bold text-sm mb-1">
+                      <span className="text-lg">⚠️</span> Cảnh báo kho:
+                    </div>
+                    {stockWarnings.map((warning, idx) => (
+                      <p key={idx} className="text-xs text-amber-600 dark:text-amber-400 ml-6">{warning}</p>
+                    ))}
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Ghi chú</label>
+                  <textarea
+                    value={editNotes}
+                    onChange={(e) => setEditNotes(e.target.value)}
+                    rows={2}
+                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                    placeholder="Ghi chú sử dụng..."
+                  />
+                </div>
+
+                {editError && (
+                  <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-sm text-red-600 dark:text-red-400">
+                    {editError}
+                  </div>
+                )}
+              </div>
+
+              <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                <div className="text-right">
+                  <p className="text-xs text-gray-500 uppercase font-bold tracking-wider">Tổng tiền mới</p>
+                  <p className="text-2xl font-bold text-primary-600">
+                    {(editItems.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0) + (prescriptionToEdit.consultation_fee || 0)).toLocaleString('vi-VN')} đ
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setIsEditDialogOpen(false)}
+                    disabled={isEditing}
+                    className="px-6 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all disabled:opacity-50"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    onClick={handleEditSubmit}
+                    disabled={isEditing || editItems.length === 0}
+                    className="btn-primary min-w-[140px] flex items-center justify-center gap-2"
+                  >
+                    {isEditing ? (
+                      <>
+                        <HiOutlineArrowPath className="w-4 h-4 animate-spin" />
+                        Đang lưu...
+                      </>
+                    ) : (
+                      'Lưu thay đổi'
+                    )}
+                  </button>
+                </div>
               </div>
             </motion.div>
           </div>
