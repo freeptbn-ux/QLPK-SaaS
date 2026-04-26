@@ -17,7 +17,6 @@ Hệ thống được phát triển trên nền tảng công nghệ State-of-the
 
 - **Frontend**: [Next.js 16.2](https://nextjs.org/) (App Router), [React 19](https://reactjs.org/)
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/) & [Framer Motion](https://www.framer.com/motion/) (Animation)
-- **UI Library**: [Material UI (MUI) v9.0.0](https://mui.com/)
 - **Backend-as-a-Service**: [Supabase](https://supabase.com/) (PostgreSQL, Edge Functions/RPC, Auth)
 - **Form Management**: [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/)
 - **Data Visualization**: [Recharts](https://recharts.org/)
