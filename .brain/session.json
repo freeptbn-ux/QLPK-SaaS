@@ -1,0 +1,22 @@
+{
+  "working_on": {
+    "feature": "Initial Run",
+    "status": "running",
+    "last_run": "2026-04-25T23:16:45+07:00",
+    "last_run_url": "http://localhost:3000"
+  },
+  "errors_encountered": [
+    {
+      "error": "Missing Supabase URL and Key",
+      "solution": "Created .env.local with user-provided credentials",
+      "resolved": true,
+      "file": ".env.local"
+    },
+    {
+      "error": "Hydration failed because the server rendered text didn't match the client (toLocaleString mismatch)",
+      "solution": "Added explicit 'vi-VN' locale to all toLocaleString() calls",
+      "resolved": true,
+      "file": "src/components/features/patients/PrescriptionHistory.tsx"
+    }
+  ]
+}
