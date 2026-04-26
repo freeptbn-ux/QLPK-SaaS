@@ -4,23 +4,23 @@ QLPK-SaaS là giải pháp phần mềm hiện đại, toàn diện được thi
 
 ## ✨ Tính năng chính
 
-- **Quản lý Bệnh nhân**: Lưu trữ hồ sơ chi tiết, lịch sử khám bệnh, chẩn đoán và đơn thuốc. Tìm kiếm bệnh nhân nhanh chóng.
+- **Quản lý Bệnh nhân**: Lưu trữ hồ sơ chi tiết, lịch sử khám bệnh, chẩn đoán và đơn thuốc. Tìm kiếm bệnh nhân nhanh chóng bằng thuật toán tối ưu.
 - **Kê đơn thuốc điện tử**: Giao diện kê đơn thông minh, hỗ trợ gợi ý thuốc, liều dùng và tự động tính toán tổng chi phí đơn thuốc.
 - **Quản lý Kho dược**: Theo dõi tồn kho thực tế, giá nhập, giá bán, cảnh báo khi thuốc sắp hết hạn hoặc sắp hết hàng.
 - **Công cụ tính liều (Dose Calculator)**: Hỗ trợ bác sĩ tính toán liều lượng thuốc chính xác dựa trên cân nặng và độ tuổi bệnh nhân.
-- **Thống kê & Báo cáo**: Tổng hợp doanh thu, số lượng bệnh nhân, phân tích tình hình hoạt động theo ngày, tháng, năm thông qua biểu đồ trực quan.
-- **Bảo mật & Phân quyền**: Hệ thống xác thực an toàn, đảm bảo chỉ nhân viên có thẩm quyền mới có thể truy cập dữ liệu nhạy cảm.
+- **Thống kê & Báo cáo**: Tổng hợp doanh thu, số lượng bệnh nhân, phân tích tình hình hoạt động theo ngày, tháng, năm thông qua biểu đồ trực quan (Recharts).
+- **Bảo mật & Phân quyền**: Hệ thống xác thực an toàn thông qua Supabase Auth, đảm bảo chỉ nhân viên có thẩm quyền mới có thể truy cập dữ liệu nhạy cảm.
 
 ## 🚀 Công nghệ sử dụng
 
 Hệ thống được phát triển trên nền tảng công nghệ State-of-the-art:
 
-- **Frontend**: [Next.js 16+](https://nextjs.org/) (App Router), [React 19](https://reactjs.org/)
+- **Frontend**: [Next.js 16.2](https://nextjs.org/) (App Router), [React 19](https://reactjs.org/)
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/) & [Framer Motion](https://www.framer.com/motion/) (Animation)
-- **Backend-as-a-Service**: [Supabase](https://supabase.com/) (Database, Auth, Storage, Edge Functions)
+- **UI Library**: [Material UI (MUI) v9.0.0](https://mui.com/)
+- **Backend-as-a-Service**: [Supabase](https://supabase.com/) (PostgreSQL, Edge Functions/RPC, Auth)
 - **Form Management**: [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/)
 - **Data Visualization**: [Recharts](https://recharts.org/)
-- **Date Handling**: [Day.js](https://day.js.org/)
 - **Testing**: [Vitest](https://vitest.dev/) & [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
 
 ## 🛠️ Hướng dẫn cài đặt
@@ -39,11 +39,11 @@ npm install
 ```
 
 ### 3. Cấu hình biến môi trường
-Tạo file `.env.local` tại thư mục gốc với các nội dung sau (lấy từ bảng điều khiển Supabase):
+Tạo file `.env.local` tại thư mục gốc với các nội dung sau:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-DB_PASSWORD=your_database_password
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ```
 
 ### 4. Khởi chạy ứng dụng
@@ -52,25 +52,21 @@ npm run dev
 ```
 Sau đó truy cập [http://localhost:3000](http://localhost:3000) trên trình duyệt.
 
-## 📖 Cách sử dụng
-
-1. **Đăng nhập**: Sử dụng tài khoản được cấp để truy cập vào hệ thống dashboard.
-2. **Tiếp nhận bệnh nhân**: Vào mục "Bệnh nhân" để tạo hồ sơ mới hoặc tìm kiếm bệnh nhân cũ.
-3. **Kê đơn**: Tại trang chi tiết bệnh nhân, chọn "Tạo đơn thuốc", thêm thuốc từ kho và nhập chẩn đoán.
-4. **Quản lý kho**: Cập nhật danh mục thuốc, điều chỉnh số lượng tồn kho tại mục "Thuốc".
-5. **Xem báo cáo**: Truy cập "Thống kê" để theo dõi hiệu quả hoạt động của phòng khám.
-
 ## 📁 Cấu trúc thư mục
 
 ```text
 src/
 ├── actions/        # Server Actions xử lý logic nghiệp vụ backend
-├── app/            # Next.js App Router (Pages, Layouts, API)
-├── components/     # UI Components (Atom, Molecule, Organism)
+├── app/            # Next.js App Router (Pages, Layouts)
+├── components/     # UI Components (features và generic ui)
 ├── hooks/          # Custom React Hooks
 ├── lib/            # Utilities, Supabase Config, Validations
 ├── theme/          # Cấu hình giao diện và màu sắc
 └── types/          # Định nghĩa kiểu dữ liệu TypeScript
+supabase/
+└── migrations/     # Quản lý schema database bằng SQL migrations
+plans/              # Tài liệu các phase phát triển tính năng
+scripts/            # Script bảo trì và chuyển đổi dữ liệu
 ```
 
 ## 📜 Bản quyền

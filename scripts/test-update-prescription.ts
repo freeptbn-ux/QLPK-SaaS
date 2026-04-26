@@ -12,18 +12,18 @@ async function testUpdatePrescription() {
   console.log('🧪 Bắt đầu test RPC update_prescription...');
 
   // 1. Chuẩn bị data: Patient, Medicine
-  const { data: patient } = await supabase
+  const { data: patient, error: patientError } = await supabase
     .from('patients')
-    .insert({ name: 'Test Patient', phone: '0987654321' })
+    .insert({ name: 'Test Patient', phone: '0987654321', dob: '1990-01-01', gender: 'Nam' })
     .select()
     .single();
 
-  const { data: medicine } = await supabase
+  const testSuffix = Date.now().toString().slice(-4);
+  const { data: medicine, error: medicineError } = await supabase
     .from('medicines')
     .insert({ 
-      name: 'Test Medicine', 
+      name: `Test Medicine ${testSuffix}`, 
       stock_quantity: 100, 
-      unit: 'Viên', 
       price: 1000,
       packing_spec: 'Vỉ 10 viên'
     })
@@ -32,6 +32,8 @@ async function testUpdatePrescription() {
 
   if (!patient || !medicine) {
     console.error('❌ Không thể tạo data mẫu');
+    if (patientError) console.error('Patient Error:', patientError);
+    if (medicineError) console.error('Medicine Error:', medicineError);
     return;
   }
 
@@ -102,6 +104,11 @@ async function testUpdatePrescription() {
     .eq('id', medicine.id)
     .single();
 
+  if (!updatedMedicine) {
+    console.error('❌ Không tìm thấy dữ liệu thuốc sau khi update!');
+    return;
+  }
+
   // Ban đầu 100, trừ 10 còn 90. Update thành 5 -> (90 + 10) - 5 = 95.
   console.log(`Stock hiện tại: ${updatedMedicine.stock_quantity} (Kỳ vọng: 95)`);
   if (updatedMedicine.stock_quantity === 95) {
@@ -116,6 +123,11 @@ async function testUpdatePrescription() {
     .select('diagnosis, notes, total_amount')
     .eq('id', header.id)
     .single();
+
+  if (!updatedHeader) {
+    console.error('❌ Không tìm thấy dữ liệu header sau khi update!');
+    return;
+  }
 
   console.log(`Diagnosis mới: ${updatedHeader.diagnosis} (Kỳ vọng: Viêm họng)`);
   console.log(`Total amount: ${updatedHeader.total_amount} (Kỳ vọng: 55000)`); // 50k fee + 5 * 1k
@@ -132,13 +144,22 @@ async function testUpdatePrescription() {
     .select('quantity')
     .eq('prescription_header_id', header.id);
 
-  console.log(`Số lượng details: ${updatedDetails.length} (Kỳ vọng: 1)`);
-  console.log(`Số lượng thuốc: ${updatedDetails[0].quantity} (Kỳ vọng: 5)`);
+  if (!updatedDetails) {
+    console.error('❌ Không tìm thấy dữ liệu details sau khi update!');
+    return;
+  }
 
-  if (updatedDetails.length === 1 && updatedDetails[0].quantity === 5) {
-    console.log('✅ Details cập nhật đúng!');
+  console.log(`Số lượng details: ${updatedDetails.length} (Kỳ vọng: 1)`);
+  
+  if (updatedDetails.length > 0) {
+    console.log(`Số lượng thuốc: ${updatedDetails[0].quantity} (Kỳ vọng: 5)`);
+    if (updatedDetails.length === 1 && updatedDetails[0].quantity === 5) {
+      console.log('✅ Details cập nhật đúng!');
+    } else {
+      console.error('❌ Details cập nhật SAI!');
+    }
   } else {
-    console.error('❌ Details cập nhật SAI!');
+    console.error('❌ Chi tiết đơn thuốc đang bị rỗng!');
   }
 
   // 4.4 Kiểm tra Patient
@@ -147,6 +168,11 @@ async function testUpdatePrescription() {
     .select('diagnosis, medical_history')
     .eq('id', patient.id)
     .single();
+
+  if (!updatedPatient) {
+    console.error('❌ Không tìm thấy dữ liệu bệnh nhân sau khi update!');
+    return;
+  }
 
   console.log(`Patient diagnosis: ${updatedPatient.diagnosis} (Kỳ vọng: Viêm họng)`);
   if (updatedPatient.diagnosis === 'Viêm họng') {
