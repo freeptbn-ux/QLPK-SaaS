@@ -1,0 +1,31 @@
+{
+  "meta": { "schema_version": "1.1.0", "awf_version": "3.3.0" },
+  "project": {
+    "name": "QLPK-SaaS",
+    "type": "Healthcare Management SaaS",
+    "status": "In Development / Security Hardening"
+  },
+  "tech_stack": {
+    "frontend": "Next.js 16.2.4 (Turbopack), React 19, Tailwind CSS 4, Framer Motion, Recharts",
+    "backend": "Next.js Server Actions, Supabase SSR",
+    "database": "Supabase (PostgreSQL)"
+  },
+  "features": [
+    "Quản lý bệnh nhân (CRUD, Search)",
+    "Quản lý đơn thuốc (Tạo, In, Lịch sử)",
+    "Thống kê doanh thu và lượt khám",
+    "Cài đặt hệ thống và cấu hình danh mục thuốc"
+  ],
+  "knowledge_items": {
+    "patterns": [
+      "Server Actions for all DB operations",
+      "Supabase RLS for data protection",
+      "Turbopack for fast local development"
+    ],
+    "gotchas": [
+      "Hydration errors on toLocaleString() - must use explicit 'vi-VN' locale",
+      "RPC execution grants were too broad (anon access) - needs remediation",
+      "RLS was set to USING (true) - needs redesign"
+    ]
+  }
+}
