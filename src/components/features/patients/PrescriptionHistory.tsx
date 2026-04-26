@@ -16,7 +16,7 @@ import dayjs from 'dayjs';
 import Link from 'next/link';
 import MedicineAutocomplete from '../prescriptions/MedicineAutocomplete';
 import { PrescriptionItem } from '@/types/forms';
-import { appendToPrescription } from '@/actions/prescriptions';
+import { appendToPrescription, deletePrescription } from '@/actions/prescriptions';
 import MedicineUsageDialog from './MedicineUsageDialog';
 import { cn } from '@/lib/utils/cn';
 import { getPatientPrescriptionsPaginated } from '@/actions/patients';
@@ -36,6 +36,9 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
   const [loading, setLoading] = useState(false);
   const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [prescriptionToDelete, setPrescriptionToDelete] = useState<PrescriptionWithDetails | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Pagination state
   const [prescriptions, setPrescriptions] = useState<PrescriptionWithDetails[]>(initialPrescriptions);
@@ -109,6 +112,27 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
       alert('Lỗi khi thêm thuốc');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!prescriptionToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      const result = await deletePrescription(prescriptionToDelete.id, patientId);
+      if (result.success) {
+        setPrescriptions(prev => prev.filter(p => p.id !== prescriptionToDelete.id));
+        setIsDeleteDialogOpen(false);
+        setPrescriptionToDelete(null);
+      } else {
+        alert(result.error || 'Lỗi khi xóa đơn thuốc');
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+      alert('Đã xảy ra lỗi khi kết nối với máy chủ');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -258,6 +282,16 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
                        </div>
 
                        <div className="flex justify-end gap-2">
+                          <button 
+                            onClick={() => {
+                              setPrescriptionToDelete(p);
+                              setIsDeleteDialogOpen(true);
+                            }}
+                            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all active:scale-95"
+                          >
+                            <HiOutlineTrash className="w-4 h-4" />
+                            Xóa đơn
+                          </button>
                           <button className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl transition-all active:scale-95">
                             <HiOutlinePrinter className="w-4 h-4" />
                             In đơn thuốc
@@ -383,6 +417,65 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
                   className="btn-primary min-w-[100px] flex items-center justify-center"
                 >
                   {loading ? 'Đang lưu...' : 'Lưu thêm'}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Confirmation Dialog */}
+      <AnimatePresence>
+        {isDeleteDialogOpen && prescriptionToDelete && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => !isDeleting && setIsDeleteDialogOpen(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden"
+            >
+              <div className="p-6">
+                <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center text-red-600 dark:text-red-400 mb-4">
+                  <HiOutlineTrash className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                  Xác nhận xóa đơn thuốc
+                </h3>
+                <p className="text-gray-500 dark:text-gray-400">
+                  Bạn có chắc chắn muốn xóa đơn thuốc ngày <span className="font-bold text-gray-900 dark:text-white">{dayjs(prescriptionToDelete.prescription_date).format('DD/MM/YYYY')}</span> không? 
+                  <br />
+                  <span className="text-red-500 text-sm mt-2 block font-medium">Lưu ý: Các dữ liệu thuộc đơn này sẽ bị mất vĩnh viễn.</span>
+                </p>
+              </div>
+
+              <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-800 flex justify-end gap-3">
+                <button
+                  onClick={() => setIsDeleteDialogOpen(false)}
+                  disabled={isDeleting}
+                  className="px-6 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all disabled:opacity-50"
+                >
+                  Hủy
+                </button>
+                <button
+                  onClick={handleDeleteConfirm}
+                  disabled={isDeleting}
+                  className="px-6 py-2.5 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-lg shadow-red-600/20 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2"
+                >
+                  {isDeleting ? (
+                    <>
+                      <HiOutlineArrowPath className="w-4 h-4 animate-spin" />
+                      Đang xóa...
+                    </>
+                  ) : (
+                    'Xác nhận xóa'
+                  )}
                 </button>
               </div>
             </motion.div>

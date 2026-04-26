@@ -26,26 +26,42 @@ export async function runDatabaseMigration() {
   try {
     await client.connect();
     
-    const migrations = [
-      '002_create_prescription_rpc.sql',
-      '006_merge_patients_rpc.sql'
-    ];
+    const migrationsDir = path.join(process.cwd(), 'supabase', 'migrations');
+    const files = await fs.readdir(migrationsDir);
+    const sqlFiles = files
+      .filter(f => f.endsWith('.sql'))
+      .sort();
 
-    for (const file of migrations) {
-      const sqlPath = path.join(process.cwd(), 'supabase', 'migrations', file);
+    const results: { file: string; success: boolean; error?: string }[] = [];
+
+    for (const file of sqlFiles) {
+      const sqlPath = path.join(migrationsDir, file);
       const sql = await fs.readFile(sqlPath, 'utf8');
-      console.log(`🚀 Running migration: ${file}`);
-      await client.query(sql);
+      
+      try {
+        console.log(`🚀 Running migration: ${file}`);
+        await client.query(sql);
+        results.push({ file, success: true });
+      } catch (err) {
+        console.error(`❌ Migration failed for ${file}:`, err);
+        results.push({ 
+          file, 
+          success: false, 
+          error: err instanceof Error ? err.message : String(err) 
+        });
+      }
     }
 
-    // Also drop the unique constraint to allow mock data creation
-    console.log('🚀 Dropping unique constraint for testing...');
-    await client.query('DROP INDEX IF EXISTS idx_patients_unique_person;');
-
     await client.end();
-    return { success: true };
+    
+    const failed = results.filter(r => !r.success);
+    return { 
+      success: failed.length === 0, 
+      results,
+      summary: `${results.length} files processed, ${failed.length} failed.`
+    };
   } catch (error) {
-    console.error('Migration failed:', error);
+    console.error('Migration runner failed:', error);
     try { await client.end(); } catch { }
     const message = error instanceof Error ? error.message : 'Unknown error';
     return { success: false, error: message };

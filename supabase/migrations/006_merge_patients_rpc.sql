@@ -48,3 +48,7 @@ BEGIN
   WHERE id = ANY(duplicate_ids);
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Grant permissions
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO anon, authenticated;
+

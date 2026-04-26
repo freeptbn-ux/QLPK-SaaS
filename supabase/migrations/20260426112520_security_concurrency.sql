@@ -113,3 +113,7 @@ BEGIN
   RETURN QUERY SELECT to_jsonb(v_patient), v_existing;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Grant permissions
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO anon, authenticated;
+

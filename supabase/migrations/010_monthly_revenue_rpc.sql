@@ -9,3 +9,7 @@ BEGIN
   );
 END;
 $$ LANGUAGE plpgsql STABLE;
+
+-- Grant permissions
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO anon, authenticated;
+

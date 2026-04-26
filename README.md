@@ -1,75 +1,69 @@
-# QLPK SaaS - Hệ thống Quản lý Phòng khám Thông minh
+# QLPK-SaaS - Hệ thống Quản lý Phòng khám Thông minh
 
-![QLPK SaaS Logo](https://img.shields.io/badge/Next.js-16.2-black?style=for-the-badge&logo=next.js)
-![React](https://img.shields.io/badge/React-19.2-blue?style=for-the-badge&logo=react)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.2-38B2AC?style=for-the-badge&logo=tailwind-css)
-![Supabase](https://img.shields.io/badge/Supabase-Database-3ECF8E?style=for-the-badge&logo=supabase)
-
-**QLPK SaaS** là một giải pháp quản lý phòng khám hiện đại, đa nền tảng, được xây dựng để giúp các bác sĩ và nhân viên y tế quản lý công việc hiệu quả hơn. Hệ thống tập trung vào trải nghiệm người dùng, tính chính xác trong kê đơn và khả năng quản lý kho thuốc thông minh.
+QLPK-SaaS là một giải pháp phần mềm hiện đại được thiết kế để tối ưu hóa quy trình quản lý tại các phòng khám vừa và nhỏ. Hệ thống cung cấp các công cụ mạnh mẽ từ việc quản lý bệnh nhân, kê đơn thuốc điện tử đến theo dõi doanh thu và thống kê báo cáo.
 
 ## ✨ Tính năng chính
 
-- 🏥 **Quản lý Bệnh nhân**: Hồ sơ bệnh án chi tiết, tìm kiếm thông minh với Trigram Index.
-- 💊 **Quản lý Kho thuốc**: Theo dõi nhập/xuất, tồn kho thực tế, đơn giá và liều dùng mẫu.
-- 📝 **Kê đơn Thông minh**: Tự động tính toán liều lượng thuốc, tổng tiền và xuất đơn thuốc chuyên nghiệp.
-- 📊 **Thống kê & Báo cáo**: Theo dõi doanh thu theo tháng, số lượng bệnh nhân và hiệu suất phòng khám.
-- 🎨 **Giao diện Cao cấp**: Hỗ trợ Chế độ Sáng/Tối, hiệu ứng Glassmorphism và chuyển động mượt mà với Framer Motion.
-- 📱 **Thiết kế Đáp ứng (Responsive)**: Hoạt động hoàn hảo trên mọi thiết bị từ Mobile đến Desktop.
+- **Quản lý Bệnh nhân**: Lưu trữ thông tin chi tiết, lịch sử khám bệnh và đơn thuốc của từng bệnh nhân.
+- **Kê đơn thuốc thông minh**: Giao diện kê đơn nhanh chóng, hỗ trợ gợi ý thuốc và tự động tính toán tổng tiền.
+- **Quản lý Kho thuốc**: Theo dõi số lượng tồn kho, giá nhập, giá bán và cảnh báo khi thuốc sắp hết.
+- **Thống kê & Báo cáo**: Biểu đồ trực quan về doanh thu, số lượng bệnh nhân theo ngày/tháng/năm.
+- **Công cụ tính liều lượng**: Hỗ trợ bác sĩ tính toán liều lượng thuốc chính xác dựa trên thông tin bệnh nhân.
+- **Bảo mật & Phân quyền**: Đăng nhập an toàn, bảo vệ dữ liệu y tế nhạy cảm.
 
-## 🛠️ Công nghệ sử dụng
+## 🚀 Công nghệ sử dụng
 
-- **Frontend Core**: Next.js 16.2 (App Router), React 19.
-- **Styling**: Vanilla CSS kết hợp Tailwind CSS v4 (Design System mạnh mẽ).
-- **Cơ sở dữ liệu**: Supabase (Postgres) với các SQL RPC tối ưu hiệu năng.
-- **Biểu đồ**: Recharts cho các báo cáo doanh thu trực quan.
-- **Xử lý Form**: React Hook Form & Zod (Validation chặt chẽ).
-- **Hiệu ứng**: Framer Motion cho trải nghiệm người dùng mượt mà.
-- **Ngôn ngữ**: TypeScript 5+.
+Hệ thống được xây dựng trên những công nghệ hiện đại nhất hiện nay:
 
-## 🚀 Hướng dẫn cài đặt
+- **Frontend**: [Next.js 16+](https://nextjs.org/) (App Router), [React 19](https://reactjs.org/)
+- **Backend-as-a-Service**: [Supabase](https://supabase.com/) (Auth, Database, Storage, RPC)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
+- **Animation**: [Framer Motion](https://www.framer.com/motion/)
+- **Form Management**: [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/)
+- **Data Visualization**: [Recharts](https://recharts.org/)
+- **Date Handling**: [Day.js](https://day.js.org/)
 
-### 1. Chuẩn bị môi trường
-- Node.js 18+ 
-- Tài khoản Supabase
+## 🛠️ Hướng dẫn cài đặt
 
-### 2. Cài đặt Project
-```bash
-# Clone repository
-git clone https://github.com/freeptbn-ux/QLPK-SaaS.git
+Để chạy dự án local, hãy thực hiện theo các bước sau:
 
-# Di chuyển vào thư mục dự án
-cd QLPK-SaaS
+1. **Clone repository:**
+   ```bash
+   git clone https://github.com/freeptbn-ux/QLPK-SaaS.git
+   cd QLPK-SaaS
+   ```
 
-# Cài đặt các gói phụ thuộc
-npm install
+2. **Cài đặt thư viện:**
+   ```bash
+   npm install
+   ```
+
+3. **Cấu hình biến môi trường:**
+   Tạo file `.env.local` trong thư mục gốc và thêm các thông tin sau (lấy từ Supabase project của bạn):
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+
+4. **Chạy dự án:**
+   ```bash
+   npm run dev
+   ```
+   Truy cập `http://localhost:3000` để xem kết quả.
+
+## 📁 Cấu trúc thư mục
+
+```text
+src/
+├── actions/        # Các Server Actions xử lý logic backend
+├── app/            # Các trang và route (App Router)
+├── components/     # Các UI components tái sử dụng
+├── hooks/          # Custom React hooks
+├── lib/            # Tiện ích, cấu hình database và validation
+├── theme/          # Cấu hình màu sắc và giao diện
+└── types/          # Định nghĩa TypeScript interfaces
 ```
 
-### 3. Cấu hình biến môi trường
-Tạo file `.env.local` tại thư mục gốc:
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-```
+## 📜 Bản quyền
 
-### 4. Khởi chạy
-```bash
-npm run dev
-```
-Mở [http://localhost:3000](http://localhost:3000) trên trình duyệt của bạn.
-
-## 📁 Cấu trúc dự án
-
-- `src/app`: Routes và layouts (Next.js App Router).
-- `src/components`: Các UI Components (Features, UI, Layout).
-- `src/actions`: Server Actions tương tác với database.
-- `src/lib`: Cấu hình Supabase, Utils, Hooks.
-- `supabase/migrations`: Các file SQL migration cho database.
-- `.brain`: Tài liệu và kiến thức dự án (được đồng bộ).
-
-## 📄 Bản quyền
-
-Copyright 2026 Nguyễn Duy Trường. All rights reserved.
-
----
-*Dự án được phát triển với sự hỗ trợ của Antigravity AI.*
+Copyright © 2026 Nguyễn Duy Trường. All rights reserved.

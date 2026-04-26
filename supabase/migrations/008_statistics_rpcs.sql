@@ -118,7 +118,7 @@ BEGIN
   RETURN QUERY
   SELECT 
     to_char(prescription_date, 'MM/YYYY') AS name,
-    SUM(COALESCE(total_amount, 0) + COALESCE(consultation_fee, 0)) AS revenue
+    SUM(COALESCE(total_amount, 0)::numeric) AS revenue
   FROM prescriptions_header
   WHERE (p_year_month IS NULL OR (
     prescription_date >= (p_year_month || '-01')::date
@@ -174,3 +174,7 @@ BEGIN
   END IF;
 END;
 $$ LANGUAGE plpgsql STABLE;
+
+-- Grant permissions
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO anon, authenticated;
+

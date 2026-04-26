@@ -114,3 +114,6 @@ BEGIN
   WHERE id = v_patient_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Grant permissions
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO anon, authenticated;

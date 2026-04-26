@@ -121,3 +121,19 @@ export async function getConsultationFee() {
 
   return parseFloat(data.value);
 }
+
+export async function deletePrescription(prescriptionId: number, patientId: number) {
+  const supabase = await createClient();
+
+  const { error } = await supabase.rpc('delete_prescription', {
+    p_prescription_id: prescriptionId
+  });
+
+  if (error) {
+    console.error('Error deleting prescription:', error);
+    return { success: false, error: error.message };
+  }
+
+  revalidatePath(`/patients/${patientId}`);
+  return { success: true };
+}
