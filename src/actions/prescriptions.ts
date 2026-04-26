@@ -167,6 +167,28 @@ export async function updatePrescription(rawData: UpdatePrescriptionData) {
     return { success: false, error: error.message };
   }
 
+  // Fetch updated data to return to client
+  const { data: updatedData, error: fetchError } = await supabase
+    .from('prescriptions_header')
+    .select(`
+      *,
+      prescription_details (
+        *,
+        medicines (
+          name,
+          packing_spec
+        )
+      )
+    `)
+    .eq('id', data.prescription_id)
+    .single();
+
+  if (fetchError) {
+    console.error('Error fetching updated prescription:', fetchError);
+    // Still return success since the update itself succeeded
+    return { success: true };
+  }
+
   revalidatePath(`/patients/${data.patient_id}`);
-  return { success: true };
+  return { success: true, data: updatedData };
 }

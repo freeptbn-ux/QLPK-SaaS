@@ -8,7 +8,7 @@ export async function getDistinctMonthsYears() {
 
   if (error) {
     console.error('Error fetching distinct months/years:', error);
-    return [];
+    throw new Error(error.message);
   }
 
   return (data || []).map((item: { month: string }) => item.month);
@@ -22,7 +22,7 @@ export async function getStatsByDayForMonth(yearMonth: string) {
 
   if (error) {
     console.error('Error fetching stats by day:', error);
-    return [];
+    throw new Error(error.message);
   }
 
   return data || [];
@@ -36,7 +36,7 @@ export async function getStatsByWeek(limit: number = 8) {
 
   if (error) {
     console.error('Error fetching stats by week:', error);
-    return [];
+    throw new Error(error.message);
   }
 
   return data || [];
@@ -50,7 +50,7 @@ export async function getStatsByMonth(limit: number = 12) {
 
   if (error) {
     console.error('Error fetching stats by month:', error);
-    return [];
+    throw new Error(error.message);
   }
 
   return data || [];
@@ -62,7 +62,7 @@ export async function getStatsByYear() {
 
   if (error) {
     console.error('Error fetching stats by year:', error);
-    return [];
+    throw new Error(error.message);
   }
 
   return data || [];
@@ -74,7 +74,7 @@ export async function getStatsByGender() {
 
   if (error) {
     console.error('Error fetching stats by gender:', error);
-    return [];
+    throw new Error(error.message);
   }
 
   return data || [];
@@ -88,7 +88,7 @@ export async function getStatsByLocation(limit: number = 20) {
 
   if (error) {
     console.error('Error fetching stats by location:', error);
-    return [];
+    throw new Error(error.message);
   }
 
   return data || [];
@@ -103,7 +103,7 @@ export async function getPatientDobsByTime(filterType: string, timeValue: string
 
   if (error) {
     console.error('Error fetching patient DOBs:', error);
-    return [];
+    throw new Error(error.message);
   }
 
   return (data || []).map((item: { dob: string | null }) => item.dob);
@@ -117,7 +117,7 @@ export async function getMedicineUsageStats(yearMonth?: string) {
 
   if (error) {
     console.error('Error fetching medicine usage stats:', error);
-    return [];
+    throw new Error(error.message);
   }
 
   return data || [];
@@ -131,7 +131,7 @@ export async function getRevenueStats(yearMonth?: string) {
 
   if (error) {
     console.error('Error fetching revenue stats:', error);
-    return [];
+    throw new Error(error.message);
   }
 
   return data || [];
@@ -143,7 +143,7 @@ export async function getOverviewStats() {
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
   
-  const [patientsCount, monthlyVisits, revenueData, lowStock] = await Promise.all([
+  const results = await Promise.all([
     supabase.from('patients').select('*', { count: 'estimated', head: true }),
     supabase.from('prescriptions_header')
       .select('*', { count: 'exact', head: true })
@@ -151,6 +151,16 @@ export async function getOverviewStats() {
     supabase.rpc('get_monthly_revenue_total'),
     supabase.rpc('get_low_stock_count')
   ]);
+
+  const [patientsCount, monthlyVisits, revenueData, lowStock] = results;
+
+  // Check for errors in any of the calls
+  for (const res of results) {
+    if (res.error) {
+      console.error('Error in getOverviewStats batch:', res.error);
+      throw new Error(res.error.message);
+    }
+  }
 
   return {
     totalPatients: patientsCount.count || 0,

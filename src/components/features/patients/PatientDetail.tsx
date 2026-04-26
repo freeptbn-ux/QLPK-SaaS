@@ -18,8 +18,6 @@ export default function PatientDetail({ patient }: PatientDetailProps) {
   const router = useRouter();
   const [formOpen, setFormOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [currentPatient] = useState(patient);
-
   const handleDelete = async () => {
     try {
       await deletePatient(patient.id);
@@ -72,62 +70,63 @@ export default function PatientDetail({ patient }: PatientDetailProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="space-y-1">
               <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Họ và tên</span>
-              <p className="text-base font-medium text-gray-900 dark:text-gray-100">{currentPatient.name}</p>
+              <p className="text-base font-medium text-gray-900 dark:text-gray-100">{patient.name}</p>
             </div>
             <div className="space-y-1">
               <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Giới tính</span>
-              <p className="text-base text-gray-900 dark:text-gray-100">{currentPatient.gender || 'N/A'}</p>
+              <p className="text-base text-gray-900 dark:text-gray-100">{patient.gender || 'N/A'}</p>
             </div>
             <div className="space-y-1">
               <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Ngày sinh / Tuổi</span>
               <p className="text-base text-gray-900 dark:text-gray-100">
-                {currentPatient.dob || 'N/A'}
-                {currentPatient.dob && formatAge(currentPatient.dob) && (
-                  <span className="ml-2 text-primary-600 font-medium">({formatAge(currentPatient.dob)})</span>
+                {patient.dob || 'N/A'}
+                {patient.dob && formatAge(patient.dob) && (
+                  <span className="ml-2 text-primary-600 font-medium">({formatAge(patient.dob)})</span>
                 )}
               </p>
             </div>
             <div className="space-y-1">
               <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Số điện thoại</span>
-              <p className="text-base text-gray-900 dark:text-gray-100">{currentPatient.phone || 'N/A'}</p>
+              <p className="text-base text-gray-900 dark:text-gray-100">{patient.phone || 'N/A'}</p>
             </div>
             <div className="space-y-1 sm:col-span-2">
               <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Địa chỉ</span>
-              <p className="text-base text-gray-900 dark:text-gray-100">{currentPatient.address || 'N/A'}</p>
+              <p className="text-base text-gray-900 dark:text-gray-100">{patient.address || 'N/A'}</p>
             </div>
             <div className="space-y-1">
               <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Cân nặng</span>
-              <p className="text-base text-gray-900 dark:text-gray-100">{currentPatient.weight ? `${currentPatient.weight} kg` : 'N/A'}</p>
+              <p className="text-base text-gray-900 dark:text-gray-100">{patient.weight ? `${patient.weight} kg` : 'N/A'}</p>
             </div>
             <div className="space-y-1 sm:col-span-2 lg:col-span-1">
               <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Chẩn đoán gần nhất</span>
-              <p className="text-base text-gray-900 dark:text-gray-100">{currentPatient.diagnosis || 'N/A'}</p>
+              <p className="text-base text-gray-900 dark:text-gray-100">{patient.diagnosis || 'N/A'}</p>
             </div>
           </div>
         </div>
       </div>
 
       <PrescriptionHistory 
-        patientId={currentPatient.id} 
-        patientName={currentPatient.name}
-        prescriptions={currentPatient.prescriptions || []} 
-        totalCount={currentPatient.totalPrescriptions}
+        patientId={patient.id} 
+        patientName={patient.name}
+        prescriptions={patient.prescriptions || []} 
+        totalCount={patient.totalPrescriptions}
       />
 
       <PatientFormDialog
         open={formOpen}
         onClose={() => setFormOpen(false)}
-        patient={currentPatient}
+        patient={patient}
         onSuccess={handleUpdateSuccess}
       />
 
       <ConfirmDialog
         open={deleteConfirmOpen}
         title="Xác nhận xóa"
-        message={`Bạn có chắc chắn muốn xóa bệnh nhân "${currentPatient.name}"?`}
+        message={`Bạn có chắc chắn muốn xóa bệnh nhân "${patient.name}"?`}
         onConfirm={handleDelete}
         onCancel={() => setDeleteConfirmOpen(false)}
       />
+
     </div>
   );
 }

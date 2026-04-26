@@ -2,11 +2,13 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { removeDiacritics } from '@/lib/utils/normalize';
+import { escapeLikePattern } from '@/lib/utils/string';
 import { PatientFormData } from '@/types/forms';
 import { Patient } from '@/types/database';
 import { revalidatePath } from 'next/cache';
 import { patientFormSchema } from '@/lib/validations/patient';
 import { formatZodError } from '@/lib/validations/helpers';
+import { cache } from 'react';
 
 export async function getPatientsPaginated(page: number, pageSize: number) {
   const supabase = await createClient();
@@ -33,6 +35,8 @@ export async function searchPatients(term: string, page: number, pageSize: numbe
   const to = from + pageSize - 1;
 
   const normalizedTerm = removeDiacritics(term);
+  const escapedTerm = escapeLikePattern(term);
+  const escapedNormalizedTerm = escapeLikePattern(normalizedTerm);
 
   let query = supabase
     .from('patients')
@@ -40,7 +44,7 @@ export async function searchPatients(term: string, page: number, pageSize: numbe
 
   if (term) {
     // Search by normalized name or phone
-    query = query.or(`name_normalized.ilike.%${normalizedTerm}%,phone.ilike.%${term}%`);
+    query = query.or(`name_normalized.ilike.%${escapedNormalizedTerm}%,phone.ilike.%${escapedTerm}%`);
   }
 
   const { data, error, count } = await query
@@ -55,7 +59,7 @@ export async function searchPatients(term: string, page: number, pageSize: numbe
   return { data: data as Patient[], count };
 }
 
-export async function getPatientById(id: number) {
+export const getPatientById = cache(async (id: number) => {
   const supabase = await createClient();
 
   // Fetch patient info separately
@@ -83,7 +87,7 @@ export async function getPatientById(id: number) {
   }
 
   return { ...patient, prescriptions: prescriptions || [], totalPrescriptions: count || 0 };
-}
+});
 
 export async function getPatientPrescriptionsPaginated(
   patientId: number, 

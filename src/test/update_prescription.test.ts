@@ -18,14 +18,21 @@ vi.mock('next/cache', () => ({
 }));
 
 describe('updatePrescription', () => {
+  const mockSingle = vi.fn();
+  const mockEq = vi.fn().mockReturnValue({ single: mockSingle });
+  const mockSelect = vi.fn().mockReturnValue({ eq: mockEq });
+  const mockFrom = vi.fn().mockReturnValue({ select: mockSelect });
   const mockRpc = vi.fn();
+  
   const mockSupabase = {
     rpc: mockRpc,
+    from: mockFrom,
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
     (supabaseServer.createClient as any).mockResolvedValue(mockSupabase);
+    mockSingle.mockResolvedValue({ data: { id: 123 }, error: null });
   });
 
   it('should update prescription successfully', async () => {
@@ -46,10 +53,12 @@ describe('updatePrescription', () => {
     });
 
     mockRpc.mockResolvedValue({ data: null, error: null });
+    const mockUpdatedData = { id: 123, diagnosis: 'Flu' };
+    mockSingle.mockResolvedValue({ data: mockUpdatedData, error: null });
 
     const result = await updatePrescription(mockInput);
 
-    expect(result).toEqual({ success: true });
+    expect(result).toEqual({ success: true, data: mockUpdatedData });
     expect(mockRpc).toHaveBeenCalledWith('update_prescription', expect.objectContaining({
       p_prescription_id: 123,
       p_diagnosis: 'Flu',

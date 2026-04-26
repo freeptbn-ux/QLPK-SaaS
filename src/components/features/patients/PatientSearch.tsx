@@ -19,6 +19,11 @@ export default function PatientSearch({
   const [searchTerm, setSearchTerm] = useState(initialValue);
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
+  // Sync state with prop if initialValue changes (e.g. on back navigation)
+  useEffect(() => {
+    setSearchTerm(initialValue);
+  }, [initialValue]);
+
   useEffect(() => {
     onSearch(debouncedSearchTerm);
   }, [debouncedSearchTerm, onSearch]);

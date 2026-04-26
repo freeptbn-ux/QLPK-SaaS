@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   HiOutlineChevronDown, 
   HiOutlinePlus, 
@@ -58,6 +59,11 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(totalCount > initialPrescriptions.length);
   const [loadingMore, setLoadingMore] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    setPrescriptions(initialPrescriptions);
+  }, [initialPrescriptions]);
 
   const handleLoadMore = async () => {
     if (loadingMore || !hasMore) return;
@@ -259,36 +265,17 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
       });
 
       if (result.success) {
-        // Calculate new total amount for the local state update
-        const medicineTotal = editItems.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0);
-        const newTotalAmount = medicineTotal + (prescriptionToEdit.consultation_fee || 0);
-
-        setPrescriptions(prev => prev.map(p => 
-          p.id === prescriptionToEdit.id 
-            ? { 
-                ...p, 
-                diagnosis: editDiagnosis,
-                notes: editNotes,
-                prescription_date: new Date(editDate).toISOString(),
-                total_amount: newTotalAmount,
-                // We'd ideally want to refresh the details too, but for simplicity we can just update the header
-                // and maybe trigger a full refresh or update the details list if we have all info.
-                // Re-mapping details to match the structure in PrescriptionWithDetails:
-                prescription_details: editItems.map(item => ({
-                  id: p.prescription_details.find(d => d.medicine_id === item.medicine_id)?.id || 0, // Placeholder ID if new
-                  prescription_id: p.id,
-                  medicine_id: item.medicine_id,
-                  quantity: item.quantity,
-                  unit_price: item.unit_price,
-                  medicines: {
-                    name: item.medicine_name,
-                    packing_spec: item.packing_spec
-                  }
-                }))
-              } as PrescriptionWithDetails
-            : p
-        ));
+        if (result.data) {
+          setPrescriptions(prev => prev.map(p => 
+            p.id === prescriptionToEdit.id ? (result.data as PrescriptionWithDetails) : p
+          ));
+        } else {
+          // Fallback to refresh if data not returned
+          router.refresh();
+        }
         setIsEditDialogOpen(false);
+        // Refresh anyway to sync parent components if any
+        router.refresh();
       } else {
         setEditError(result.error || 'Lỗi khi cập nhật đơn thuốc');
       }

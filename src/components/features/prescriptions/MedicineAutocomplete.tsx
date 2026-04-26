@@ -21,14 +21,22 @@ const MedicineAutocomplete = React.memo(function MedicineAutocomplete({ onSelect
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Memoize excludeIds to avoid unnecessary reference changes
+  const memoizedExcludeIds = React.useMemo(() => excludeIds, [JSON.stringify(excludeIds)]);
+  const excludeIdsRef = useRef(excludeIds);
+
+  useEffect(() => {
+    excludeIdsRef.current = memoizedExcludeIds;
+  }, [memoizedExcludeIds]);
+
   const debouncedFetch = React.useMemo(
     () =>
       debounce(async (query: string) => {
         setLoading(true);
         try {
           const results = await getMedicines(query);
-          // Filter out already selected medicines
-          const filtered = results.filter((m: Medicine) => !excludeIds.includes(m.id));
+          // Use the latest excludeIds from ref to keep this function stable
+          const filtered = results.filter((m: Medicine) => !excludeIdsRef.current.includes(m.id));
           setOptions(filtered);
           setSelectedIndex(filtered.length > 0 ? 0 : -1);
         } catch (error) {
@@ -37,8 +45,15 @@ const MedicineAutocomplete = React.memo(function MedicineAutocomplete({ onSelect
           setLoading(false);
         }
       }, 300),
-    [excludeIds]
+    [] // Stable: never recreated
   );
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      debouncedFetch.cancel();
+    };
+  }, [debouncedFetch]);
 
   const fetchMedicines = useCallback(
     (query: string) => {
