@@ -153,14 +153,13 @@ export default function PatientListClient({
                 <th className="px-4 py-3">Giới tính</th>
                 <th className="px-4 py-3">SĐT</th>
                 <th className="px-4 py-3">Địa chỉ</th>
-                <th className="px-4 py-3">Chẩn đoán</th>
                 <th className="px-4 py-3 text-right">Thao tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {patients.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-12 text-center">
+                  <td colSpan={7} className="px-4 py-12 text-center">
                     <EmptyState 
                       title="Không tìm thấy bệnh nhân nào" 
                       description="Thử thay đổi từ khóa tìm kiếm hoặc thêm mới bệnh nhân" 
@@ -188,9 +187,6 @@ export default function PatientListClient({
                     <td className="px-4 py-3">{patient.phone || 'N/A'}</td>
                     <td className="px-4 py-3 truncate max-w-[200px]" title={patient.address || ''}>
                       {patient.address || 'N/A'}
-                    </td>
-                    <td className="px-4 py-3 truncate max-w-[200px]" title={patient.diagnosis || ''}>
-                      {patient.diagnosis || 'Chưa có'}
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex justify-end gap-1">
@@ -244,9 +240,6 @@ export default function PatientListClient({
                     {patient.phone || 'No phone'}
                   </span>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-1">
-                  <span className="font-medium">Chẩn đoán:</span> {patient.diagnosis || 'Chưa có'}
-                </p>
                 <div className="flex justify-end gap-2 pt-2 border-t border-gray-50 dark:border-gray-800/50">
                    <Link
                     href={`/patients/${patient.id}`}
