@@ -11,6 +11,7 @@ import { addPatient, updatePatient } from '@/actions/patients';
 import { useToast } from '@/hooks/useToast';
 import DateInput from '@/components/ui/DateInput';
 import { cn } from '@/lib/utils/cn';
+import { formatDobForInput } from '@/lib/utils/age';
 
 interface PatientFormDialogProps {
   open: boolean;
@@ -47,10 +48,9 @@ export default function PatientFormDialog({
 
   useEffect(() => {
     if (patient && open) {
-      const isOldFormat = patient.dob && !/^\d{2}\/\d{2}\/\d{4}$/.test(patient.dob);
       reset({
         name: patient.name || '',
-        dob: isOldFormat ? '' : (patient.dob || ''),
+        dob: formatDobForInput(patient.dob || ''),
         gender: (patient.gender as 'Nam' | 'Nữ') || 'Nam',
         address: patient.address || '',
         phone: patient.phone || '',
@@ -175,7 +175,7 @@ export default function PatientFormDialog({
                             error={!!errors.dob}
                             helperText={errors.dob?.message}
                           />
-                          {patient && patient.dob && !/^\d{2}\/\d{2}\/\d{4}$/.test(patient.dob) && (
+                          {patient && patient.dob && !formatDobForInput(patient.dob) && (
                             <div className="mt-2 flex items-center gap-1.5 p-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
                               <HiOutlineInformationCircle className="w-4 h-4 text-amber-600" />
                               <p className="text-xs text-amber-700 dark:text-amber-400">

@@ -1,13 +1,24 @@
 import dayjs from 'dayjs';
 
-const DOB_REGEX = /^\d{2}\/\d{2}\/\d{4}$/;
+const DOB_REGEX_DDMMYYYY = /^\d{2}\/\d{2}\/\d{4}$/;
+const DOB_REGEX_ISO = /^\d{4}-\d{2}-\d{2}$/;
 
 /**
- * Parse DD/MM/YYYY → dayjs object
+ * Parse DD/MM/YYYY or YYYY-MM-DD → dayjs object
  */
 function parseDob(dob: string): dayjs.Dayjs | null {
-  if (!dob || !DOB_REGEX.test(dob)) return null;
-  const [dd, mm, yyyy] = dob.split('/');
+  if (!dob) return null;
+
+  let dd: string, mm: string, yyyy: string;
+
+  if (DOB_REGEX_DDMMYYYY.test(dob)) {
+    [dd, mm, yyyy] = dob.split('/');
+  } else if (DOB_REGEX_ISO.test(dob)) {
+    [yyyy, mm, dd] = dob.split('-');
+  } else {
+    return null;
+  }
+
   const day = parseInt(dd, 10);
   const month = parseInt(mm, 10);
   const year = parseInt(yyyy, 10);
@@ -89,4 +100,17 @@ export function formatAge(dob: string, referenceDate?: dayjs.Dayjs): string {
     case 'year':  return `${parts.value} tuổi`;
     default: return '';
   }
+}
+
+/**
+ * Format DOB for input (always return DD/MM/YYYY if possible)
+ */
+export function formatDobForInput(dob: string): string {
+  if (!dob) return '';
+  if (DOB_REGEX_DDMMYYYY.test(dob)) return dob; // already DD/MM/YYYY
+  if (DOB_REGEX_ISO.test(dob)) {
+    const [yyyy, mm, dd] = dob.split('-');
+    return `${dd}/${mm}/${yyyy}`;
+  }
+  return ''; // unrecognized format
 }

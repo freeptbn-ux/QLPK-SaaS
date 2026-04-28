@@ -8,7 +8,7 @@ import PrescriptionHistory from './PrescriptionHistory';
 import PatientFormDialog from './PatientFormDialog';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { deletePatient } from '@/actions/patients';
-import { formatAge } from '@/lib/utils/age';
+import { formatAge, formatDobForInput } from '@/lib/utils/age';
 
 interface PatientDetailProps {
   patient: PatientWithPrescriptions; 
@@ -79,7 +79,7 @@ export default function PatientDetail({ patient }: PatientDetailProps) {
             <div className="space-y-1">
               <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Ngày sinh / Tuổi</span>
               <p className="text-base text-gray-900 dark:text-gray-100">
-                {patient.dob || 'N/A'}
+                {patient.dob ? formatDobForInput(patient.dob) : 'N/A'}
                 {patient.dob && formatAge(patient.dob) && (
                   <span className="ml-2 text-primary-600 font-medium">({formatAge(patient.dob)})</span>
                 )}

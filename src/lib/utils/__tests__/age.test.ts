@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import dayjs from 'dayjs';
-import { formatAge, parseAgeParts } from '../age';
+import { formatAge, parseAgeParts, formatDobForInput } from '../age';
 
 describe('age utility', () => {
   const refDate = dayjs('2026-04-23'); // Fixed reference date for tests
@@ -62,6 +62,31 @@ describe('age utility', () => {
     it('should return empty string for future date', () => {
       expect(formatAge('24/04/2026', refDate)).toBe('');
     });
+
+    describe('YYYY-MM-DD format', () => {
+      it('should parse ISO format (YYYY-MM-DD)', () => {
+        expect(formatAge('2026-04-23', refDate)).toBe('0 ngày tuổi');
+      });
+
+      it('should parse ISO format for older patient', () => {
+        expect(formatAge('1996-04-23', refDate)).toBe('30 tuổi');
+      });
+
+      it('should parse ISO format for infant', () => {
+        expect(formatAge('2025-02-16', refDate)).toBe('14 tháng tuổi');
+        // Nguyễn Quang Hoàng Đức: 16/02/2025
+      });
+
+      it('should still reject invalid ISO dates', () => {
+        expect(formatAge('2026-13-01', refDate)).toBe('');
+        expect(formatAge('2026-01-32', refDate)).toBe('');
+      });
+
+      it('should return correct parts for ISO format', () => {
+        const parts = parseAgeParts('2025-02-16', refDate);
+        expect(parts).toEqual({ value: 14, unit: 'month' });
+      });
+    });
   });
 
   describe('parseAgeParts', () => {
@@ -72,6 +97,22 @@ describe('age utility', () => {
 
     it('should return null for invalid DOB', () => {
       expect(parseAgeParts('invalid')).toBeNull();
+    });
+  });
+
+  describe('formatDobForInput', () => {
+    it('should return DD/MM/YYYY for ISO format', () => {
+      expect(formatDobForInput('2025-02-16')).toBe('16/02/2025');
+    });
+
+    it('should return same string if already DD/MM/YYYY', () => {
+      expect(formatDobForInput('16/02/2025')).toBe('16/02/2025');
+    });
+
+    it('should return empty string for invalid format', () => {
+      expect(formatDobForInput('2025/02/16')).toBe('');
+      expect(formatDobForInput('16-02-2025')).toBe('');
+      expect(formatDobForInput('')).toBe('');
     });
   });
 });
