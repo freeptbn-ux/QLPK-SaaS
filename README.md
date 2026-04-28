@@ -9,15 +9,16 @@
 - **Công cụ tính liều nhanh**: Tích hợp ngay trong màn hình kê đơn, hỗ trợ bác sĩ tính liều thuốc dựa trên cân nặng (mg/kg) cho bệnh nhi.
 - **Quản lý dược phẩm & Tồn kho**: Theo dõi số lượng tồn kho, cảnh báo thuốc sắp hết và quản lý quy cách đóng gói.
 - **Báo cáo & Thống kê**: Biểu đồ trực quan về doanh thu, số lượng bệnh nhân và hiệu suất phòng khám.
+- **Hệ thống RLS bảo mật**: Phân quyền truy cập dữ liệu theo từng phòng khám (Multi-tenant) sử dụng Row Level Security nâng cao.
 - **Giao diện hiện đại**: Hỗ trợ Dark Mode, thiết kế Responsive mượt mà trên mọi thiết bị.
 
 ## 🛠️ Công nghệ sử dụng
 Hệ thống được xây dựng trên những công nghệ web mạnh mẽ nhất hiện nay:
-- **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router, Turbopack)
 - **Library**: [React 19](https://react.dev/)
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/), [Framer Motion](https://www.framer.com/motion/) (Animation)
 - **Backend/Database**: [Supabase](https://supabase.com/) (PostgreSQL, Auth, Realtime)
-- **Form & Validation**: [React Hook Form](https://react-hook-form.com/), [Zod](https://zod.dev/)
+- **State Management & Validation**: [Zod](https://zod.dev/), [React Hook Form](https://react-hook-form.com/)
 - **Biểu đồ**: [Recharts](https://recharts.org/)
 - **Icons**: [React Icons](https://react-icons.github.io/react-icons/)
 - **Ngôn ngữ**: [TypeScript](https://www.typescriptlang.org/)
@@ -48,16 +49,16 @@ Hệ thống được xây dựng trên những công nghệ web mạnh mẽ nh�
    ```
    Truy cập [http://localhost:3000](http://localhost:3000) để xem kết quả.
 
-## 📂 Cấu trúc thư mục tiêu biểu
-- `src/app`: Chứa các routes và các trang chức năng.
-- `src/components/features`: Các component chuyên biệt cho từng tính năng (Bệnh nhân, Thuốc, Kê đơn...).
-- `src/actions`: Các Server Actions để giao tiếp với database.
-- `src/lib`: Chứa các hàm tiện ích, cấu hình database và validation schema.
-- `supabase/migrations`: Các bản ghi thay đổi cấu trúc database.
-- `.brain`: Thư mục lưu trữ kiến thức và ngữ cảnh cho AI.
+## 📂 Cấu trúc thư mục
+- `src/app`: Routes và các trang chức năng (Dashboard, Medicines, Patients, etc.).
+- `src/components`: Các UI Components dùng chung và các component tính năng.
+- `src/actions`: Server Actions xử lý logic nghiệp vụ và tương tác Database.
+- `src/lib`: Cấu hình Supabase client, utils và validation schemas.
+- `supabase/migrations`: Quản lý các phiên bản cấu trúc cơ sở dữ liệu.
+- `.brain`: Lưu trữ kiến thức, ngữ cảnh và lịch sử phát triển của dự án (Eternal Context).
 
 ## ⚖️ Bản quyền
 Copyright 2026 Nguyễn Duy Trường
 
 ---
-*Dự án được phát triển với sự hỗ trợ của Antigravity AI.*
+*Phát triển bởi Nguyễn Duy Trường với sự hỗ trợ từ Antigravity AI.*
