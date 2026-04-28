@@ -2,7 +2,7 @@ name: Supabase Database Backup
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Chạy vào 00:00 mỗi ngày
+    - cron: '0 2 */2 * *' # Chạy vào 02:00 UTC (9:00 sáng VN), cách 2 ngày một lần
   workflow_dispatch:      # Cho phép chạy thủ công từ tab Actions
 
 jobs:
