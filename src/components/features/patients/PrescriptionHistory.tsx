@@ -382,47 +382,49 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Chi tiết thuốc</h4>
                        
                        <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden bg-white dark:bg-slate-900 mb-4 shadow-sm">
-                        <table className="w-full text-sm">
-                          <thead className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
-                            <tr>
-                              <th className="px-4 py-2.5 text-left font-semibold">Tên thuốc</th>
-                              <th className="px-4 py-2.5 text-right font-semibold">SL</th>
-                              <th className="px-4 py-2.5 text-right font-semibold">Đơn giá</th>
-                              <th className="px-4 py-2.5 text-right font-semibold">Thành tiền</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                            {p.prescription_details?.map((detail) => (
-                              <tr key={detail.id}>
-                                <td className="px-4 py-2.5">
-                                  <div className="font-medium text-gray-900 dark:text-gray-100">{detail.medicines?.name}</div>
-                                  <div className="text-xs text-gray-500">{detail.medicines?.packing_spec}</div>
-                                </td>
-                                <td className="px-4 py-2.5 text-right font-medium">{detail.quantity}</td>
-                                <td className="px-4 py-2.5 text-right text-gray-500">{(detail.unit_price || 0).toLocaleString('vi-VN')}</td>
-                                <td className="px-4 py-2.5 text-right font-semibold">
-                                  {(detail.quantity * (detail.unit_price || 0)).toLocaleString('vi-VN')}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                          <tfoot className="bg-gray-50/50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700">
-                            <tr>
-                              <td colSpan={3} className="px-4 py-2 text-right text-gray-500">Tiền thuốc:</td>
-                              <td className="px-4 py-2 text-right font-bold">{(p.total_amount - (p.consultation_fee || 0)).toLocaleString('vi-VN')} đ</td>
-                            </tr>
-                            {p.consultation_fee > 0 && (
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-sm">
+                            <thead className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
                               <tr>
-                                <td colSpan={3} className="px-4 py-2 text-right text-gray-500">Phí khám:</td>
-                                <td className="px-4 py-2 text-right text-gray-500">{p.consultation_fee.toLocaleString('vi-VN')} đ</td>
+                                <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Tên thuốc</th>
+                                <th className="px-4 py-2.5 text-right font-semibold">SL</th>
+                                <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">Đơn giá</th>
+                                <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">Thành tiền</th>
                               </tr>
-                            )}
-                            <tr className="border-t border-gray-200 dark:border-gray-700">
-                              <td colSpan={3} className="px-4 py-3 text-right font-bold text-primary-600">Tổng cộng:</td>
-                              <td className="px-4 py-3 text-right font-bold text-primary-600 text-lg">{p.total_amount.toLocaleString('vi-VN')} đ</td>
-                            </tr>
-                          </tfoot>
-                        </table>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                              {p.prescription_details?.map((detail) => (
+                                <tr key={detail.id}>
+                                  <td className="px-4 py-2.5">
+                                    <div className="font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">{detail.medicines?.name}</div>
+                                    <div className="text-xs text-gray-500 whitespace-nowrap">{detail.medicines?.packing_spec}</div>
+                                  </td>
+                                  <td className="px-4 py-2.5 text-right font-medium">{detail.quantity}</td>
+                                  <td className="px-4 py-2.5 text-right text-gray-500 whitespace-nowrap">{(detail.unit_price || 0).toLocaleString('vi-VN')}</td>
+                                  <td className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">
+                                    {(detail.quantity * (detail.unit_price || 0)).toLocaleString('vi-VN')}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                            <tfoot className="bg-gray-50/50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700">
+                              <tr>
+                                <td colSpan={3} className="px-4 py-2 text-right text-gray-500 whitespace-nowrap">Tiền thuốc:</td>
+                                <td className="px-4 py-2 text-right font-bold whitespace-nowrap">{(p.total_amount - (p.consultation_fee || 0)).toLocaleString('vi-VN')} đ</td>
+                              </tr>
+                              {p.consultation_fee > 0 && (
+                                <tr>
+                                  <td colSpan={3} className="px-4 py-2 text-right text-gray-500 whitespace-nowrap">Phí khám:</td>
+                                  <td className="px-4 py-2 text-right text-gray-500 whitespace-nowrap">{p.consultation_fee.toLocaleString('vi-VN')} đ</td>
+                                </tr>
+                              )}
+                              <tr className="border-t border-gray-200 dark:border-gray-700">
+                                <td colSpan={3} className="px-4 py-3 text-right font-bold text-primary-600 whitespace-nowrap">Tổng cộng:</td>
+                                <td className="px-4 py-3 text-right font-bold text-primary-600 text-lg whitespace-nowrap">{p.total_amount.toLocaleString('vi-VN')} đ</td>
+                              </tr>
+                            </tfoot>
+                          </table>
+                        </div>
                        </div>
 
                        <div className="mb-6 p-4 bg-white dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm">

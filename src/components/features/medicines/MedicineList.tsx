@@ -146,12 +146,12 @@ export default function MedicineList({ initialData }: MedicineListProps) {
             <table className="w-full text-sm text-left">
               <thead className="bg-slate-50/50 dark:bg-slate-800/30 text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800">
                 <tr>
-                  <th className="px-6 py-5 font-bold tracking-tight">Tên thuốc</th>
-                  <th className="px-6 py-5 font-bold tracking-tight">Quy cách</th>
-                  <th className="px-6 py-5 font-bold tracking-tight text-right">Giá (VNĐ)</th>
-                  <th className="px-6 py-5 font-bold tracking-tight text-right">Tồn kho</th>
-                  <th className="px-6 py-5 font-bold tracking-tight text-center">Trạng thái</th>
-                  <th className="px-6 py-5 font-bold tracking-tight text-right">Thao tác</th>
+                  <th className="px-6 py-5 font-bold tracking-tight whitespace-nowrap">Tên thuốc</th>
+                  <th className="px-6 py-5 font-bold tracking-tight whitespace-nowrap">Quy cách</th>
+                  <th className="px-6 py-5 font-bold tracking-tight text-right whitespace-nowrap">Giá (VNĐ)</th>
+                  <th className="px-6 py-5 font-bold tracking-tight text-right whitespace-nowrap">Tồn kho</th>
+                  <th className="px-6 py-5 font-bold tracking-tight text-center whitespace-nowrap">Trạng thái</th>
+                  <th className="px-6 py-5 font-bold tracking-tight text-right whitespace-nowrap">Thao tác</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -160,14 +160,14 @@ export default function MedicineList({ initialData }: MedicineListProps) {
                   return (
                     <tr key={medicine.id} className="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all duration-200">
                       <td className="px-6 py-5">
-                        <div className="font-bold text-slate-900 dark:text-slate-100 group-hover:text-primary-600 transition-colors">
+                        <div className="font-bold text-slate-900 dark:text-slate-100 group-hover:text-primary-600 transition-colors whitespace-nowrap">
                           {medicine.name}
                         </div>
                       </td>
-                      <td className="px-6 py-5 text-slate-500 font-medium">
+                      <td className="px-6 py-5 text-slate-500 font-medium whitespace-nowrap">
                         {medicine.packing_spec || '-'}
                       </td>
-                      <td className="px-6 py-5 text-right font-bold text-slate-700 dark:text-slate-300">
+                      <td className="px-6 py-5 text-right font-bold text-slate-700 dark:text-slate-300 whitespace-nowrap">
                         {medicine.price.toLocaleString('vi-VN')}
                       </td>
                       <td className="px-6 py-5 text-right">
