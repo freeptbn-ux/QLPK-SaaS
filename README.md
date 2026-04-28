@@ -14,7 +14,7 @@ Dự án sử dụng kiến trúc **Multi-tenant** mạnh mẽ, đảm bảo tí
 - **Dashboard Phân Tích**: Theo dõi chỉ số quan trọng, doanh thu và lưu lượng bệnh nhân thông qua biểu đồ trực quan.
 - **Quản lý Bệnh Nhân**: Hồ sơ điện tử chi tiết, tra cứu lịch sử khám bệnh và tiểu sử bệnh lý chỉ trong vài giây.
 - **Kê Đơn Thông Minh**: Hệ thống tìm kiếm thuốc thông minh, hỗ trợ tính liều lượng theo cân nặng và tự động tính toán tổng chi phí.
-- **Kiểm Sốát Tồn Kho**: Quản lý xuất/nhập thuốc theo thời gian thực, cảnh báo khi thuốc sắp hết hạn hoặc dưới ngưỡng an toàn.
+- **Kiểm Soát Tồn Kho**: Quản lý xuất/nhập thuốc theo thời gian thực, cảnh báo khi thuốc sắp hết hạn hoặc dưới ngưỡng an toàn.
 - **Công Cụ Hỗ Trợ Lâm Sàng**: Tích hợp máy tính liều lượng thuốc (Dose Calculator) ngay tại màn hình làm việc.
 - **Trải Nghiệm Premium**: Giao diện Modern SaaS với hiệu ứng chuyển cảnh mượt mà, hỗ trợ tốt trên cả thiết bị di động.
 
@@ -68,7 +68,7 @@ Hệ thống được xây dựng trên nền tảng các công nghệ tiên ti�
 - `.brain`: Eternal Context - Lưu trữ toàn bộ tri thức, kế hoạch và lịch sử phát triển của dự án giúp AI hiểu ngữ cảnh sâu.
 
 ## ⚖️ Bản quyền
-**Copyright 2026 Nguyễn Duy Trường**
+Copyright 2026 Nguyễn Duy Trường
 
 ---
 *Dự án được xây dựng với tiêu chuẩn UI/UX cao cấp, tập trung vào trải nghiệm người dùng cuối.*

@@ -65,7 +65,7 @@ describe('Statistics Actions (RPC-based)', () => {
     const mockData = [{ name: '05/2024', revenue: 5000 }];
     mockSupabase.rpc.mockResolvedValue({ data: mockData, error: null });
 
-    const result = await statistics.getRevenueStats('2024-05');
+    const result = await statistics.getRevenueStats('month', '2024-05');
 
     expect(mockSupabase.rpc).toHaveBeenCalledWith('get_revenue_stats', { p_year_month: '2024-05' });
     expect(result).toEqual(mockData);

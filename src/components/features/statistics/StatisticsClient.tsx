@@ -66,12 +66,19 @@ export default function StatisticsClient({
     monthlyRevenue: number;
     lowStockCount: number;
   } | null>(initialOverview);
-  const [visitData, setVisitData] = useState<{ name: string; count: number }[]>([]);
-  const [revenueData, setRevenueData] = useState<{ name: string; revenue: number }[]>([]);
   const [genderData] = useState<{ name: string; value: number }[]>(initialGenderData);
-  const [dobData, setDobData] = useState<string[]>([]);
   const [locationData] = useState<{ name: string; count: number }[]>(initialLocationData);
-  const [medicineData, setMedicineData] = useState<{ name: string; totalQuantity: number; totalRevenue: number }[]>([]);
+  const [chartData, setChartData] = useState<{
+    visitData: { name: string; count: number }[];
+    revenueData: { name: string; revenue: number }[];
+    dobData: string[];
+    medicineData: { name: string; totalQuantity: number; totalRevenue: number }[];
+  }>({
+    visitData: [],
+    revenueData: [],
+    dobData: [],
+    medicineData: [],
+  });
 
   const fetchData = useCallback(async () => {
     try {
@@ -106,10 +113,13 @@ export default function StatisticsClient({
           getMedicineUsageStats(),
         ]);
       }
-      setVisitData(visits);
-      setRevenueData(revenue);
-      setDobData(dobs.filter((d: string | null): d is string => d !== null));
-      setMedicineData(medicines);
+      
+      setChartData({
+        visitData: visits,
+        revenueData: revenue,
+        dobData: dobs.filter((d: string | null): d is string => d !== null),
+        medicineData: medicines,
+      });
     } catch (error) {
       console.error('Error fetching statistics:', error);
     }
@@ -141,7 +151,7 @@ export default function StatisticsClient({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-8">
             <VisitChart 
-              data={visitData} 
+              data={chartData.visitData} 
               title={`Lượt khám ${timeRange === 'day' ? dayjs(selectedMonth).format('[Tháng] M, YYYY') : 
                 timeRange === 'week' ? '8 tuần gần nhất' : 
                 timeRange === 'month' ? '12 tháng gần nhất' : 'Theo năm'}`} 
@@ -153,21 +163,21 @@ export default function StatisticsClient({
           
           <div className="lg:col-span-8">
             <RevenueChart 
-              data={revenueData} 
+              data={chartData.revenueData} 
               title={`Doanh thu ${timeRange === 'day' ? dayjs(selectedMonth).format('[Tháng] M, YYYY') : 
                 timeRange === 'week' ? '8 tuần gần nhất' : 
                 timeRange === 'month' ? '12 tháng gần nhất' : 'Theo năm'}`} 
             />
           </div>
           <div className="lg:col-span-4">
-            <AgeGroupChart dobs={dobData} />
+            <AgeGroupChart dobs={chartData.dobData} />
           </div>
           
           <div className="lg:col-span-6">
             <TopLocations data={locationData} />
           </div>
           <div className="lg:col-span-6">
-            <MedicineUsageTable data={medicineData} />
+            <MedicineUsageTable data={chartData.medicineData} />
           </div>
         </div>
       </div>

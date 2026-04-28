@@ -80,7 +80,7 @@ export default function RevenueChart({ data, title }: RevenueChartProps) {
                 fillOpacity={1} 
                 fill="url(#colorRevenue)" 
                 strokeWidth={4}
-                animationDuration={1500}
+                animationDuration={800}
               />
             </AreaChart>
           </ResponsiveContainer>

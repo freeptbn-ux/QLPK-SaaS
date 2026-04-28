@@ -44,7 +44,7 @@ export async function searchPatients(term: string, page: number, pageSize: numbe
 
   let query = supabase
     .from('patients')
-    .select('*', { count: 'exact' });
+    .select('*', { count: 'estimated' });
 
   if (term) {
     // Search by normalized name or phone

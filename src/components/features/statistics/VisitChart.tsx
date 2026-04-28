@@ -63,11 +63,11 @@ export default function VisitChart({ data, title }: VisitChartProps) {
               <Bar 
                 dataKey="count" 
                 radius={[6, 6, 6, 6]} 
-                animationDuration={1500}
+                animationDuration={800}
                 barSize={data.length > 20 ? 8 : 32}
               >
-                {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill="#3b82f6" />
+                {data.map((entry) => (
+                  <Cell key={entry.name} fill="#3b82f6" />
                 ))}
               </Bar>
             </BarChart>
