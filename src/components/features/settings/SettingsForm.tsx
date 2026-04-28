@@ -10,6 +10,7 @@ import { updateMultipleSettings, changePassword } from '@/actions/settings';
 import { useThemeContext } from '@/theme/ThemeContext';
 import { cn } from '@/lib/utils/cn';
 import { HiOutlineDatabase } from 'react-icons/hi';
+import Loading from '@/components/Loading/Loading';
 
 const settingsSchema = z.object({
   clinic_name: z.string().min(1, 'Tên phòng khám là bắt buộc'),
@@ -181,10 +182,7 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
               className="btn-primary min-w-[200px] flex items-center justify-center gap-2 py-4 rounded-2xl shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 transition-all duration-500 group"
             >
               {isSubmitting ? (
-                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
+                <Loading variant="spinner" size="sm" delay={0} ariaLabel="Đang lưu..." className="text-white" />
               ) : (
                 <HiOutlineCheck className="w-5 h-5 group-hover:scale-125 transition-transform duration-300" />
               )}
@@ -294,10 +292,7 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                 className="w-full btn-outlined border-slate-200 hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/10 flex items-center justify-center gap-2 mt-4 py-3 rounded-xl transition-all duration-300 font-bold uppercase tracking-widest text-[11px]"
               >
                 {isChangingPassword ? (
-                  <svg className="animate-spin h-4 w-4 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
+                  <Loading variant="spinner" size="sm" delay={0} ariaLabel="Đang đổi mật khẩu..." className="text-primary-600" />
                 ) : null}
                 Đổi mật khẩu truy cập
               </button>

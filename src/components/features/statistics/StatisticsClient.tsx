@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import PageHeader from '@/components/ui/PageHeader';
+import Loading from '@/components/Loading/Loading';
 import StatsOverview from '@/components/features/statistics/StatsOverview';
 import StatsFilter from '@/components/features/statistics/StatsFilter';
 import TopLocations from '@/components/features/statistics/TopLocations';
@@ -18,30 +19,24 @@ import {
 } from '@/actions/statistics';
 import dayjs from 'dayjs';
 
-function ChartSkeleton() {
-  return (
-    <div className="h-[400px] w-full animate-pulse bg-gray-100 dark:bg-gray-800/50 rounded-2xl border border-gray-200 dark:border-gray-800" />
-  );
-}
-
 const VisitChart = dynamic(
   () => import('@/components/features/statistics/VisitChart'),
-  { ssr: false, loading: () => <ChartSkeleton /> }
+  { ssr: false, loading: () => <Loading variant="skeleton" delay={0} className="h-[400px] w-full rounded-2xl border border-slate-200 dark:border-slate-800" /> }
 );
 
 const RevenueChart = dynamic(
   () => import('@/components/features/statistics/RevenueChart'),
-  { ssr: false, loading: () => <ChartSkeleton /> }
+  { ssr: false, loading: () => <Loading variant="skeleton" delay={0} className="h-[400px] w-full rounded-2xl border border-slate-200 dark:border-slate-800" /> }
 );
 
 const GenderPieChart = dynamic(
   () => import('@/components/features/statistics/GenderPieChart'),
-  { ssr: false, loading: () => <ChartSkeleton /> }
+  { ssr: false, loading: () => <Loading variant="skeleton" delay={0} className="h-[400px] w-full rounded-2xl border border-slate-200 dark:border-slate-800" /> }
 );
 
 const AgeGroupChart = dynamic(
   () => import('@/components/features/statistics/AgeGroupChart'),
-  { ssr: false, loading: () => <ChartSkeleton /> }
+  { ssr: false, loading: () => <Loading variant="skeleton" delay={0} className="h-[400px] w-full rounded-2xl border border-slate-200 dark:border-slate-800" /> }
 );
 
 interface StatisticsClientProps {
@@ -77,38 +72,36 @@ export default function StatisticsClient({
   const [dobData, setDobData] = useState<string[]>([]);
   const [locationData] = useState<{ name: string; count: number }[]>(initialLocationData);
   const [medicineData, setMedicineData] = useState<{ name: string; totalQuantity: number; totalRevenue: number }[]>([]);
-  const [, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
-    setLoading(true);
     try {
       // Time range specific data
       let visits, revenue, dobs, medicines;
       if (timeRange === 'day') {
         [visits, revenue, dobs, medicines] = await Promise.all([
           getStatsByDayForMonth(selectedMonth),
-          getRevenueStats(selectedMonth),
+          getRevenueStats('day', selectedMonth),
           getPatientDobsByTime('month', selectedMonth),
           getMedicineUsageStats(selectedMonth),
         ]);
       } else if (timeRange === 'week') {
         [visits, revenue, dobs, medicines] = await Promise.all([
           getStatsByWeek(),
-          getRevenueStats(),
+          getRevenueStats('week'),
           getPatientDobsByTime('all', ''),
           getMedicineUsageStats(),
         ]);
       } else if (timeRange === 'month') {
         [visits, revenue, dobs, medicines] = await Promise.all([
           getStatsByMonth(),
-          getRevenueStats(),
+          getRevenueStats('month'),
           getPatientDobsByTime('all', ''),
           getMedicineUsageStats(),
         ]);
       } else {
         [visits, revenue, dobs, medicines] = await Promise.all([
           getStatsByYear(),
-          getRevenueStats(),
+          getRevenueStats('year'),
           getPatientDobsByTime('all', ''),
           getMedicineUsageStats(),
         ]);
@@ -119,8 +112,6 @@ export default function StatisticsClient({
       setMedicineData(medicines);
     } catch (error) {
       console.error('Error fetching statistics:', error);
-    } finally {
-      setLoading(false);
     }
   }, [timeRange, selectedMonth]);
 
@@ -151,7 +142,7 @@ export default function StatisticsClient({
           <div className="lg:col-span-8">
             <VisitChart 
               data={visitData} 
-              title={`Lượt khám ${timeRange === 'day' ? `tháng ${selectedMonth}` : 
+              title={`Lượt khám ${timeRange === 'day' ? dayjs(selectedMonth).format('[Tháng] M, YYYY') : 
                 timeRange === 'week' ? '8 tuần gần nhất' : 
                 timeRange === 'month' ? '12 tháng gần nhất' : 'Theo năm'}`} 
             />
@@ -163,7 +154,9 @@ export default function StatisticsClient({
           <div className="lg:col-span-8">
             <RevenueChart 
               data={revenueData} 
-              title="Doanh thu (Đơn thuốc + Phí khám)" 
+              title={`Doanh thu ${timeRange === 'day' ? dayjs(selectedMonth).format('[Tháng] M, YYYY') : 
+                timeRange === 'week' ? '8 tuần gần nhất' : 
+                timeRange === 'month' ? '12 tháng gần nhất' : 'Theo năm'}`} 
             />
           </div>
           <div className="lg:col-span-4">

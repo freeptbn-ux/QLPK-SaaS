@@ -16,7 +16,7 @@ import PatientFormDialog from './PatientFormDialog';
 import MergePatientDialog from './MergePatientDialog';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import EmptyState from '@/components/ui/EmptyState';
-import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
+import Loading from '@/components/Loading/Loading';
 import Link from 'next/link';
 import { formatAge } from '@/lib/utils/age';
 
@@ -152,7 +152,11 @@ export default function PatientList() {
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {loading ? (
-                <LoadingSkeleton columns={8} rows={10} />
+                <tr>
+                  <td colSpan={8} className="p-0 border-none">
+                    <Loading variant="skeleton" isLoading={true} delay={0} className="h-[500px] w-full rounded-none" ariaLabel="Đang tải danh sách bệnh nhân..." />
+                  </td>
+                </tr>
               ) : patients.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="px-4 py-12 text-center">
@@ -224,7 +228,7 @@ export default function PatientList() {
           {loading ? (
              <div className="p-4 space-y-4">
                 {[...Array(3)].map((_, i) => (
-                  <div key={i} className="h-24 bg-gray-100 dark:bg-gray-800 animate-pulse rounded-xl" />
+                  <Loading key={i} variant="skeleton" isLoading={true} delay={0} className="h-24 w-full" />
                 ))}
              </div>
           ) : patients.length === 0 ? (

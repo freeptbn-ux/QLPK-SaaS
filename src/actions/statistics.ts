@@ -11,6 +11,8 @@ export async function getDistinctMonthsYears() {
     throw new Error(error.message);
   }
 
+  // Assumption: the RPC 'get_distinct_months_years' returns objects with a 'month' property 
+  // in 'YYYY-MM' format. If the DB schema changes, this mapping must be updated.
   return (data || []).map((item: { month: string }) => item.month);
 }
 
@@ -106,7 +108,9 @@ export async function getPatientDobsByTime(filterType: string, timeValue: string
     throw new Error(error.message);
   }
 
-  return (data || []).map((item: { dob: string | null }) => item.dob);
+  return (data || [])
+    .map((item: { dob: string | null }) => item.dob)
+    .filter((dob: string | null): dob is string => dob !== null);
 }
 
 export async function getMedicineUsageStats(yearMonth?: string) {
@@ -123,10 +127,15 @@ export async function getMedicineUsageStats(yearMonth?: string) {
   return data || [];
 }
 
-export async function getRevenueStats(yearMonth?: string) {
+export async function getRevenueStats(timeRange: string = 'month', selectedMonth?: string) {
   const supabase = await createClient();
+  
+  // Logic: if timeRange is 'month' or 'day', use selectedMonth (format: YYYY-MM)
+  // Currently, the RPC 'get_revenue_stats' only supports filtering by month.
+  const p_year_month = (timeRange === 'month' || timeRange === 'day') ? selectedMonth : null;
+
   const { data, error } = await supabase.rpc('get_revenue_stats', {
-    p_year_month: yearMonth || null,
+    p_year_month: p_year_month || null,
   });
 
   if (error) {
@@ -141,7 +150,8 @@ export async function getOverviewStats() {
   const supabase = await createClient();
   
   const now = new Date();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+  // Use YYYY-MM-DD format to avoid timezone offset issues when comparing in Postgres
+  const startOfMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
   
   const results = await Promise.all([
     supabase.from('patients').select('*', { count: 'estimated', head: true }),
