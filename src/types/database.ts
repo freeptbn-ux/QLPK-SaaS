@@ -56,3 +56,15 @@ export interface Setting {
   key: string;
   value: string;
 }
+
+export interface InventoryTransactionLog {
+  id: number;
+  clinic_id: number;
+  medicine_id: number;
+  user_id: string | null;
+  old_quantity: number;
+  new_quantity: number;
+  adjustment: number;
+  reason: string | null;
+  created_at: string;
+}

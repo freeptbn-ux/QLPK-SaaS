@@ -1,5 +1,5 @@
 # Phase 02: RLS Redesign
-Status: ⬜ Pending
+Status: ✅ Completed
 Dependencies: Phase 01
 
 ## Objective
@@ -7,13 +7,13 @@ Thiết kế lại hệ thống Row Level Security (RLS) để thắt chặt quy
 
 ## Requirements
 ### Security
-- [ ] Mỗi bảng chỉ cho phép truy cập/sửa đổi bởi user hợp lệ.
-- [ ] Giới hạn quyền theo role (Admin/Doctor/Staff) hoặc tenant (clinic_id) thay vì chỉ kiểm tra `authenticated`.
+- [x] Mỗi bảng chỉ cho phép truy cập/sửa đổi bởi user hợp lệ.
+- [x] Giới hạn quyền theo role (Admin/Doctor/Staff) hoặc tenant (clinic_id) thay vì chỉ kiểm tra `authenticated`.
 
 ## Implementation Steps
-1. [ ] Viết migration mới để xóa bỏ các policy `USING (true)` trên bảng `patients`, `medicines`, `prescriptions_header`, `prescription_details`, `settings`.
-2. [ ] Thêm các RLS policy mới yêu cầu kiểm tra user ID hoặc role (Ví dụ: `auth.uid() = ...` hoặc gọi function check role).
-3. [ ] (Tuỳ chọn) Thiết lập cấu trúc phân quyền (Role-based) cho user.
+1. [x] Viết migration mới để xóa bỏ các policy `USING (true)` trên bảng `patients`, `medicines`, `prescriptions_header`, `prescription_details`, `settings`.
+2. [x] Thêm các RLS policy mới yêu cầu kiểm tra user ID hoặc role (Ví dụ: `auth.uid() = ...` hoặc gọi function check role).
+3. [x] (Tuỳ chọn) Thiết lập cấu trúc phân quyền (Role-based) cho user.
 
 ## Files to Create/Modify
 - `supabase/migrations/YYYYMMDD_fix_rls_policies.sql` - Migration script mới.

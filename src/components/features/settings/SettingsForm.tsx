@@ -7,7 +7,6 @@ import * as z from 'zod';
 import { HiOutlineCheck, HiOutlineKey, HiOutlineComputerDesktop, HiOutlineCurrencyDollar } from 'react-icons/hi2';
 import { useToast } from '@/hooks/useToast';
 import { updateMultipleSettings, changePassword } from '@/actions/settings';
-import { runDatabaseMigration } from '@/actions/system';
 import { useThemeContext } from '@/theme/ThemeContext';
 import { cn } from '@/lib/utils/cn';
 import { HiOutlineDatabase } from 'react-icons/hi';
@@ -39,7 +38,6 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
   const { mode, toggleTheme } = useThemeContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
-  const [isMigrating, setIsMigrating] = useState(false);
 
   const {
     register,
@@ -91,25 +89,6 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
       showToast(err.message || 'Lỗi khi đổi mật khẩu', 'error');
     } finally {
       setIsChangingPassword(false);
-    }
-  };
-
-  const onRunMigration = async () => {
-    if (!confirm('Bạn có chắc chắn muốn chạy migration? Việc này sẽ cập nhật database và gỡ bỏ ràng buộc trùng lặp để test.')) return;
-    
-    setIsMigrating(true);
-    try {
-      const result = await runDatabaseMigration();
-      if (result.success) {
-        showToast('Migration thành công!', 'success');
-      } else {
-        showToast('Lỗi migration: ' + result.error, 'error');
-      }
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      showToast('Lỗi kết nối: ' + message, 'error');
-    } finally {
-      setIsMigrating(false);
     }
   };
 
@@ -228,37 +207,6 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                     mode === 'dark' ? "translate-x-6" : "translate-x-1"
                   )}
                 />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="card border-amber-200 dark:border-amber-900/50">
-          <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center gap-2">
-            <HiOutlineDatabase className="w-5 h-5 text-amber-600" />
-            <h3 className="text-base font-bold text-gray-900 dark:text-white">
-              Hệ thống & Bảo trì
-            </h3>
-          </div>
-          <div className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <p className="text-sm font-bold text-gray-900 dark:text-white">Chạy Database Migration</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Cập nhật RPC, sửa lỗi cache schema và gỡ bỏ unique constraint để test gộp hồ sơ.</p>
-              </div>
-              <button
-                onClick={onRunMigration}
-                disabled={isMigrating}
-                type="button"
-                className="btn-outlined border-amber-300 text-amber-700 hover:bg-amber-50 dark:border-amber-800 dark:text-amber-500 dark:hover:bg-amber-900/20 flex items-center gap-2"
-              >
-                {isMigrating ? (
-                  <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                ) : <HiOutlineDatabase className="w-4 h-4" />}
-                Chạy Migration
               </button>
             </div>
           </div>

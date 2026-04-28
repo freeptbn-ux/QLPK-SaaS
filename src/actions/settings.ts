@@ -2,9 +2,20 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
+import { getGenericErrorMessage } from '@/lib/error-handler';
+ 
+const ALLOWED_SETTING_KEYS = [
+  'consultation_fee',
+  'drug_presets',
+  'clinic_name',
+  'clinic_address',
+  'clinic_phone'
+];
 
 export async function getAllSettings(): Promise<Record<string, string>> {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Unauthorized');
   const { data, error } = await supabase
     .from('settings')
     .select('key, value');
@@ -22,13 +33,19 @@ export async function getAllSettings(): Promise<Record<string, string>> {
 
 export async function updateSetting(key: string, value: string) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Unauthorized');
+
+  if (!ALLOWED_SETTING_KEYS.includes(key)) {
+    throw new Error(`Setting key "${key}" is not allowed`);
+  }
+
   const { error } = await supabase
     .from('settings')
     .upsert({ key, value }, { onConflict: 'key' });
 
   if (error) {
-    console.error(`Error updating setting ${key}:`, error);
-    throw new Error(`Failed to update setting ${key}`);
+    throw new Error(getGenericErrorMessage(error));
   }
 
   revalidatePath('/settings');
@@ -36,18 +53,24 @@ export async function updateSetting(key: string, value: string) {
 
 export async function updateMultipleSettings(settings: Record<string, string>) {
   const supabase = await createClient();
-  const upsertData = Object.entries(settings).map(([key, value]) => ({
-    key,
-    value,
-  }));
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Unauthorized');
+
+  const upsertData = Object.entries(settings)
+    .filter(([key]) => ALLOWED_SETTING_KEYS.includes(key))
+    .map(([key, value]) => ({
+      key,
+      value,
+    }));
+
+  if (upsertData.length === 0) return;
 
   const { error } = await supabase
     .from('settings')
     .upsert(upsertData, { onConflict: 'key' });
 
   if (error) {
-    console.error('Error updating multiple settings:', error);
-    throw new Error('Failed to update multiple settings');
+    throw new Error(getGenericErrorMessage(error));
   }
 
   revalidatePath('/settings');
@@ -55,23 +78,32 @@ export async function updateMultipleSettings(settings: Record<string, string>) {
 
 export async function changePassword(currentPassword: string, newPassword: string) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Unauthorized');
 
-  // Supabase doesn't have a direct "verify password before change" in a single call easily for the current user's password if they are logged in via email/pass without signing in again, 
-  // but we can try to update and it will fail if session is invalid or user is not auth'd.
-  // Actually, for password change, the user needs to be authenticated.
-  
+  // Verify old password by re-signing in
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: user.email!,
+    password: currentPassword,
+  });
+
+  if (signInError) {
+    throw new Error('Mật khẩu hiện tại không chính xác');
+  }
+
   const { error } = await supabase.auth.updateUser({
     password: newPassword
   });
 
   if (error) {
-    console.error('Error changing password:', error);
-    throw new Error(error.message);
+    throw new Error(getGenericErrorMessage(error));
   }
 }
 
 export async function getDrugPresets() {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Unauthorized');
   const { data, error } = await supabase
     .from('settings')
     .select('value')
@@ -91,13 +123,14 @@ export async function getDrugPresets() {
 
 export async function saveDrugPresets(presets: unknown[]) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Unauthorized');
   const { error } = await supabase
     .from('settings')
     .upsert({ key: 'drug_presets', value: JSON.stringify(presets) }, { onConflict: 'key' });
 
   if (error) {
-    console.error('Error saving drug presets:', error);
-    throw new Error('Failed to save drug presets');
+    throw new Error(getGenericErrorMessage(error));
   }
 
   revalidatePath('/dose-calculator');

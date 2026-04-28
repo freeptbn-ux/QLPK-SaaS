@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useMemo, useCallback } from 'react';
-import { HiOutlineCheck, HiOutlineArrowLeft } from 'react-icons/hi2';
+import { HiOutlineCheck, HiOutlineArrowLeft, HiOutlineCalculator } from 'react-icons/hi2';
 import { useRouter } from 'next/navigation';
 import MedicineAutocomplete from './MedicineAutocomplete';
+import DoseCalculator from '../dose-calculator/DoseCalculator';
 import PrescriptionItemRow from './PrescriptionItemRow';
 import { PrescriptionItem, CreatePrescriptionData } from '@/types/forms';
 import { Patient, Medicine } from '@/types/database';
@@ -24,6 +25,7 @@ export default function PrescriptionForm({ patient, consultationFee }: Prescript
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showCalculator, setShowCalculator] = useState(false);
 
   const handleAddMedicine = useCallback((medicine: Medicine | null) => {
     if (!medicine) return;
@@ -128,9 +130,30 @@ export default function PrescriptionForm({ patient, consultationFee }: Prescript
                   </div>
 
                   <div className="space-y-3">
-                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                      Chọn thuốc
-                    </label>
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                        Chọn thuốc
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setShowCalculator(!showCalculator)}
+                        className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-primary-600 bg-primary-50 hover:bg-primary-100 dark:text-primary-400 dark:bg-primary-900/20 dark:hover:bg-primary-900/30 rounded-lg transition-colors"
+                      >
+                        <HiOutlineCalculator className="w-4 h-4" />
+                        {showCalculator ? 'Đóng tính liều' : 'Tính liều nhanh'}
+                      </button>
+                    </div>
+                    
+                    {showCalculator && (
+                      <div className="p-4 bg-gray-50/50 dark:bg-slate-800/30 border border-gray-100 dark:border-gray-800 rounded-2xl animate-in fade-in slide-in-from-top-2 duration-300">
+                        <DoseCalculator 
+                          initialWeight={patient.weight || undefined} 
+                          initialTimesPerDay={2} 
+                          isEmbedded={true} 
+                        />
+                      </div>
+                    )}
+
                     <MedicineAutocomplete
                       onSelect={handleAddMedicine}
                       excludeIds={items.map((i) => i.medicine_id)}

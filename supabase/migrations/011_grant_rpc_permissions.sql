@@ -1,12 +1,12 @@
--- Phase 01: Grant RPC Permissions (Robust Version)
--- Objective: Cấp quyền EXECUTE cho anon và authenticated mà không bị lỗi signature mismatch
+-- Phase 01: Grant RPC Permissions (Secure Version)
+-- Objective: Chỉ cấp quyền EXECUTE cho authenticated users
 
 -- 1. Cấp quyền trên toàn bộ các hàm hiện có trong schema public
--- Đây là cách an toàn và bao phủ tất cả các RPC functions
-GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO anon, authenticated;
+-- Chỉ cho phép người dùng đã đăng nhập thực thi các hàm
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO authenticated;
 
--- 2. Đảm bảo các hàm được tạo trong tương lai cũng tự động có quyền này
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT EXECUTE ON FUNCTIONS TO anon, authenticated;
+-- 2. Đảm bảo các hàm được tạo trong tương lai cũng chỉ cấp quyền cho authenticated
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT EXECUTE ON FUNCTIONS TO authenticated;
 
 -- 3. Reload PostgREST schema cache
 NOTIFY pgrst, 'reload schema';

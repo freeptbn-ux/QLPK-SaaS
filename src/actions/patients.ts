@@ -9,9 +9,12 @@ import { revalidatePath } from 'next/cache';
 import { patientFormSchema } from '@/lib/validations/patient';
 import { formatZodError } from '@/lib/validations/helpers';
 import { cache } from 'react';
+import { getGenericErrorMessage } from '@/lib/error-handler';
 
 export async function getPatientsPaginated(page: number, pageSize: number) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Unauthorized');
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
@@ -22,8 +25,7 @@ export async function getPatientsPaginated(page: number, pageSize: number) {
     .range(from, to);
 
   if (error) {
-    console.error('Error fetching patients:', error);
-    throw new Error('Failed to fetch patients');
+    throw new Error(getGenericErrorMessage(error));
   }
 
   return { data: data as Patient[], count };
@@ -31,6 +33,8 @@ export async function getPatientsPaginated(page: number, pageSize: number) {
 
 export async function searchPatients(term: string, page: number, pageSize: number) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Unauthorized');
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
@@ -52,8 +56,7 @@ export async function searchPatients(term: string, page: number, pageSize: numbe
     .range(from, to);
 
   if (error) {
-    console.error('Error searching patients:', error);
-    throw new Error('Failed to search patients');
+    throw new Error(getGenericErrorMessage(error));
   }
 
   return { data: data as Patient[], count };
@@ -61,6 +64,8 @@ export async function searchPatients(term: string, page: number, pageSize: numbe
 
 export const getPatientById = cache(async (id: number) => {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Unauthorized');
 
   // Fetch patient info separately
   const { data: patient, error: pErr } = await supabase
@@ -95,6 +100,8 @@ export async function getPatientPrescriptionsPaginated(
   pageSize: number = 10
 ) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Unauthorized');
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
@@ -106,8 +113,7 @@ export async function getPatientPrescriptionsPaginated(
     .range(from, to);
 
   if (error) {
-    console.error('Error fetching paginated prescriptions:', error);
-    throw new Error('Failed to fetch prescriptions');
+    throw new Error(getGenericErrorMessage(error));
   }
 
   return { 
@@ -119,6 +125,8 @@ export async function getPatientPrescriptionsPaginated(
 
 export async function addPatient(rawData: PatientFormData) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Unauthorized');
 
   // Validate and whitelist fields
   const validation = patientFormSchema.safeParse(rawData);
@@ -143,8 +151,7 @@ export async function addPatient(rawData: PatientFormData) {
   });
 
   if (error) {
-    console.error('Error in upsert_patient:', error);
-    throw new Error('Failed to add/update patient');
+    throw new Error(getGenericErrorMessage(error));
   }
 
   // result is returned from RPC as { patient_data: jsonb, is_existing: boolean }
@@ -156,6 +163,8 @@ export async function addPatient(rawData: PatientFormData) {
 
 export async function updatePatient(id: number, rawData: PatientFormData) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Unauthorized');
 
   // Validate and whitelist fields
   const validation = patientFormSchema.safeParse(rawData);
@@ -185,8 +194,7 @@ export async function updatePatient(id: number, rawData: PatientFormData) {
     .single();
 
   if (error) {
-    console.error('Error updating patient:', error);
-    throw new Error('Failed to update patient');
+    throw new Error(getGenericErrorMessage(error));
   }
 
   revalidatePath('/patients');
@@ -196,6 +204,8 @@ export async function updatePatient(id: number, rawData: PatientFormData) {
 
 export async function deletePatient(id: number) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Unauthorized');
 
   const { error } = await supabase
     .from('patients')
@@ -203,8 +213,7 @@ export async function deletePatient(id: number) {
     .eq('id', id);
 
   if (error) {
-    console.error('Error deleting patient:', error);
-    throw new Error('Failed to delete patient');
+    throw new Error(getGenericErrorMessage(error));
   }
 
   revalidatePath('/patients');
@@ -213,6 +222,8 @@ export async function deletePatient(id: number) {
 
 export async function getTotalPatientCount() {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Unauthorized');
 
   const { count, error } = await supabase
     .from('patients')
@@ -228,6 +239,8 @@ export async function getTotalPatientCount() {
 
 export async function getMedicineUsageByPatient(patientId: number) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Unauthorized');
 
   // Lấy tất cả chi tiết đơn thuốc của bệnh nhân này
   const { data, error } = await supabase
@@ -270,6 +283,8 @@ export async function getMedicineUsageByPatient(patientId: number) {
 
 export async function getPotentialDuplicates() {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Unauthorized');
 
   const { data, error } = await supabase.rpc('get_potential_duplicates');
 
@@ -290,6 +305,8 @@ export async function getPotentialDuplicates() {
 
 export async function mergePatients(masterId: number, duplicateIds: number[]) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Unauthorized');
 
   // duplicateIds should not include masterId
   const idsToDelete = duplicateIds.filter(id => id !== masterId);

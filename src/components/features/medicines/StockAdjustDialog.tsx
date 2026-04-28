@@ -16,6 +16,7 @@ interface StockAdjustDialogProps {
 
 export default function StockAdjustDialog({ open, onClose, medicine, onSuccess }: StockAdjustDialogProps) {
   const [adjustment, setAdjustment] = useState<number>(0);
+  const [reason, setReason] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,6 +24,7 @@ export default function StockAdjustDialog({ open, onClose, medicine, onSuccess }
     if (open) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setAdjustment(0);
+      setReason('');
       setError(null);
     }
   }, [open]);
@@ -30,20 +32,23 @@ export default function StockAdjustDialog({ open, onClose, medicine, onSuccess }
   if (!medicine) return null;
 
   const handleAdjust = async () => {
+    if (adjustment === 0) {
+      setError('Vui lòng nhập số lượng thay đổi');
+      return;
+    }
+    if (!reason.trim()) {
+      setError('Vui lòng nhập lý do điều chỉnh');
+      return;
+    }
+
     setLoading(true);
     setError(null);
     try {
-      const newQuantity = medicine.stock_quantity + adjustment;
-      if (newQuantity < 0) {
-        setError('Số lượng tồn kho không thể âm');
-        setLoading(false);
-        return;
-      }
-      await updateMedicineStock(medicine.id, newQuantity);
+      await updateMedicineStock(medicine.id, adjustment, reason);
       onSuccess();
       onClose();
-    } catch {
-      setError('Không thể cập nhật tồn kho');
+    } catch (err: any) {
+      setError(err.message || 'Không thể cập nhật tồn kho');
     } finally {
       setLoading(false);
     }
@@ -94,17 +99,30 @@ export default function StockAdjustDialog({ open, onClose, medicine, onSuccess }
                     onChange={(e) => setAdjustment(parseInt(e.target.value) || 0)}
                     className={cn(
                       "input-field pl-8 bg-white dark:bg-slate-900",
-                      error && "border-red-500 focus:ring-red-500/20"
+                      error && !adjustment && "border-red-500 focus:ring-red-500/20"
                     )}
                   />
                 </div>
                 <p className="text-[10px] text-gray-400 font-medium italic">Nhập số dương để tăng, số âm để giảm</p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Lý do điều chỉnh</label>
+                <textarea
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  placeholder="VD: Nhập thêm hàng, Kiểm kê bù, Hủy thuốc hỏng..."
+                  className={cn(
+                    "input-field min-h-[80px] py-2 resize-none bg-white dark:bg-slate-900 text-sm",
+                    error && !reason.trim() && "border-red-500 focus:ring-red-500/20"
+                  )}
+                />
                 {error && <p className="text-xs font-medium text-red-500">{error}</p>}
               </div>
 
               <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-800">
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Tồn kho mới: <span className="font-bold text-gray-900 dark:text-white text-base ml-1">{medicine.stock_quantity + adjustment}</span>
+                  Tồn kho mới (dự kiến): <span className="font-bold text-gray-900 dark:text-white text-base ml-1">{medicine.stock_quantity + adjustment}</span>
                 </p>
               </div>
             </div>

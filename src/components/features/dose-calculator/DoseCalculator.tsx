@@ -12,15 +12,25 @@ interface DrugPreset {
   dose: number;
 }
 
-export default function DoseCalculator() {
+interface DoseCalculatorProps {
+  initialWeight?: string | number;
+  initialTimesPerDay?: number;
+  isEmbedded?: boolean;
+}
+
+export default function DoseCalculator({ 
+  initialWeight, 
+  initialTimesPerDay = 2,
+  isEmbedded = false
+}: DoseCalculatorProps) {
   const [presets, setPresets] = useState<DrugPreset[]>([]);
   const [selectedPreset, setSelectedPreset] = useState<string>('');
   
   const [mg, setMg] = useState<string>('');
   const [ml, setMl] = useState<string>('');
   const [dosePerKg, setDosePerKg] = useState<string>('');
-  const [weight, setWeight] = useState<string>('');
-  const [timesPerDay, setTimesPerDay] = useState<number>(3);
+  const [weight, setWeight] = useState<string>(initialWeight?.toString() || '');
+  const [timesPerDay, setTimesPerDay] = useState<number>(initialTimesPerDay);
   
   const [result, setResult] = useState<{ mlPerTime: string; totalMl: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -64,15 +74,17 @@ export default function DoseCalculator() {
   };
 
   return (
-    <div className="card max-w-3xl mx-auto overflow-hidden">
-      <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-primary-50/30 dark:bg-primary-900/10">
-        <h3 className="text-xl font-bold text-primary-600 dark:text-primary-400 flex items-center gap-3">
-          <HiOutlineCalculator className="w-6 h-6" /> 
-          Công cụ tính liều
-        </h3>
-      </div>
+    <div className={cn("max-w-3xl mx-auto overflow-hidden", !isEmbedded && "card")}>
+      {!isEmbedded && (
+        <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-primary-50/30 dark:bg-primary-900/10">
+          <h3 className="text-xl font-bold text-primary-600 dark:text-primary-400 flex items-center gap-3">
+            <HiOutlineCalculator className="w-6 h-6" /> 
+            Công cụ tính liều
+          </h3>
+        </div>
+      )}
 
-      <div className="p-8 space-y-8">
+      <div className={cn("space-y-8", isEmbedded ? "p-4" : "p-8")}>
         <div className="space-y-2">
           <label className="text-sm font-bold text-gray-400 uppercase tracking-widest">
             Chọn từ danh mục thuốc mẫu

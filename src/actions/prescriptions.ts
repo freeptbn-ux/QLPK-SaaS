@@ -5,9 +5,12 @@ import { CreatePrescriptionData, PrescriptionItem, UpdatePrescriptionData } from
 import { revalidatePath } from 'next/cache';
 import { createPrescriptionSchema, updatePrescriptionSchema } from '@/lib/validations/prescription';
 import { formatZodError } from '@/lib/validations/helpers';
+import { getGenericErrorMessage } from '@/lib/error-handler';
 
 export async function createPrescription(rawData: CreatePrescriptionData) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Unauthorized');
 
   // Validate and whitelist
   const validation = createPrescriptionSchema.safeParse(rawData);
@@ -32,8 +35,7 @@ export async function createPrescription(rawData: CreatePrescriptionData) {
   });
 
   if (error) {
-    console.error('Error creating prescription:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: getGenericErrorMessage(error) };
   }
 
   revalidatePath(`/patients/${data.patient_id}`);
@@ -42,6 +44,8 @@ export async function createPrescription(rawData: CreatePrescriptionData) {
 
 export async function appendToPrescription(prescriptionId: number, items: PrescriptionItem[], patientId: number) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Unauthorized');
 
   const { error } = await supabase.rpc('append_to_prescription', {
     p_header_id: prescriptionId,
@@ -49,8 +53,7 @@ export async function appendToPrescription(prescriptionId: number, items: Prescr
   });
 
   if (error) {
-    console.error('Error appending to prescription:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: getGenericErrorMessage(error) };
   }
 
   revalidatePath(`/patients/${patientId}`);
@@ -59,6 +62,8 @@ export async function appendToPrescription(prescriptionId: number, items: Prescr
 
 export async function getPrescriptionsByPatient(patientId: number) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Unauthorized');
 
   const { data, error } = await supabase
     .from('prescriptions_header')
@@ -85,6 +90,8 @@ export async function getPrescriptionsByPatient(patientId: number) {
 
 export async function getLatestPrescriptionId(patientId: number) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Unauthorized');
 
   // Get prescriptions created today
   const today = new Date();
@@ -107,6 +114,8 @@ export async function getLatestPrescriptionId(patientId: number) {
 
 export async function getConsultationFee() {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Unauthorized');
 
   const { data, error } = await supabase
     .from('settings')
@@ -124,14 +133,15 @@ export async function getConsultationFee() {
 
 export async function deletePrescription(prescriptionId: number, patientId: number) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Unauthorized');
 
   const { error } = await supabase.rpc('delete_prescription', {
     p_prescription_id: prescriptionId
   });
 
   if (error) {
-    console.error('Error deleting prescription:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: getGenericErrorMessage(error) };
   }
 
   revalidatePath(`/patients/${patientId}`);
@@ -140,6 +150,8 @@ export async function deletePrescription(prescriptionId: number, patientId: numb
 
 export async function updatePrescription(rawData: UpdatePrescriptionData) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Unauthorized');
 
   // Validate
   const validation = updatePrescriptionSchema.safeParse(rawData);
@@ -163,8 +175,7 @@ export async function updatePrescription(rawData: UpdatePrescriptionData) {
   });
 
   if (error) {
-    console.error('Error updating prescription:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: getGenericErrorMessage(error) };
   }
 
   // Fetch updated data to return to client

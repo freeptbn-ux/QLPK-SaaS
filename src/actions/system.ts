@@ -4,6 +4,18 @@ import { Client } from 'pg';
 import path from 'path';
 import fs from 'fs/promises';
 
+/**
+ * VÔ HIỆU HÓA: Migration không được phép chạy từ UI/Client vì lý do bảo mật.
+ * Việc chạy migration phải được thực hiện thông qua CLI hoặc CI/CD pipeline an toàn.
+ */
+export async function runDatabaseMigration() {
+  return { 
+    success: false, 
+    error: 'Chức năng này đã bị vô hiệu hóa vì lý do bảo mật. Vui lòng sử dụng Supabase CLI.' 
+  };
+}
+
+/*
 export async function runDatabaseMigration() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const dbPassword = process.env.DB_PASSWORD;
@@ -67,3 +79,4 @@ export async function runDatabaseMigration() {
     return { success: false, error: message };
   }
 }
+*/

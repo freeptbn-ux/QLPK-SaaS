@@ -2,9 +2,10 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { Medicine } from '@/types/database';
-import { medicineFormSchema } from '@/lib/validations/medicine';
+import { medicineFormSchema, stockAdjustmentSchema } from '@/lib/validations/medicine';
 import { formatZodError } from '@/lib/validations/helpers';
 import { revalidatePath } from 'next/cache';
+import { getGenericErrorMessage } from '@/lib/error-handler';
 
 export async function getAllMedicines() {
   const supabase = await createClient();
@@ -15,8 +16,7 @@ export async function getAllMedicines() {
     .order('name', { ascending: true });
 
   if (error) {
-    console.error('Error fetching medicines:', error);
-    throw new Error('Failed to fetch medicines');
+    throw new Error(getGenericErrorMessage(error));
   }
 
   return data as Medicine[];
@@ -39,11 +39,7 @@ export async function addMedicine(rawData: unknown) {
     .single();
 
   if (error) {
-    console.error('Error adding medicine:', error);
-    if (error.code === '23505') {
-      throw new Error('Tên thuốc đã tồn tại');
-    }
-    throw new Error('Failed to add medicine');
+    throw new Error(getGenericErrorMessage(error));
   }
 
   revalidatePath('/medicines');
@@ -68,11 +64,7 @@ export async function updateMedicine(id: number, rawData: unknown) {
     .single();
 
   if (error) {
-    console.error('Error updating medicine:', error);
-    if (error.code === '23505') {
-      throw new Error('Tên thuốc đã tồn tại');
-    }
-    throw new Error('Failed to update medicine');
+    throw new Error(getGenericErrorMessage(error));
   }
 
   revalidatePath('/medicines');
@@ -94,31 +86,34 @@ export async function deleteMedicine(id: number) {
     .eq('id', id);
 
   if (error) {
-    console.error('Error deleting medicine:', error);
-    throw new Error('Failed to delete medicine');
+    throw new Error(getGenericErrorMessage(error));
   }
 
   revalidatePath('/medicines');
   return { success: true };
 }
 
-export async function updateMedicineStock(id: number, newQuantity: number) {
+export async function updateMedicineStock(id: number, adjustment: number, reason?: string) {
   const supabase = await createClient();
 
-  const { data: updatedData, error } = await supabase
-    .from('medicines')
-    .update({ stock_quantity: newQuantity })
-    .eq('id', id)
-    .select()
-    .single();
+  // Validate
+  const validation = stockAdjustmentSchema.safeParse({ id, adjustment, reason });
+  if (!validation.success) {
+    throw new Error(formatZodError(validation.error));
+  }
+
+  const { data, error } = await supabase.rpc('adjust_medicine_stock', {
+    p_medicine_id: id,
+    p_adjustment: adjustment,
+    p_reason: reason || 'Điều chỉnh thủ công'
+  });
 
   if (error) {
-    console.error('Error updating medicine stock:', error);
-    throw new Error('Failed to update medicine stock');
+    throw new Error(getGenericErrorMessage(error));
   }
 
   revalidatePath('/medicines');
-  return updatedData;
+  return data;
 }
 
 export async function getLowStockMedicines() {

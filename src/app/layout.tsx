@@ -19,20 +19,7 @@ export default function RootLayout({
   return (
     <html lang="vi" suppressHydrationWarning>
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var mode = localStorage.getItem('themeMode');
-                  var supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
-                  if (!mode && supportDarkMode) mode = 'dark';
-                  if (mode === 'dark') document.documentElement.classList.add('dark');
-                } catch (e) {}
-              })();
-            `,
-          }}
-        />
+        <script src="/theme.js" />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         <ThemeRegistry>

@@ -15,11 +15,15 @@ vi.mock('next/cache', () => ({
 describe('Patient Merge Actions', () => {
   const mockSupabase = {
     rpc: vi.fn(),
+    auth: {
+      getUser: vi.fn(),
+    },
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
     (createClient as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(mockSupabase);
+    mockSupabase.auth.getUser.mockResolvedValue({ data: { user: { id: 'test-user' } }, error: null });
   });
 
   describe('getPotentialDuplicates', () => {
