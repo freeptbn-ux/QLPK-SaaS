@@ -2,7 +2,6 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { removeDiacritics } from '@/lib/utils/normalize';
-import { escapeLikePattern } from '@/lib/utils/string';
 import { PatientFormData } from '@/types/forms';
 import { Patient } from '@/types/database';
 import { revalidatePath } from 'next/cache';
@@ -15,51 +14,58 @@ export async function getPatientsPaginated(page: number, pageSize: number) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Unauthorized');
-  const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
+  
+  const offset = (page - 1) * pageSize;
 
-  const { data, error, count } = await supabase
-    .from('patients')
-    .select('*', { count: 'estimated' })
-    .order('id', { ascending: false })
-    .range(from, to);
+  const { data, error } = await supabase.rpc('get_patients_with_last_visit', {
+    p_search_term: null,
+    p_search_normalized: null,
+    p_limit: pageSize,
+    p_offset: offset,
+  });
 
   if (error) {
     throw new Error(getGenericErrorMessage(error));
   }
 
-  return { data: data as Patient[], count };
+  const count = data && data.length > 0 ? Number(data[0].total_count) : 0;
+  
+  // Map RPC result to Patient type (loại bỏ total_count khỏi mỗi row)
+  const patients: Patient[] = (data || []).map(({ total_count, ...patient }: any) => ({
+    ...patient,
+    last_visit_date: patient.last_visit_date || null,
+  })) as Patient[];
+
+  return { data: patients, count };
 }
 
 export async function searchPatients(term: string, page: number, pageSize: number) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Unauthorized');
-  const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
-
+  
+  const offset = (page - 1) * pageSize;
   const normalizedTerm = removeDiacritics(term);
-  const escapedTerm = escapeLikePattern(term);
-  const escapedNormalizedTerm = escapeLikePattern(normalizedTerm);
 
-  let query = supabase
-    .from('patients')
-    .select('*', { count: 'estimated' });
-
-  if (term) {
-    // Search by normalized name or phone
-    query = query.or(`name_normalized.ilike.%${escapedNormalizedTerm}%,phone.ilike.%${escapedTerm}%`);
-  }
-
-  const { data, error, count } = await query
-    .order('id', { ascending: false })
-    .range(from, to);
+  const { data, error } = await supabase.rpc('get_patients_with_last_visit', {
+    p_search_term: term || null,
+    p_search_normalized: normalizedTerm || null,
+    p_limit: pageSize,
+    p_offset: offset,
+  });
 
   if (error) {
     throw new Error(getGenericErrorMessage(error));
   }
 
-  return { data: data as Patient[], count };
+  const count = data && data.length > 0 ? Number(data[0].total_count) : 0;
+  
+  const patients: Patient[] = (data || []).map(({ total_count, ...patient }: any) => ({
+    ...patient,
+    last_visit_date: patient.last_visit_date || null,
+  })) as Patient[];
+
+  return { data: patients, count };
 }
 
 export const getPatientById = cache(async (id: number) => {

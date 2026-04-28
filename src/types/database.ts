@@ -11,6 +11,7 @@ export interface Patient {
   created_at: string;
   updated_at?: string;
   name_normalized: string | null;
+  last_visit_date?: string | null;
 }
 
 export interface PatientWithPrescriptions extends Patient {

@@ -19,6 +19,7 @@ import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import EmptyState from '@/components/ui/EmptyState';
 import Link from 'next/link';
 import { formatAge } from '@/lib/utils/age';
+import { formatLastVisit, formatDob } from '@/lib/utils/date';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 interface PatientListClientProps {
@@ -151,16 +152,15 @@ export default function PatientListClient({
                 <th className="px-6 py-5 font-bold tracking-tight w-16">STT</th>
                 <th className="px-6 py-5 font-bold tracking-tight">Họ và tên</th>
                 <th className="px-6 py-5 font-bold tracking-tight">Ngày sinh</th>
-                <th className="px-6 py-5 font-bold tracking-tight">Giới tính</th>
                 <th className="px-6 py-5 font-bold tracking-tight">SĐT</th>
-                <th className="px-6 py-5 font-bold tracking-tight">Địa chỉ</th>
+                <th className="px-6 py-5 font-bold tracking-tight">Khám gần nhất</th>
                 <th className="px-6 py-5 font-bold tracking-tight text-right">Thao tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {patients.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-20 text-center">
+                  <td colSpan={6} className="px-6 py-20 text-center">
                     <EmptyState 
                       title="Không tìm thấy bệnh nhân nào" 
                       description="Thử thay đổi từ khóa tìm kiếm hoặc thêm mới bệnh nhân để bắt đầu quản lý hồ sơ" 
@@ -179,17 +179,27 @@ export default function PatientListClient({
                       </div>
                     </td>
                     <td className="px-6 py-5">
-                      <div className="text-slate-700 dark:text-slate-300 font-medium">{patient.dob || 'N/A'}</div>
+                      <div className="text-slate-700 dark:text-slate-300 font-medium">{formatDob(patient.dob)}</div>
                       {patient.dob && (
                         <div className="text-xs text-slate-500 mt-0.5">
                           {formatAge(patient.dob)}
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-5 text-slate-600 dark:text-slate-400">{patient.gender}</td>
                     <td className="px-6 py-5 font-medium text-slate-700 dark:text-slate-300">{patient.phone || 'N/A'}</td>
-                    <td className="px-6 py-5 truncate max-w-[200px] text-slate-500 dark:text-slate-500" title={patient.address || ''}>
-                      {patient.address || 'N/A'}
+                    <td className="px-6 py-5">
+                      <div className={`text-sm font-medium ${
+                        patient.last_visit_date 
+                          ? 'text-slate-700 dark:text-slate-300' 
+                          : 'text-slate-400 dark:text-slate-600 italic'
+                      }`}>
+                        {formatLastVisit(patient.last_visit_date)}
+                      </div>
+                      {patient.last_visit_date && (
+                        <div className="text-xs text-slate-400 mt-0.5">
+                          {new Date(patient.last_visit_date).toLocaleDateString('vi-VN')}
+                        </div>
+                      )}
                     </td>
                     <td className="px-6 py-5 text-right">
                       <div className="flex justify-end items-center gap-1">
@@ -239,7 +249,10 @@ export default function PatientListClient({
                   <div>
                     <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">{patient.name}</h3>
                     <p className="text-sm text-slate-500 font-medium mt-0.5">
-                      {patient.gender} • {patient.dob ? formatAge(patient.dob) : 'N/A'}
+                      {patient.dob ? `${formatDob(patient.dob)} • ${formatAge(patient.dob)}` : 'N/A'}
+                    </p>
+                    <p className="text-xs text-slate-400 mt-1">
+                      🩺 {formatLastVisit(patient.last_visit_date)}
                     </p>
                   </div>
                   <span className="px-2.5 py-1 text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-lg border border-slate-200 dark:border-slate-700">

@@ -45,6 +45,9 @@ Dự án được xây dựng với kiến trúc **Multi-tenant**, sử dụng c
    ```env
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   # Required for some scripts
+   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+   DB_PASSWORD=your_db_password
    ```
 
 4. **Khởi chạy Development Server:**
