@@ -8,17 +8,17 @@ export const metadata = {
 
 export default function DoseCalculatorPage() {
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="flex flex-col gap-6">
       <PageHeader 
         title="Tính liều thuốc nhi khoa" 
         subtitle="Công cụ hỗ trợ tính liều siro/hỗn dịch cho trẻ em" 
       />
       
-      <div className="mt-8">
+      <div className="">
         <DoseCalculator />
       </div>
       
-      <div className="mt-12">
+      <div className="">
         <DrugPresetManager />
       </div>
     </div>

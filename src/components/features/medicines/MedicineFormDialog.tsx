@@ -96,23 +96,23 @@ export default function MedicineFormDialog({
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden"
           >
-            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+            <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                 {medicine ? 'Sửa thông tin thuốc' : 'Thêm thuốc mới'}
               </h3>
               <button 
                 type="button"
                 onClick={onClose}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
               >
-                <HiOutlineXMark className="w-6 h-6 text-gray-500" />
+                <HiOutlineXMark className="w-6 h-6 text-slate-500" />
               </button>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="p-6 space-y-4 max-h-[calc(100vh-200px)] overflow-y-auto">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Tên thuốc</label>
+                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Tên thuốc</label>
                   <input
                     {...register('name')}
                     placeholder="Nhập tên thuốc..."
@@ -125,7 +125,7 @@ export default function MedicineFormDialog({
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Quy cách đóng gói</label>
+                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Quy cách đóng gói</label>
                   <input
                     {...register('packing_spec')}
                     placeholder="VD: Hộp 30 viên, Chai 100ml..."
@@ -139,7 +139,7 @@ export default function MedicineFormDialog({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Đơn giá</label>
+                    <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Đơn giá</label>
                     <div className="relative">
                       <input
                         {...register('price', { valueAsNumber: true })}
@@ -150,14 +150,14 @@ export default function MedicineFormDialog({
                         )}
                       />
                       <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                        <span className="text-xs font-bold text-gray-400">VNĐ</span>
+                        <span className="text-xs font-bold text-slate-400">VNĐ</span>
                       </div>
                     </div>
                     {errors.price && <p className="text-xs font-medium text-red-500">{errors.price.message}</p>}
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Ngưỡng cảnh báo</label>
+                    <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Ngưỡng cảnh báo</label>
                     <input
                       {...register('min_stock_level', { valueAsNumber: true })}
                       type="number"
@@ -166,14 +166,14 @@ export default function MedicineFormDialog({
                         errors.min_stock_level && "border-red-500 focus:ring-red-500/20"
                       )}
                     />
-                    <p className="text-[10px] text-gray-400 font-medium italic">Hiện cảnh báo khi tồn kho ≤ mức này</p>
+                    <p className="text-[10px] text-slate-400 font-medium italic">Hiện cảnh báo khi tồn kho ≤ mức này</p>
                     {errors.min_stock_level && <p className="text-xs font-medium text-red-500">{errors.min_stock_level.message}</p>}
                   </div>
                 </div>
 
                 {!medicine && (
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Số lượng tồn kho ban đầu</label>
+                    <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Số lượng tồn kho ban đầu</label>
                     <input
                       {...register('stock_quantity', { valueAsNumber: true })}
                       type="number"
@@ -187,12 +187,12 @@ export default function MedicineFormDialog({
                 )}
               </div>
 
-              <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-800 flex justify-end gap-3">
+              <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={onClose}
                   disabled={isSubmitting}
-                  className="px-6 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all"
+                  className="px-6 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all"
                 >
                   Hủy
                 </button>

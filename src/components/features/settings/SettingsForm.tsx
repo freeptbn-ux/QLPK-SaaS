@@ -96,77 +96,89 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
       <div className="lg:col-span-8 space-y-6">
         <form onSubmit={handleSubmit(onSettingsSubmit)} className="space-y-6">
-          <div className="card">
-            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center gap-2">
-              <HiOutlineComputerDesktop className="w-5 h-5 text-primary-600" />
-              <h3 className="text-base font-bold text-gray-900 dark:text-white">
-                Thông tin phòng khám
-              </h3>
+          <div className="card border-none shadow-sm overflow-hidden">
+            <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex items-center gap-3">
+              <div className="p-2 bg-primary-100 dark:bg-primary-900/30 rounded-xl">
+                <HiOutlineComputerDesktop className="w-5 h-5 text-primary-600" />
+              </div>
+              <div>
+                <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                  Thông tin phòng khám
+                </h3>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Cấu hình cơ bản của hệ thống</p>
+              </div>
             </div>
-            <div className="p-6 space-y-4">
-              <div className="grid grid-cols-1 gap-4">
+            <div className="p-6 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  <label className="text-[11px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">
                     Tên phòng khám
                   </label>
                   <input
                     {...register('clinic_name')}
-                    className={cn("input-field", errors.clinic_name && "border-red-500 focus:border-red-500")}
+                    placeholder="VD: Phòng khám Đa khoa Antigravity"
+                    className={cn("input-field bg-slate-50/50 border-slate-200 focus:bg-white transition-all duration-300", errors.clinic_name && "border-red-500 focus:border-red-500")}
                   />
                   {errors.clinic_name && (
-                    <p className="text-xs text-red-500 font-medium">{errors.clinic_name.message}</p>
+                    <p className="text-xs text-red-500 font-medium mt-1 ml-1">{errors.clinic_name.message}</p>
                   )}
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Tên bác sĩ
+                  <label className="text-[11px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">
+                    Tên bác sĩ đại diện
                   </label>
                   <input
                     {...register('doctor_name')}
-                    className={cn("input-field", errors.doctor_name && "border-red-500 focus:border-red-500")}
+                    placeholder="VD: BS. Nguyễn Văn A"
+                    className={cn("input-field bg-slate-50/50 border-slate-200 focus:bg-white transition-all duration-300", errors.doctor_name && "border-red-500 focus:border-red-500")}
                   />
                   {errors.doctor_name && (
-                    <p className="text-xs text-red-500 font-medium">{errors.doctor_name.message}</p>
+                    <p className="text-xs text-red-500 font-medium mt-1 ml-1">{errors.doctor_name.message}</p>
                   )}
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="card">
-            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center gap-2">
-              <HiOutlineCurrencyDollar className="w-5 h-5 text-emerald-600" />
-              <h3 className="text-base font-bold text-gray-900 dark:text-white">
-                Tài chính
-              </h3>
+          <div className="card border-none shadow-sm overflow-hidden">
+            <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex items-center gap-3">
+              <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl">
+                <HiOutlineCurrencyDollar className="w-5 h-5 text-emerald-600" />
+              </div>
+              <div>
+                <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                  Tài chính & Thanh toán
+                </h3>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Thiết lập các mức phí dịch vụ</p>
+              </div>
             </div>
             <div className="p-6">
-              <div className="space-y-1.5 max-w-xs">
-                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              <div className="space-y-1.5 max-w-sm">
+                <label className="text-[11px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">
                   Phí khám mặc định
                 </label>
                 <div className="relative">
                   <input
                     type="number"
                     {...register('consultation_fee', { valueAsNumber: true })}
-                    className={cn("input-field pr-12", errors.consultation_fee && "border-red-500 focus:border-red-500")}
+                    className={cn("input-field pr-16 bg-slate-50/50 border-slate-200 focus:bg-white transition-all duration-300 font-bold text-lg", errors.consultation_fee && "border-red-500 focus:border-red-500")}
                   />
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400">
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-400 uppercase tracking-widest">
                     VNĐ
                   </div>
                 </div>
                 {errors.consultation_fee && (
-                  <p className="text-xs text-red-500 font-medium">{errors.consultation_fee.message}</p>
+                  <p className="text-xs text-red-500 font-medium mt-1 ml-1">{errors.consultation_fee.message}</p>
                 )}
               </div>
             </div>
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex justify-end pt-2">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="btn-primary min-w-[160px] flex items-center justify-center gap-2 py-3"
+              className="btn-primary min-w-[200px] flex items-center justify-center gap-2 py-4 rounded-2xl shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 transition-all duration-500 group"
             >
               {isSubmitting ? (
                 <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -174,36 +186,42 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
               ) : (
-                <HiOutlineCheck className="w-5 h-5" />
+                <HiOutlineCheck className="w-5 h-5 group-hover:scale-125 transition-transform duration-300" />
               )}
-              Lưu thay đổi
+              <span className="font-bold uppercase tracking-widest text-xs">Lưu cấu hình</span>
             </button>
           </div>
         </form>
 
-        <div className="card">
-          <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center gap-2">
-            <h3 className="text-base font-bold text-gray-900 dark:text-white">
-              Giao diện & Trải nghiệm
-            </h3>
+        <div className="card border-none shadow-sm overflow-hidden">
+          <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex items-center gap-3">
+            <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl">
+              <HiOutlineComputerDesktop className="w-5 h-5 text-indigo-600" />
+            </div>
+            <div>
+              <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                Giao diện & Trải nghiệm
+              </h3>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Tùy chỉnh phong cách hiển thị</p>
+            </div>
           </div>
           <div className="p-6">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800/50">
               <div className="space-y-0.5">
-                <p className="text-sm font-bold text-gray-900 dark:text-white">Chế độ hiển thị</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Chuyển đổi giữa giao diện sáng và tối</p>
+                <p className="text-sm font-bold text-slate-900 dark:text-white">Chế độ tối (Dark Mode)</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Tối ưu cho làm việc ban đêm</p>
               </div>
               <button
                 onClick={toggleTheme}
                 type="button"
                 className={cn(
-                  "relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ring-2 ring-transparent focus:ring-primary-500/20",
-                  mode === 'dark' ? "bg-primary-600" : "bg-gray-200 dark:bg-gray-700"
+                  "relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ring-4 ring-transparent focus:ring-primary-500/10",
+                  mode === 'dark' ? "bg-primary-600" : "bg-slate-200 dark:bg-slate-700"
                 )}
               >
                 <span
                   className={cn(
-                    "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
+                    "inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm",
                     mode === 'dark' ? "translate-x-6" : "translate-x-1"
                   )}
                 />
@@ -214,58 +232,66 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
       </div>
 
       <div className="lg:col-span-4">
-        <div className="card">
-          <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center gap-2">
-            <HiOutlineKey className="w-5 h-5 text-amber-500" />
-            <h3 className="text-base font-bold text-gray-900 dark:text-white">
-              Bảo mật
-            </h3>
+        <div className="card border-none shadow-sm overflow-hidden">
+          <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex items-center gap-3">
+            <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-xl">
+              <HiOutlineKey className="w-5 h-5 text-amber-600" />
+            </div>
+            <div>
+              <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                Bảo mật tài khoản
+              </h3>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Cập nhật mật khẩu truy cập</p>
+            </div>
           </div>
           <div className="p-6">
-            <form onSubmit={handleSubmitPassword(onPasswordSubmit)} className="space-y-4">
+            <form onSubmit={handleSubmitPassword(onPasswordSubmit)} className="space-y-5">
               <div className="space-y-1.5">
-                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <label className="text-[11px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">
                   Mật khẩu hiện tại
                 </label>
                 <input
                   type="password"
+                  placeholder="••••••••"
                   {...registerPassword('currentPassword')}
-                  className={cn("input-field", passwordErrors.currentPassword && "border-red-500 focus:border-red-500")}
+                  className={cn("input-field bg-slate-50/50 border-slate-200 focus:bg-white transition-all duration-300", passwordErrors.currentPassword && "border-red-500 focus:border-red-500")}
                 />
                 {passwordErrors.currentPassword && (
-                  <p className="text-xs text-red-500 font-medium">{passwordErrors.currentPassword.message}</p>
+                  <p className="text-xs text-red-500 font-medium mt-1 ml-1">{passwordErrors.currentPassword.message}</p>
                 )}
               </div>
               <div className="space-y-1.5">
-                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <label className="text-[11px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">
                   Mật khẩu mới
                 </label>
                 <input
                   type="password"
+                  placeholder="Tối thiểu 6 ký tự"
                   {...registerPassword('newPassword')}
-                  className={cn("input-field", passwordErrors.newPassword && "border-red-500 focus:border-red-500")}
+                  className={cn("input-field bg-slate-50/50 border-slate-200 focus:bg-white transition-all duration-300", passwordErrors.newPassword && "border-red-500 focus:border-red-500")}
                 />
                 {passwordErrors.newPassword && (
-                  <p className="text-xs text-red-500 font-medium">{passwordErrors.newPassword.message}</p>
+                  <p className="text-xs text-red-500 font-medium mt-1 ml-1">{passwordErrors.newPassword.message}</p>
                 )}
               </div>
               <div className="space-y-1.5">
-                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Xác nhận mật khẩu
+                <label className="text-[11px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">
+                  Xác nhận mật khẩu mới
                 </label>
                 <input
                   type="password"
+                  placeholder="Nhập lại mật khẩu mới"
                   {...registerPassword('confirmPassword')}
-                  className={cn("input-field", passwordErrors.confirmPassword && "border-red-500 focus:border-red-500")}
+                  className={cn("input-field bg-slate-50/50 border-slate-200 focus:bg-white transition-all duration-300", passwordErrors.confirmPassword && "border-red-500 focus:border-red-500")}
                 />
                 {passwordErrors.confirmPassword && (
-                  <p className="text-xs text-red-500 font-medium">{passwordErrors.confirmPassword.message}</p>
+                  <p className="text-xs text-red-500 font-medium mt-1 ml-1">{passwordErrors.confirmPassword.message}</p>
                 )}
               </div>
               <button
                 type="submit"
                 disabled={isChangingPassword}
-                className="w-full btn-outlined flex items-center justify-center gap-2 mt-2"
+                className="w-full btn-outlined border-slate-200 hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/10 flex items-center justify-center gap-2 mt-4 py-3 rounded-xl transition-all duration-300 font-bold uppercase tracking-widest text-[11px]"
               >
                 {isChangingPassword ? (
                   <svg className="animate-spin h-4 w-4 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -273,7 +299,7 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
                 ) : null}
-                Cập nhật mật khẩu
+                Đổi mật khẩu truy cập
               </button>
             </form>
           </div>

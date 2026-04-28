@@ -27,7 +27,7 @@ export default async function PatientPage({ params }: PatientPageProps) {
   }
 
   return (
-    <div>
+    <div className="flex flex-col gap-6">
       <PageHeader
         title={patient.name}
         subtitle={`Mã bệnh nhân: #${patient.id}`}

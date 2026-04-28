@@ -128,7 +128,7 @@ export const DateInput: React.FC<DateInputProps> = ({
         <label 
           className={cn(
             "block text-sm font-semibold mb-2 transition-colors",
-            error ? "text-red-500" : focused ? "text-primary-600" : "text-gray-500 dark:text-gray-400",
+            error ? "text-red-500" : focused ? "text-primary-600" : "text-slate-500 dark:text-slate-400",
             disabled && "opacity-50"
           )}
         >
@@ -146,12 +146,12 @@ export const DateInput: React.FC<DateInputProps> = ({
         }}
         className={cn(
           "flex items-center px-4 py-2.5 rounded-xl border transition-all cursor-text",
-          disabled ? "bg-gray-50 dark:bg-slate-900/50 cursor-not-allowed opacity-50" : "bg-white dark:bg-slate-900",
+          disabled ? "bg-slate-50 dark:bg-slate-900/50 cursor-not-allowed opacity-50" : "bg-white dark:bg-slate-900",
           error
             ? "border-red-500 ring-4 ring-red-500/10"
             : focused
             ? "border-primary-500 ring-4 ring-primary-500/10"
-            : "border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700"
+            : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
         )}
       >
         <div className="w-10">
@@ -166,11 +166,11 @@ export const DateInput: React.FC<DateInputProps> = ({
             placeholder={placeholder.day || 'DD'}
             disabled={disabled}
             inputMode="numeric"
-            className="w-full bg-transparent border-none outline-none text-center text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-600 font-medium"
+            className="w-full bg-transparent border-none outline-none text-center text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-slate-600 font-medium"
           />
         </div>
         
-        <span className="mx-1 text-gray-400 select-none">/</span>
+        <span className="mx-1 text-slate-400 select-none">/</span>
         
         <div className="w-10">
           <input
@@ -184,11 +184,11 @@ export const DateInput: React.FC<DateInputProps> = ({
             placeholder={placeholder.month || 'MM'}
             disabled={disabled}
             inputMode="numeric"
-            className="w-full bg-transparent border-none outline-none text-center text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-600 font-medium"
+            className="w-full bg-transparent border-none outline-none text-center text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-slate-600 font-medium"
           />
         </div>
         
-        <span className="mx-1 text-gray-400 select-none">/</span>
+        <span className="mx-1 text-slate-400 select-none">/</span>
         
         <div className="w-14">
           <input
@@ -202,13 +202,13 @@ export const DateInput: React.FC<DateInputProps> = ({
             placeholder={placeholder.year || 'YYYY'}
             disabled={disabled}
             inputMode="numeric"
-            className="w-full bg-transparent border-none outline-none text-center text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-600 font-medium"
+            className="w-full bg-transparent border-none outline-none text-center text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-slate-600 font-medium"
           />
         </div>
       </div>
 
       {(helperText || error) && (
-        <p className={cn("text-xs mt-1.5 font-medium px-1", error ? "text-red-500" : "text-gray-500")}>
+        <p className={cn("text-xs mt-1.5 font-medium px-1", error ? "text-red-500" : "text-slate-500")}>
           {helperText}
         </p>
       )}

@@ -56,8 +56,8 @@ export default function DrugPresetManager() {
 
   return (
     <div className="card mt-12 overflow-hidden">
-      <div className="p-6 border-b border-gray-100 dark:border-gray-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+      <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white">
           Quản lý thuốc mẫu
         </h3>
         <button
@@ -72,7 +72,7 @@ export default function DrugPresetManager() {
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left">
           <thead className="bg-gray-50/50 dark:bg-gray-800/30">
-            <tr className="text-[11px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 dark:border-gray-800">
+            <tr className="text-[11px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800">
               <th className="px-6 py-4">Tên thuốc</th>
               <th className="px-6 py-4 text-right">Hàm lượng (mg)</th>
               <th className="px-6 py-4 text-right">Thể tích (ml)</th>
@@ -80,12 +80,12 @@ export default function DrugPresetManager() {
               <th className="px-6 py-4 text-center">Thao tác</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">
+          <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">
             {presets.map((preset, index) => (
-              <tr key={index} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/20 transition-colors">
-                <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">{preset.name}</td>
-                <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-400 font-medium">{preset.mg}</td>
-                <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-400 font-medium">{preset.ml}</td>
+              <tr key={index} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors">
+                <td className="px-6 py-4 font-semibold text-slate-900 dark:text-white">{preset.name}</td>
+                <td className="px-6 py-4 text-right text-gray-600 dark:text-slate-400 font-medium">{preset.mg}</td>
+                <td className="px-6 py-4 text-right text-gray-600 dark:text-slate-400 font-medium">{preset.ml}</td>
                 <td className="px-6 py-4 text-right text-primary-600 dark:text-primary-400 font-bold">{preset.dose}</td>
                 <td className="px-6 py-4 text-center">
                   <div className="flex items-center justify-center gap-2">
@@ -107,7 +107,7 @@ export default function DrugPresetManager() {
             ))}
             {presets.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-6 py-12 text-center text-gray-400 italic">
+                <td colSpan={5} className="px-6 py-12 text-center text-slate-400 italic">
                   Chưa có thuốc mẫu nào. Hãy thêm mới để sử dụng nhanh.
                 </td>
               </tr>
@@ -123,15 +123,15 @@ export default function DrugPresetManager() {
             className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" 
             onClick={handleClose}
           />
-          <div className="relative bg-white dark:bg-slate-900 rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden border border-gray-100 dark:border-gray-800 animate-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-gray-100 dark:border-gray-800">
-              <h4 className="text-xl font-black text-gray-900 dark:text-white">
+          <div className="relative bg-white dark:bg-slate-900 rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden border border-slate-100 dark:border-slate-800 animate-in zoom-in-95 duration-200">
+            <div className="p-6 border-b border-slate-100 dark:border-slate-800">
+              <h4 className="text-xl font-black text-slate-900 dark:text-white">
                 {editingIndex !== null ? '⚡ Sửa thuốc mẫu' : '➕ Thêm thuốc mẫu'}
               </h4>
             </div>
             <div className="p-6 space-y-5">
               <div className="space-y-1.5">
-                <label className="text-sm font-bold text-gray-400 uppercase tracking-widest ml-1">Tên thuốc</label>
+                <label className="text-sm font-bold text-slate-400 uppercase tracking-widest ml-1">Tên thuốc</label>
                 <input
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -141,7 +141,7 @@ export default function DrugPresetManager() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-bold text-gray-400 uppercase tracking-widest ml-1">Hàm lượng (mg)</label>
+                  <label className="text-sm font-bold text-slate-400 uppercase tracking-widest ml-1">Hàm lượng (mg)</label>
                   <input
                     type="number"
                     value={formData.mg}
@@ -150,7 +150,7 @@ export default function DrugPresetManager() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-sm font-bold text-gray-400 uppercase tracking-widest ml-1">Thể tích (ml)</label>
+                  <label className="text-sm font-bold text-slate-400 uppercase tracking-widest ml-1">Thể tích (ml)</label>
                   <input
                     type="number"
                     value={formData.ml}
@@ -160,7 +160,7 @@ export default function DrugPresetManager() {
                 </div>
               </div>
               <div className="space-y-1.5">
-                <label className="text-sm font-bold text-gray-400 uppercase tracking-widest ml-1">Liều chuẩn (mg/kg)</label>
+                <label className="text-sm font-bold text-slate-400 uppercase tracking-widest ml-1">Liều chuẩn (mg/kg)</label>
                 <input
                   type="number"
                   value={formData.dose}
@@ -169,10 +169,10 @@ export default function DrugPresetManager() {
                 />
               </div>
             </div>
-            <div className="p-6 bg-gray-50 dark:bg-slate-800/50 flex gap-3">
+            <div className="p-6 bg-slate-50 dark:bg-slate-800/50 flex gap-3">
               <button
                 onClick={handleClose}
-                className="flex-1 px-4 py-3 text-sm font-bold text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                className="flex-1 px-4 py-3 text-sm font-bold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
               >
                 Hủy bỏ
               </button>

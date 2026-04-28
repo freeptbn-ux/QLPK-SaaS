@@ -43,19 +43,24 @@ export default function StatsOverview({ stats }: StatsOverviewProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {items.map((item, index) => (
-        <div key={index} className="card group hover:shadow-lg transition-all duration-300">
-          <div className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                  {item.title}
-                </span>
-                <div className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
-                  {stats ? item.value : <div className="h-8 w-24 bg-gray-100 dark:bg-gray-800 animate-pulse rounded" />}
+        <div key={index} className="card group hover:shadow-xl transition-all duration-500 border-none bg-white dark:bg-slate-900/50 overflow-hidden relative">
+          <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity duration-500">
+            <item.icon className="w-20 h-20 -mr-4 -mt-4 rotate-12" />
+          </div>
+          <div className="p-6 relative z-10">
+            <div className="flex items-start justify-between">
+              <div className="space-y-3">
+                <div className={`p-3 rounded-2xl inline-flex ${item.colorClass} shadow-sm group-hover:scale-110 transition-transform duration-500`}>
+                  <item.icon className="w-6 h-6" />
                 </div>
-              </div>
-              <div className={`p-3 rounded-2xl transition-transform group-hover:scale-110 duration-300 ${item.colorClass}`}>
-                <item.icon className="w-7 h-7" />
+                <div className="space-y-1">
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-widest block">
+                    {item.title}
+                  </span>
+                  <div className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                    {stats ? item.value : <div className="h-10 w-32 bg-slate-100 dark:bg-slate-800 animate-pulse rounded-lg" />}
+                  </div>
+                </div>
               </div>
             </div>
           </div>

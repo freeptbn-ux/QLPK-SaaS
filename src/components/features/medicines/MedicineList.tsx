@@ -98,7 +98,7 @@ export default function MedicineList({ initialData }: MedicineListProps) {
       <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
         <div className="flex-grow max-w-lg relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <HiOutlineMagnifyingGlass className="h-5 w-5 text-gray-400" />
+            <HiOutlineMagnifyingGlass className="h-5 w-5 text-slate-400" />
           </div>
           <input
             type="text"
@@ -134,79 +134,85 @@ export default function MedicineList({ initialData }: MedicineListProps) {
 
       <div className="card overflow-hidden">
         {filteredData.length === 0 ? (
-          <div className="p-12">
+          <div className="p-20">
             <EmptyState 
               title={searchTerm || showLowStockOnly ? "Không tìm thấy thuốc phù hợp" : "Chưa có thuốc nào trong kho"}
-              description={searchTerm || showLowStockOnly ? "Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm" : "Hãy thêm thuốc mới để bắt đầu quản lý"}
+              description={searchTerm || showLowStockOnly ? "Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm để tìm đúng loại thuốc cần thiết" : "Hãy thêm thuốc mới vào danh mục để bắt đầu quản lý kho và kê đơn cho bệnh nhân"}
+              icon={HiOutlineArchiveBox}
             />
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
-              <thead className="bg-gray-50 dark:bg-gray-800/50 text-gray-600 dark:text-gray-400 font-medium border-b border-gray-100 dark:border-gray-800">
+              <thead className="bg-slate-50/50 dark:bg-slate-800/30 text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800">
                 <tr>
-                  <th className="px-6 py-4">Tên thuốc</th>
-                  <th className="px-6 py-4">Quy cách</th>
-                  <th className="px-6 py-4 text-right">Giá (VNĐ)</th>
-                  <th className="px-6 py-4 text-right">Tồn kho</th>
-                  <th className="px-6 py-4 text-center">Trạng thái</th>
-                  <th className="px-6 py-4 text-right">Thao tác</th>
+                  <th className="px-6 py-5 font-bold tracking-tight">Tên thuốc</th>
+                  <th className="px-6 py-5 font-bold tracking-tight">Quy cách</th>
+                  <th className="px-6 py-5 font-bold tracking-tight text-right">Giá (VNĐ)</th>
+                  <th className="px-6 py-5 font-bold tracking-tight text-right">Tồn kho</th>
+                  <th className="px-6 py-5 font-bold tracking-tight text-center">Trạng thái</th>
+                  <th className="px-6 py-5 font-bold tracking-tight text-right">Thao tác</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {filteredData.map((medicine) => {
                   const isLowStock = medicine.stock_quantity <= medicine.min_stock_level;
                   return (
-                    <tr key={medicine.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors">
-                      <td className="px-6 py-4 font-semibold text-gray-900 dark:text-gray-100">
-                        {medicine.name}
+                    <tr key={medicine.id} className="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all duration-200">
+                      <td className="px-6 py-5">
+                        <div className="font-bold text-slate-900 dark:text-slate-100 group-hover:text-primary-600 transition-colors">
+                          {medicine.name}
+                        </div>
                       </td>
-                      <td className="px-6 py-4 text-gray-500">
+                      <td className="px-6 py-5 text-slate-500 font-medium">
                         {medicine.packing_spec || '-'}
                       </td>
-                      <td className="px-6 py-4 text-right font-medium">
+                      <td className="px-6 py-5 text-right font-bold text-slate-700 dark:text-slate-300">
                         {medicine.price.toLocaleString('vi-VN')}
                       </td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-6 py-5 text-right">
                         <div className="flex items-center justify-end gap-2">
                           <span className={cn(
-                            "font-bold",
-                            isLowStock ? "text-red-500" : "text-gray-900 dark:text-gray-100"
+                            "font-bold text-base",
+                            isLowStock ? "text-red-500" : "text-slate-900 dark:text-slate-100"
                           )}>
                             {medicine.stock_quantity}
                           </span>
                           <button
                             onClick={() => handleAdjustStock(medicine)}
-                            className="p-1 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors"
+                            className="p-1.5 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-all"
                             title="Nhập thêm/Điều chỉnh"
                           >
                             <HiOutlinePlus className="w-4 h-4" />
                           </button>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-center">
+                      <td className="px-6 py-5 text-center">
                         {isLowStock ? (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800">
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 border border-red-100 dark:border-red-900/50">
                             Sắp hết
                           </span>
                         ) : (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800">
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/50">
                             Còn hàng
                           </span>
                         )}
                       </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex justify-end gap-1">
+                      <td className="px-6 py-5 text-right">
+                        <div className="flex justify-end items-center gap-1">
                           <button
                             onClick={() => handleEdit(medicine)}
-                            className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                            className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all"
                             title="Sửa"
                           >
                             <HiOutlinePencil className="w-5 h-5" />
                           </button>
+                          
+                          <div className="w-px h-4 bg-slate-200 dark:bg-slate-700 mx-1" />
+                          
                           <button
                             onClick={() => handleDeleteClick(medicine)}
-                            className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all"
                             title="Xóa"
                           >
                             <HiOutlineTrash className="w-5 h-5" />

@@ -76,7 +76,7 @@ export default function DoseCalculator({
   return (
     <div className={cn("max-w-3xl mx-auto overflow-hidden", !isEmbedded && "card")}>
       {!isEmbedded && (
-        <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-primary-50/30 dark:bg-primary-900/10">
+        <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-primary-50/30 dark:bg-primary-900/10">
           <h3 className="text-xl font-bold text-primary-600 dark:text-primary-400 flex items-center gap-3">
             <HiOutlineCalculator className="w-6 h-6" /> 
             Công cụ tính liều
@@ -86,13 +86,13 @@ export default function DoseCalculator({
 
       <div className={cn("space-y-8", isEmbedded ? "p-4" : "p-8")}>
         <div className="space-y-2">
-          <label className="text-sm font-bold text-gray-400 uppercase tracking-widest">
+          <label className="text-sm font-bold text-slate-400 uppercase tracking-widest">
             Chọn từ danh mục thuốc mẫu
           </label>
           <select
             value={selectedPreset}
             onChange={(e) => handlePresetChange(e.target.value)}
-            className="input-field bg-gray-50/50 dark:bg-slate-800/50"
+            className="input-field bg-slate-50/50 dark:bg-slate-800/50"
           >
             <option value="">-- Tự nhập thông số --</option>
             {presets.map((p) => (
@@ -104,13 +104,13 @@ export default function DoseCalculator({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-6">
             <div className="space-y-3">
-              <h4 className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2">
+              <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <HiOutlineBeaker className="w-4 h-4 text-blue-500" />
                 Hàm lượng & Thể tích
               </h4>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase ml-1">Hàm lượng (mg)</span>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase ml-1">Hàm lượng (mg)</span>
                   <input
                     type="number"
                     value={mg}
@@ -120,7 +120,7 @@ export default function DoseCalculator({
                   />
                 </div>
                 <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase ml-1">Thể tích (ml)</span>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase ml-1">Thể tích (ml)</span>
                   <input
                     type="number"
                     value={ml}
@@ -133,13 +133,13 @@ export default function DoseCalculator({
             </div>
 
             <div className="space-y-3">
-              <h4 className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2">
+              <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <HiOutlineCalculator className="w-4 h-4 text-emerald-500" />
                 Thông số bệnh nhi
               </h4>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase ml-1">Liều (mg/kg)</span>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase ml-1">Liều (mg/kg)</span>
                   <input
                     type="number"
                     value={dosePerKg}
@@ -149,7 +149,7 @@ export default function DoseCalculator({
                   />
                 </div>
                 <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase ml-1">Cân nặng (kg)</span>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase ml-1">Cân nặng (kg)</span>
                   <input
                     type="number"
                     value={weight}
@@ -164,8 +164,8 @@ export default function DoseCalculator({
 
           <div className="flex flex-col justify-between space-y-6">
             <div className="space-y-3">
-              <h4 className="text-sm font-bold text-gray-900 dark:text-white">Tần suất sử dụng</h4>
-              <div className="p-4 bg-gray-50 dark:bg-slate-800/50 rounded-2xl border border-gray-100 dark:border-gray-800 space-y-3">
+              <h4 className="text-sm font-bold text-slate-900 dark:text-white">Tần suất sử dụng</h4>
+              <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 space-y-3">
                 {[1, 2, 3, 4].map((t) => (
                   <label key={t} className="flex items-center gap-3 cursor-pointer group">
                     <div className="relative flex items-center justify-center">
@@ -190,7 +190,7 @@ export default function DoseCalculator({
                     </div>
                     <span className={cn(
                       "text-sm font-semibold transition-colors",
-                      timesPerDay === t ? "text-gray-900 dark:text-white" : "text-gray-500 dark:text-gray-400"
+                      timesPerDay === t ? "text-slate-900 dark:text-white" : "text-slate-500 dark:text-slate-400"
                     )}>
                       {t} lần / ngày
                     </span>

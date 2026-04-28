@@ -25,13 +25,13 @@ export default function MedicinesPage() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="flex flex-col gap-6">
       <PageHeader
         title="Quản lý Kho thuốc"
         subtitle="Danh sách thuốc, đơn giá và số lượng tồn kho"
       />
       
-      <div className="mt-8">
+      <div className="">
         <Suspense fallback={
           <TableSkeleton rows={10} columns={6} headers={tableHeaders} />
         }>

@@ -119,16 +119,16 @@ export default function PatientFormDialog({
             className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden flex flex-col"
           >
             {/* Header */}
-            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+            <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                 {isEdit ? 'Cập nhật thông tin bệnh nhân' : 'Thêm bệnh nhân mới'}
               </h3>
               <button 
                 type="button"
                 onClick={onClose}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
               >
-                <HiOutlineXMark className="w-6 h-6 text-gray-500" />
+                <HiOutlineXMark className="w-6 h-6 text-slate-500" />
               </button>
             </div>
 
@@ -137,7 +137,7 @@ export default function PatientFormDialog({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   {/* Name - Full Width */}
                   <div className="sm:col-span-2">
-                    <label htmlFor="patient-name" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                    <label htmlFor="patient-name" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                       Họ và tên <span className="text-red-500">*</span>
                     </label>
                     <Controller
@@ -190,7 +190,7 @@ export default function PatientFormDialog({
 
                   {/* Gender */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                       Giới tính <span className="text-red-500">*</span>
                     </label>
                     <Controller
@@ -202,12 +202,12 @@ export default function PatientFormDialog({
                             <label key={option} className="flex items-center gap-2 cursor-pointer group">
                               <input
                                 type="radio"
-                                className="w-5 h-5 text-primary-600 border-gray-300 focus:ring-primary-500 dark:border-gray-700 dark:bg-slate-800"
+                                className="w-5 h-5 text-primary-600 border-slate-300 focus:ring-primary-500 dark:border-slate-700 dark:bg-slate-800"
                                 value={option}
                                 checked={field.value === option}
                                 onChange={() => field.onChange(option)}
                               />
-                              <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-primary-600 transition-colors">
+                              <span className="text-sm text-slate-700 dark:text-slate-300 group-hover:text-primary-600 transition-colors">
                                 {option}
                               </span>
                             </label>
@@ -219,7 +219,7 @@ export default function PatientFormDialog({
 
                   {/* Phone */}
                   <div>
-                    <label htmlFor="patient-phone" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                    <label htmlFor="patient-phone" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                       Số điện thoại <span className="text-red-500">*</span>
                     </label>
                     <Controller
@@ -244,7 +244,7 @@ export default function PatientFormDialog({
 
                   {/* Weight */}
                   <div>
-                    <label htmlFor="patient-weight" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                    <label htmlFor="patient-weight" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                       Cân nặng (kg)
                     </label>
                     <Controller
@@ -263,7 +263,7 @@ export default function PatientFormDialog({
 
                   {/* Address */}
                   <div className="sm:col-span-2">
-                    <label htmlFor="patient-address" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                    <label htmlFor="patient-address" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                       Địa chỉ
                     </label>
                     <Controller
@@ -283,7 +283,7 @@ export default function PatientFormDialog({
 
                   {/* Diagnosis */}
                   <div className="sm:col-span-2">
-                    <label htmlFor="patient-diagnosis" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                    <label htmlFor="patient-diagnosis" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                       Chẩn đoán / Ghi chú
                     </label>
                     <Controller
@@ -304,12 +304,12 @@ export default function PatientFormDialog({
               </div>
 
               {/* Footer */}
-              <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-800 flex justify-end gap-3">
+              <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={onClose}
                   disabled={isSubmitting}
-                  className="px-6 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all disabled:opacity-50"
+                  className="px-6 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all disabled:opacity-50"
                 >
                   Hủy
                 </button>

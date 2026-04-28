@@ -63,44 +63,46 @@ export default function AgeGroupChart({ dobs }: AgeGroupChartProps) {
   }, [dobs]);
 
   return (
-    <div className="card h-full">
+    <div className="card h-full border-none shadow-sm">
       <div className="p-6">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">
+        <h3 className="text-base font-black text-slate-900 dark:text-white mb-6 uppercase tracking-tight">
           Phân bố nhóm tuổi
         </h3>
-        <div className="w-full h-[300px]">
+        <div className="w-full h-[320px]">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} layout="vertical" margin={{ left: 10 }}>
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e5e7eb" className="dark:stroke-gray-800" />
+            <BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 20 }}>
+              <CartesianGrid vertical={false} horizontal={false} />
               <XAxis 
                 type="number" 
-                fontSize={11} 
+                fontSize={10} 
                 tickLine={false} 
                 axisLine={false} 
-                tick={{ fill: '#9ca3af' }}
+                tick={{ fill: '#94a3b8', fontWeight: 600 }}
               />
               <YAxis 
                 dataKey="name" 
                 type="category" 
-                fontSize={11} 
+                fontSize={10} 
                 width={110} 
                 tickLine={false} 
                 axisLine={false}
-                tick={{ fill: '#9ca3af' }}
+                tick={{ fill: '#94a3b8', fontWeight: 600 }}
               />
               <Tooltip 
+                cursor={{ fill: '#f8fafc', radius: 4 }}
                 contentStyle={{ 
-                  borderRadius: '12px', 
+                  borderRadius: '16px', 
                   border: 'none', 
-                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                  boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+                  backgroundColor: '#ffffff',
                   padding: '12px'
                 }}
-                cursor={{ fill: 'rgba(168, 85, 247, 0.05)' }}
+                itemStyle={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}
+                labelStyle={{ fontSize: '10px', fontWeight: 800, color: '#94a3b8', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}
               />
-              <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={20} animationDuration={1500}>
+              <Bar dataKey="count" radius={[0, 10, 10, 0]} barSize={16} animationDuration={1500}>
                 {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill="#a855f7" />
+                  <Cell key={`cell-${index}`} fill="#8b5cf6" />
                 ))}
               </Bar>
             </BarChart>

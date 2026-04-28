@@ -44,8 +44,8 @@
   --radius-sm: 8px;
   --radius-lg: 16px;
   
-  /* Shadows matching MUI */
-  --shadow-card: 0px 1px 3px rgba(0,0,0,0.05), 0px 1px 2px rgba(0,0,0,0.06);
+  /* Shadows matching MUI - and modern SaaS */
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); /* shadow-sm equivalent */
   --shadow-elevated: 0px 4px 12px rgba(37,99,235,0.2);
 
   /* Font family */
@@ -67,25 +67,40 @@
   }
 
   * {
-    @apply border-gray-200 dark:border-gray-800;
+    @apply border-slate-100 dark:border-slate-800;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-slate-900 dark:text-white font-bold;
+  }
+
+  p, span, div {
+    /* Base secondary text color for many elements */
+    &.secondary-text {
+      @apply text-slate-500 dark:text-slate-400;
+    }
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-primary-600 text-white rounded-xl px-4 py-2 font-semibold hover:bg-primary-700 hover:shadow-elevated transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
+    @apply bg-primary-600 text-white rounded-xl px-4 py-2 font-semibold hover:bg-primary-700 hover:opacity-90 hover:shadow-elevated transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
   }
   
   .btn-outlined {
-    @apply border border-primary-600 text-primary-600 rounded-xl px-4 py-2 font-semibold hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
+    @apply border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl px-4 py-2 font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-danger {
+    @apply bg-red-600 text-white rounded-xl px-4 py-2 font-semibold hover:bg-red-700 hover:opacity-90 transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
   }
   
   .card {
-    @apply bg-surface dark:bg-surface-dark rounded-xl shadow-card border border-gray-100 dark:border-gray-800 overflow-hidden;
+    @apply bg-surface dark:bg-surface-dark rounded-2xl shadow-card border border-slate-100 dark:border-slate-800 overflow-hidden;
   }
   
   .input-field {
-    @apply w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-900 text-foreground dark:text-white focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all placeholder:text-gray-400;
+    @apply w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 outline-none transition-all placeholder:text-slate-400;
   }
 
   .glass {

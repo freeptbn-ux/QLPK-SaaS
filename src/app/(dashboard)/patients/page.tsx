@@ -24,7 +24,7 @@ export default async function PatientsPage({
     : await getPatientsPaginated(page, pageSize);
 
   return (
-    <div>
+    <div className="flex flex-col gap-6">
       <PageHeader
         title="Bệnh nhân"
         subtitle="Quản lý danh sách hồ sơ và lịch sử khám của bệnh nhân"

@@ -31,7 +31,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
   ]
 
   const SidebarContent = (
-    <div className="flex flex-col h-full bg-surface dark:bg-surface-dark border-r border-divider">
+    <div className="flex flex-col h-full bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 shadow-sm">
       {/* Mobile Header */}
       <div className="h-16 flex items-center px-6 border-b border-divider md:hidden">
         <span className="font-bold text-lg text-foreground">QLPK SaaS</span>

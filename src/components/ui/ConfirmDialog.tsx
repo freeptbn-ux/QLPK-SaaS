@@ -51,13 +51,13 @@ export default function ConfirmDialog({
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white p-6 shadow-xl dark:bg-slate-900 border border-gray-200 dark:border-gray-800"
+            className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white p-6 shadow-xl dark:bg-slate-900 border border-slate-200 dark:border-slate-800"
           >
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">
               {title}
             </h3>
             <div className="mt-3">
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-slate-600 dark:text-slate-400">
                 {message}
               </p>
             </div>
@@ -67,7 +67,7 @@ export default function ConfirmDialog({
                 type="button"
                 onClick={onCancel}
                 disabled={loading}
-                className="px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 rounded-xl transition-all disabled:opacity-50 active:scale-95"
+                className="px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 rounded-xl transition-all disabled:opacity-50 active:scale-95"
               >
                 {cancelLabel}
               </button>
@@ -75,7 +75,7 @@ export default function ConfirmDialog({
                 type="button"
                 onClick={onConfirm}
                 disabled={loading}
-                className="px-6 py-2.5 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-xl transition-all shadow-lg shadow-red-600/20 disabled:opacity-50 active:scale-95"
+                className="btn-danger px-6 py-2.5 text-sm"
               >
                 {loading ? (
                   <span className="flex items-center gap-2">

@@ -60,7 +60,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
               initial={{ opacity: 0, x: 50, scale: 0.9 }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, x: 20, scale: 0.9 }}
-              className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl border shadow-xl shadow-gray-200/20 dark:shadow-none min-w-[300px] max-w-md ${styles[severity]}`}
+              className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl border shadow-xl shadow-slate-200/20 dark:shadow-none min-w-[300px] max-w-md ${styles[severity]}`}
             >
               <div className="shrink-0">{icons[severity]}</div>
               <p className="text-sm font-semibold flex-1 leading-tight">
