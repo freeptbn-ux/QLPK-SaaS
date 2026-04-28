@@ -36,9 +36,10 @@ export default function GenderPieChart({ data }: GenderPieChartProps) {
                 dataKey="value"
                 animationDuration={1500}
                 stroke="none"
+                cornerRadius={4}
               >
                 {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} cornerRadius={4} />
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
               <Tooltip 
