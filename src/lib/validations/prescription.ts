@@ -14,6 +14,16 @@ export const createPrescriptionSchema = z.object({
   items: z.array(prescriptionItemSchema).min(1, 'Cần ít nhất 1 loại thuốc'),
   notes: z.string().optional().default(''),
   consultation_fee: z.number().nonnegative(),
+  weight: z.string()
+    .min(1, 'Vui lòng nhập cân nặng')
+    .refine(val => {
+      const num = parseFloat(val);
+      return !isNaN(num) && num > 0;
+    }, 'Cân nặng phải là số lớn hơn 0')
+    .refine(val => {
+      const num = parseFloat(val);
+      return num >= 0.1 && num <= 500;
+    }, 'Cân nặng phải từ 0.1 đến 500 kg'),
 });
 
 export const updatePrescriptionSchema = z.object({

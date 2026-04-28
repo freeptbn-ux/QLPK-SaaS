@@ -38,6 +38,17 @@ export async function createPrescription(rawData: CreatePrescriptionData) {
     return { success: false, error: getGenericErrorMessage(error) };
   }
 
+  // Update patient weight
+  const { error: weightError } = await supabase
+    .from('patients')
+    .update({ weight: data.weight })
+    .eq('id', data.patient_id);
+
+  if (weightError) {
+    console.warn('Failed to update patient weight:', weightError);
+    // Không throw - đơn thuốc đã tạo thành công
+  }
+
   revalidatePath(`/patients/${data.patient_id}`);
   return { success: true, id: headerId };
 }

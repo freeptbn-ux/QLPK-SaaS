@@ -26,6 +26,17 @@ export default function PrescriptionForm({ patient, consultationFee }: Prescript
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showCalculator, setShowCalculator] = useState(false);
+  const [weight, setWeight] = useState(patient.weight || '');
+  const [weightError, setWeightError] = useState<string | null>(null);
+
+  const validateWeight = (value: string): string | null => {
+    if (!value) return 'Vui lòng nhập cân nặng';
+    const num = parseFloat(value);
+    if (isNaN(num)) return 'Cân nặng phải là số';
+    if (num <= 0) return 'Cân nặng phải lớn hơn 0';
+    if (num > 500) return 'Cân nặng không hợp lệ';
+    return null;
+  };
 
   const handleAddMedicine = useCallback((medicine: Medicine | null) => {
     if (!medicine) return;
@@ -77,6 +88,13 @@ export default function PrescriptionForm({ patient, consultationFee }: Prescript
       return;
     }
 
+    const wErr = validateWeight(weight);
+    if (wErr) {
+      setWeightError(wErr);
+      setError('Vui lòng kiểm tra lại thông tin cân nặng');
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -86,6 +104,7 @@ export default function PrescriptionForm({ patient, consultationFee }: Prescript
       items,
       notes,
       consultation_fee: consultationFee,
+      weight,
     };
 
     try {
@@ -147,7 +166,7 @@ export default function PrescriptionForm({ patient, consultationFee }: Prescript
                     {showCalculator && (
                       <div className="p-4 bg-gray-50/50 dark:bg-slate-800/30 border border-gray-100 dark:border-gray-800 rounded-2xl animate-in fade-in slide-in-from-top-2 duration-300">
                         <DoseCalculator 
-                          initialWeight={patient.weight || undefined} 
+                          initialWeight={weight || undefined} 
                           initialTimesPerDay={2} 
                           isEmbedded={true} 
                         />
@@ -230,11 +249,39 @@ export default function PrescriptionForm({ patient, consultationFee }: Prescript
                     <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-700" />
                     <span>{formatAge(patient.dob || '') || 'Không rõ tuổi'}</span>
                   </p>
-                  {patient.weight && (
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      Cân nặng: <span className="font-medium text-gray-700 dark:text-gray-300">{patient.weight} kg</span>
-                    </p>
-                  )}
+                  
+                  {/* Weight Input - Bắt buộc */}
+                  <div className="mt-3 space-y-1.5">
+                    <label htmlFor="prescription-weight" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Cân nặng (kg) <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id="prescription-weight"
+                      type="number"
+                      step="0.1"
+                      min="0.1"
+                      max="500"
+                      required
+                      value={weight}
+                      onChange={(e) => {
+                        setWeight(e.target.value);
+                        setWeightError(validateWeight(e.target.value));
+                      }}
+                      onBlur={() => setWeightError(validateWeight(weight))}
+                      placeholder="VD: 65"
+                      className={cn(
+                        "input-field",
+                        weightError && "border-red-400 focus:ring-red-400"
+                      )}
+                      aria-invalid={!!weightError}
+                      aria-describedby={weightError ? "weight-error" : undefined}
+                    />
+                    {weightError && (
+                      <p id="weight-error" className="text-xs text-red-500 font-medium">
+                        {weightError}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

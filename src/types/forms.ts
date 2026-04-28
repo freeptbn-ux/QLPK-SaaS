@@ -22,6 +22,7 @@ export interface CreatePrescriptionData {
   items: PrescriptionItem[];
   notes?: string;
   consultation_fee: number;
+  weight: string; // Cân nặng bắt buộc (kg)
 }
 
 export interface UpdatePrescriptionData {

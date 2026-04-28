@@ -39,6 +39,12 @@ export default function DoseCalculator({
     getDrugPresets().then(setPresets);
   }, []);
 
+  useEffect(() => {
+    if (initialWeight !== undefined) {
+      setWeight(initialWeight.toString());
+    }
+  }, [initialWeight]);
+
   const handlePresetChange = (presetName: string) => {
     setSelectedPreset(presetName);
     const preset = presets.find(p => p.name === presetName);
