@@ -147,7 +147,7 @@ export default function PatientListClient({
         {/* Desktop Table */}
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="bg-slate-50/50 dark:bg-slate-800/30 text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800">
+            <thead className="bg-slate-50/50 dark:bg-slate-800/30 text-slate-800 dark:text-slate-200 border-b border-slate-200 dark:border-slate-700">
               <tr>
                 <th className="px-6 py-5 font-bold tracking-tight w-16">STT</th>
                 <th className="px-6 py-5 font-bold tracking-tight">Họ và tên</th>
@@ -157,7 +157,7 @@ export default function PatientListClient({
                 <th className="px-6 py-5 font-bold tracking-tight text-right">Thao tác</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+            <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
               {patients.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-20 text-center">
@@ -174,8 +174,13 @@ export default function PatientListClient({
                       {page * rowsPerPage + index + 1}
                     </td>
                     <td className="px-6 py-5">
-                      <div className="font-bold text-slate-900 dark:text-slate-100 group-hover:text-primary-600 transition-colors">
-                        {patient.name}
+                      <div className="font-bold text-slate-900 dark:text-slate-100 transition-colors">
+                        <Link 
+                          href={`/patients/${patient.id}`}
+                          className="hover:text-primary-600 hover:underline transition-colors"
+                        >
+                          {patient.name}
+                        </Link>
                       </div>
                     </td>
                     <td className="px-6 py-5">
@@ -237,7 +242,7 @@ export default function PatientListClient({
         </div>
 
         {/* Mobile Cards */}
-        <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+        <div className="md:hidden divide-y divide-slate-200 dark:divide-slate-700">
           {patients.length === 0 ? (
             <div className="p-12 text-center">
               <EmptyState title="Không tìm thấy bệnh nhân nào" />
@@ -247,7 +252,14 @@ export default function PatientListClient({
               <div key={patient.id} className="p-5 space-y-4 hover:bg-slate-50 transition-colors">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">{patient.name}</h3>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                      <Link 
+                        href={`/patients/${patient.id}`}
+                        className="hover:text-primary-600 hover:underline transition-colors"
+                      >
+                        {patient.name}
+                      </Link>
+                    </h3>
                     <p className="text-sm text-slate-500 font-medium mt-0.5">
                       {patient.dob ? `${formatDob(patient.dob)} • ${formatAge(patient.dob)}` : 'N/A'}
                     </p>

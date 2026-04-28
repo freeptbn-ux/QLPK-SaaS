@@ -173,7 +173,12 @@ export default function PatientList() {
                       {page * rowsPerPage + index + 1}
                     </td>
                     <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">
-                      {patient.name}
+                      <Link 
+                        href={`/patients/${patient.id}`}
+                        className="hover:text-primary-600 hover:underline transition-colors"
+                      >
+                        {patient.name}
+                      </Link>
                     </td>
                     <td className="px-4 py-3">
                       <div>{patient.dob || 'N/A'}</div>
@@ -240,7 +245,14 @@ export default function PatientList() {
               <div key={patient.id} className="p-4 space-y-3">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">{patient.name}</h3>
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                      <Link 
+                        href={`/patients/${patient.id}`}
+                        className="hover:text-primary-600 hover:underline transition-colors"
+                      >
+                        {patient.name}
+                      </Link>
+                    </h3>
                     <p className="text-sm text-gray-500">
                       {patient.gender} • {patient.dob ? formatAge(patient.dob) : 'N/A'}
                     </p>

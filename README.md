@@ -1,80 +1,86 @@
-# QLPK SaaS - Phần mềm Quản lý Phòng khám Nhi khoa
+# QLPK SaaS - Hệ Thống Quản Lý Phòng Khám Hiện Đại
 
-Dự án **QLPK SaaS** là một giải pháp quản lý phòng khám hiện đại, được tối ưu hóa đặc biệt cho quy trình khám chữa bệnh tại các phòng khám nhi khoa. Ứng dụng cung cấp một hệ sinh thái đầy đủ các tính năng giúp số hóa toàn bộ quy trình từ tiếp đón bệnh nhân đến kê đơn thuốc và báo cáo doanh thu.
+QLPK SaaS là một nền tảng quản lý phòng khám toàn diện, được thiết kế để tối ưu hóa quy trình làm việc của bác sĩ và nhân viên y tế. Ứng dụng cung cấp các công cụ mạnh mẽ từ quản lý hồ sơ bệnh nhân, theo dõi kho thuốc đến tính toán liều lượng thuốc chính xác.
 
-## 🌟 Tính năng nổi bật
+## 🚀 Tính Năng Chính
 
-- **Quản lý bệnh nhân chuyên sâu:** Lưu trữ thông tin bệnh nhân, lịch sử khám bệnh, biểu đồ tăng trưởng và tìm kiếm thông minh.
-- **Quản lý kho thuốc & Vật tư:** Theo dõi tồn kho thời gian thực, cảnh báo hạn sử dụng và thuốc sắp hết.
-- **Hệ thống kê đơn điện tử:** Quy trình kê đơn nhanh chóng, tích hợp máy tính liều lượng thuốc thông minh và in đơn thuốc chuyên nghiệp.
-- **Thống kê & Dashboard:** Hệ thống báo cáo trực quan với biểu đồ về doanh thu, lượt khám và hiệu quả sử dụng thuốc.
-- **Cài đặt hệ thống linh hoạt:** Tùy chỉnh thông tin phòng khám, quản lý danh mục thuốc và cấu hình bảo mật.
-- **Trải nghiệm người dùng cao cấp:** Giao diện hiện đại, mượt mà với hiệu ứng Framer Motion, hỗ trợ đầy đủ Dark Mode.
+- **Quản Lý Bệnh Nhân**: Lưu trữ hồ sơ chi tiết, lịch sử khám bệnh, và chẩn đoán. Hỗ trợ tìm kiếm thông minh và lọc theo tiêu chí.
+- **Quản Lý Kho Thuốc**: Theo dõi số lượng tồn kho, quản lý danh mục thuốc, và cảnh báo thuốc sắp hết.
+- **Tính Liều Thuốc (Dose Calculator)**: Công cụ hỗ trợ bác sĩ tính toán liều lượng thuốc chính xác dựa trên cân nặng và phác đồ điều trị.
+- **Thống Kê & Báo Cáo**: Biểu đồ trực quan về lượng bệnh nhân, doanh thu, và các chỉ số vận hành quan trọng.
+- **Tùy Chỉnh Thương Hiệu**: Cho phép thay đổi tên phòng khám và thông tin liên hệ một cách linh hoạt.
 
-## 🚀 Công nghệ sử dụng
+## 🛠️ Công Nghệ Sử Dụng
 
-Hệ thống được xây dựng trên nền tảng các công nghệ hiện đại nhất hiện nay:
+Dự án được xây dựng trên các công nghệ hiện đại nhất hiện nay:
 
-- **Frontend:** [Next.js 16](https://nextjs.org/) (App Router), [React 19](https://reactjs.org/), [TypeScript](https://www.typescriptlang.org/).
-- **Styling:** [Tailwind CSS v4](https://tailwindcss.com/) - Thiết kế hiện đại, tối ưu hiệu suất.
-- **Backend & Database:** [Supabase](https://supabase.com/) (PostgreSQL, Auth, Real-time updates).
-- **Trạng thái & Form:** [React Hook Form](https://react-hook-form.com/), [Zod](https://zod.dev/) (Validation).
-- **Animation:** [Framer Motion](https://www.framer.com/motion/).
-- **Biểu đồ:** [Recharts](https://recharts.org/).
-- **Icons:** [React Icons](https://react-icons.github.io/react-icons/), [Hi2 Icons](https://react-icons.github.io/react-icons/icons/hi2/).
-- **Testing:** [Vitest](https://vitest.dev/), [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/).
+- **Frontend**: [Next.js 16](https://nextjs.org/) (React 19), [Tailwind CSS 4](https://tailwindcss.com/)
+- **Ngôn ngữ**: [TypeScript](https://www.typescriptlang.org/)
+- **Cơ sở dữ liệu & Auth**: [Supabase](https://supabase.com/) (PostgreSQL)
+- **Quản lý form**: [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/)
+- **Hiệu ứng & Hoạt ảnh**: [Framer Motion](https://www.framer.com/motion/)
+- **Biểu đồ**: [Recharts](https://recharts.org/)
+- **Kiểm thử**: [Vitest](https://vitest.dev/) & [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
 
-## 📁 Cấu trúc thư mục
+## 📂 Cấu Trúc Thư Mục
 
 ```text
-src/
-├── actions/        # Server Actions xử lý logic backend & tương tác DB
-├── app/            # Next.js App Router (Layouts, Pages, APIs)
-├── components/     # Các UI Components được module hóa
-│   ├── ui/         # Components giao diện dùng chung (Button, Input,...)
-│   └── features/   # Components theo chức năng nghiệp vụ
-├── contexts/       # React Context Providers (Settings, Auth, Theme)
-├── hooks/          # Custom Hooks dùng chung
-├── lib/            # Cấu hình thư viện (Supabase client, utils)
-└── types/          # Định nghĩa kiểu dữ liệu (TypeScript Interfaces)
+├── src/
+│   ├── app/            # Next.js App Router (Pages & Layouts)
+│   ├── components/     # UI Components (Feature-based & Common)
+│   ├── actions/        # Server Actions (API & Database logic)
+│   ├── contexts/       # React Contexts (Settings, Auth, v.v.)
+│   ├── lib/            # Utilities & Helpers
+│   └── types/          # TypeScript interfaces/types
+├── supabase/           # Migrations & Database schema
+├── public/             # Static assets (Images, Fonts)
+├── tests/              # Global test setup
+└── .brain/             # Tri thức & Context của dự án (Eternal Context)
 ```
 
-## ⚙️ Hướng dẫn cài đặt
+## ⚙️ Cài Đặt
 
 ### 1. Yêu cầu hệ thống
-- Node.js 20+
-- Tài khoản Supabase
+- Node.js 18.x trở lên
+- npm hoặc yarn
 
-### 2. Cài đặt chi tiết
-1. **Clone dự án:**
-   ```bash
-   git clone https://github.com/freeptbn-ux/QLPK-SaaS.git
-   cd QLPK-SaaS
-   ```
+### 2. Các bước cài đặt
 
-2. **Cài đặt thư viện:**
-   ```bash
-   npm install
-   ```
+```bash
+# Clone dự án
+git clone https://github.com/freeptbn-ux/QLPK-SaaS.git
 
-3. **Cấu hình môi trường:**
-   Tạo file `.env.local` từ mẫu `.env.example`:
-   ```bash
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   ```
+# Di chuyển vào thư mục dự án
+cd QLPK-SaaS
 
-4. **Khởi động Dev Server:**
-   ```bash
-   npm run dev
-   ```
+# Cài đặt dependencies
+npm install
+```
 
-## 📝 Hướng dẫn sử dụng
+### 3. Cấu hình biến môi trường
+Tạo file `.env.local` dựa trên mẫu `.env.example` và điền các thông số Supabase của bạn:
 
-1. **Đăng nhập:** Truy cập `localhost:3000` và sử dụng tài khoản admin để đăng nhập.
-2. **Tiếp nhận:** Thêm mới bệnh nhân tại mục "Bệnh nhân" và tạo phiếu khám.
-3. **Kê đơn:** Trong chi tiết bệnh nhân, chọn "Tạo đơn thuốc", hệ thống sẽ gợi ý thuốc và liều lượng dựa trên cân nặng.
-4. **Thống kê:** Xem tổng quan tình hình phòng khám tại trang "Thống kê".
+```bash
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### 4. Chạy ứng dụng
+
+```bash
+# Chế độ phát triển (Development)
+npm run dev
+
+# Xây dựng bản production
+npm run build
+```
+
+## 📝 Cách Sử Dụng
+
+1. Đăng nhập vào hệ thống bằng tài khoản được cấp.
+2. Truy cập mục **Bệnh nhân** để tạo hồ sơ mới hoặc xem lịch sử khám.
+3. Sử dụng công cụ **Tính liều** để hỗ trợ kê đơn thuốc nhanh chóng.
+4. Kiểm tra **Thống kê** định kỳ để nắm bắt tình hình hoạt động của phòng khám.
 
 ---
 
