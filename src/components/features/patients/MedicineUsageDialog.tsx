@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HiOutlineXMark } from 'react-icons/hi2';
+import { HiOutlineXMark, HiChevronUpDown, HiChevronUp, HiChevronDown } from 'react-icons/hi2';
 import { getMedicineUsageByPatient } from '@/actions/patients';
 import { cn } from '@/lib/utils/cn';
 import Loading from '@/components/Loading/Loading';
@@ -14,6 +14,9 @@ interface MedicineUsageDialogProps {
   patientName: string;
 }
 
+type SortKey = 'medicine_name' | 'times_prescribed';
+type SortConfig = { key: SortKey; direction: 'asc' | 'desc' } | null;
+
 export default function MedicineUsageDialog({ open, onClose, patientId, patientName }: MedicineUsageDialogProps) {
   const [data, setData] = useState<{ 
     medicine_name: string; 
@@ -21,11 +24,13 @@ export default function MedicineUsageDialog({ open, onClose, patientId, patientN
     times_prescribed: number 
   }[]>([]);
   const [loading, setLoading] = useState(false);
+  const [sortConfig, setSortConfig] = useState<SortConfig>(null);
 
   useEffect(() => {
     if (open) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoading(true);
+      setSortConfig(null); // Reset sort when opening
       getMedicineUsageByPatient(patientId)
         .then(setData)
         .catch(err => {
@@ -35,6 +40,46 @@ export default function MedicineUsageDialog({ open, onClose, patientId, patientN
         .finally(() => setLoading(false));
     }
   }, [open, patientId]);
+
+  const handleSort = (key: SortKey) => {
+    setSortConfig(current => {
+      if (current?.key === key) {
+        if (key === 'medicine_name') {
+          if (current.direction === 'asc') return { key, direction: 'desc' };
+          return null;
+        } else {
+          // times_prescribed: Desc -> Asc -> Null
+          if (current.direction === 'desc') return { key, direction: 'asc' };
+          return null;
+        }
+      }
+      // Initial sort: Name (Asc), Times (Desc)
+      return { key, direction: key === 'medicine_name' ? 'asc' : 'desc' };
+    });
+  };
+
+  const sortedData = useMemo(() => {
+    if (!sortConfig) return data;
+
+    return [...data].sort((a, b) => {
+      const { key, direction } = sortConfig;
+      const modifier = direction === 'asc' ? 1 : -1;
+
+      if (key === 'medicine_name') {
+        return a.medicine_name.localeCompare(b.medicine_name, 'vi') * modifier;
+      }
+      if (key === 'times_prescribed') {
+        return (a.times_prescribed - b.times_prescribed) * modifier;
+      }
+      return 0;
+    });
+  }, [data, sortConfig]);
+
+  const getSortIcon = (key: SortKey) => {
+    if (sortConfig?.key !== key) return <HiChevronUpDown className="w-4 h-4 text-gray-400 group-hover:text-gray-500 transition-colors" />;
+    if (sortConfig.direction === 'asc') return <HiChevronUp className="w-4 h-4 text-primary-600 dark:text-primary-400" />;
+    return <HiChevronDown className="w-4 h-4 text-primary-600 dark:text-primary-400" />;
+  };
 
   return (
     <AnimatePresence>
@@ -79,12 +124,28 @@ export default function MedicineUsageDialog({ open, onClose, patientId, patientN
                   <table className="w-full text-sm">
                     <thead className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
                       <tr>
-                        <th className="px-4 py-3 text-left font-semibold">Tên thuốc</th>
-                        <th className="px-4 py-3 text-center font-semibold w-24">Số lần</th>
+                        <th 
+                          onClick={() => handleSort('medicine_name')}
+                          className="px-4 py-3 text-left font-semibold cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group"
+                        >
+                          <div className="flex items-center gap-2">
+                            Tên thuốc
+                            {getSortIcon('medicine_name')}
+                          </div>
+                        </th>
+                        <th 
+                          onClick={() => handleSort('times_prescribed')}
+                          className="px-4 py-3 text-center font-semibold w-24 cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group"
+                        >
+                          <div className="flex items-center justify-center gap-2">
+                            Số lần
+                            {getSortIcon('times_prescribed')}
+                          </div>
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                      {data.map((row, index) => {
+                      {sortedData.map((row, index) => {
                         const isBold = row.times_prescribed >= 3;
                         return (
                           <tr key={index} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors">

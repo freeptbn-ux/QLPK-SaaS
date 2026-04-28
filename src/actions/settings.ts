@@ -9,7 +9,8 @@ const ALLOWED_SETTING_KEYS = [
   'drug_presets',
   'clinic_name',
   'clinic_address',
-  'clinic_phone'
+  'clinic_phone',
+  'doctor_name'
 ];
 
 export async function getAllSettings(): Promise<Record<string, string>> {
@@ -42,13 +43,13 @@ export async function updateSetting(key: string, value: string) {
 
   const { error } = await supabase
     .from('settings')
-    .upsert({ key, value }, { onConflict: 'key' });
+    .upsert({ key, value }, { onConflict: 'clinic_id, key' });
 
   if (error) {
     throw new Error(getGenericErrorMessage(error));
   }
 
-  revalidatePath('/settings');
+  revalidatePath('/', 'layout');
 }
 
 export async function updateMultipleSettings(settings: Record<string, string>) {
@@ -67,13 +68,13 @@ export async function updateMultipleSettings(settings: Record<string, string>) {
 
   const { error } = await supabase
     .from('settings')
-    .upsert(upsertData, { onConflict: 'key' });
+    .upsert(upsertData, { onConflict: 'clinic_id, key' });
 
   if (error) {
     throw new Error(getGenericErrorMessage(error));
   }
 
-  revalidatePath('/settings');
+  revalidatePath('/', 'layout');
 }
 
 export async function changePassword(currentPassword: string, newPassword: string) {
@@ -127,7 +128,7 @@ export async function saveDrugPresets(presets: unknown[]) {
   if (!user) throw new Error('Unauthorized');
   const { error } = await supabase
     .from('settings')
-    .upsert({ key: 'drug_presets', value: JSON.stringify(presets) }, { onConflict: 'key' });
+    .upsert({ key: 'drug_presets', value: JSON.stringify(presets) }, { onConflict: 'clinic_id, key' });
 
   if (error) {
     throw new Error(getGenericErrorMessage(error));

@@ -1,10 +1,16 @@
+import { Metadata } from 'next';
+import { getAllSettings } from '@/actions/settings';
 import PageHeader from '@/components/ui/PageHeader';
 import DoseCalculator from '@/components/features/dose-calculator/DoseCalculator';
 import DrugPresetManager from '@/components/features/dose-calculator/DrugPresetManager';
 
-export const metadata = {
-  title: 'Tính liều thuốc - QLPK SaaS',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getAllSettings().catch(() => ({} as Record<string, string>));
+  const clinicName = settings.clinic_name || 'Phòng khám';
+  return {
+    title: `Tính liều thuốc - ${clinicName}`,
+  };
+}
 
 export default function DoseCalculatorPage() {
   return (

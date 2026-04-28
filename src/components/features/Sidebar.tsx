@@ -12,6 +12,7 @@ import {
   HiOutlineXMark
 } from 'react-icons/hi2'
 import { logoutAction } from '@/actions/auth'
+import { useSettings } from '@/contexts/SettingsContext'
 import Link from 'next/link'
 
 interface SidebarProps {
@@ -21,6 +22,7 @@ interface SidebarProps {
 
 export default function Sidebar({ open, onClose }: SidebarProps) {
   const pathname = usePathname()
+  const { clinic_name } = useSettings()
 
   const navItems = [
     { text: 'Bệnh nhân', icon: <HiOutlineUsers className="w-5 h-5" />, path: '/patients' },
@@ -34,10 +36,12 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
     <div className="flex flex-col h-full bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 shadow-sm">
       {/* Mobile Header */}
       <div className="h-16 flex items-center px-6 border-b border-divider md:hidden">
-        <span className="font-bold text-lg text-foreground">QLPK SaaS</span>
+        <span className="font-bold text-lg text-foreground truncate mr-2">
+          {clinic_name || 'Phòng khám'}
+        </span>
         <button 
           onClick={onClose}
-          className="ml-auto p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          className="ml-auto p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0"
           aria-label="Close menu"
         >
           <HiOutlineXMark className="w-5 h-5" />

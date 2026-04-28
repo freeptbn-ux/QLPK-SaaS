@@ -72,8 +72,9 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
         consultation_fee: values.consultation_fee.toString(),
       });
       showToast('Cập nhật cài đặt thành công', 'success');
-    } catch {
-      showToast('Lỗi khi cập nhật cài đặt', 'error');
+    } catch (error: any) {
+      console.error("Lỗi settings form:", error);
+      showToast(error.message || 'Lỗi khi cập nhật cài đặt', 'error');
     } finally {
       setIsSubmitting(false);
     }

@@ -9,16 +9,20 @@ import {
 } from 'react-icons/hi2'
 import { useThemeContext } from '@/theme/ThemeContext'
 import { logoutAction } from '@/actions/auth'
+import { useSettings } from '@/contexts/SettingsContext'
 
 interface TopBarProps {
   onMenuClick?: () => void
   title?: string
 }
 
-export default function TopBar({ onMenuClick, title = 'QLPK SaaS' }: TopBarProps) {
+export default function TopBar({ onMenuClick, title }: TopBarProps) {
   const { mode, toggleTheme } = useThemeContext()
+  const { clinic_name } = useSettings()
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+
+  const displayTitle = title || clinic_name || 'Phòng khám'
 
   const handleLogout = async () => {
     setIsUserMenuOpen(false)
@@ -48,7 +52,7 @@ export default function TopBar({ onMenuClick, title = 'QLPK SaaS' }: TopBarProps
         </button>
         
         <h1 className="text-lg font-bold text-foreground truncate">
-          {title}
+          {displayTitle}
         </h1>
       </div>
 
