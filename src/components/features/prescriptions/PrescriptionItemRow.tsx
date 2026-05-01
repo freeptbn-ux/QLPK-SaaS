@@ -28,8 +28,11 @@ const PrescriptionItemRow = React.memo(function PrescriptionItemRow({ item, inde
         <input
           type="number"
           min="1"
-          value={item.quantity}
-          onChange={(e) => onUpdate(index, { quantity: parseInt(e.target.value) || 0 })}
+          value={item.quantity === 0 ? '' : item.quantity}
+          onChange={(e) => {
+            const val = e.target.value;
+            onUpdate(index, { quantity: val === '' ? 0 : parseInt(val) || 0 });
+          }}
           className="input-field py-1 px-2 text-center"
         />
       </td>
@@ -37,8 +40,11 @@ const PrescriptionItemRow = React.memo(function PrescriptionItemRow({ item, inde
         <div className="relative">
           <input
             type="number"
-            value={item.unit_price}
-            onChange={(e) => onUpdate(index, { unit_price: parseInt(e.target.value) || 0 })}
+            value={item.unit_price === 0 ? '' : item.unit_price}
+            onChange={(e) => {
+              const val = e.target.value;
+              onUpdate(index, { unit_price: val === '' ? 0 : parseInt(val) || 0 });
+            }}
             className="input-field py-1 pl-2 pr-10"
           />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">đ</span>
