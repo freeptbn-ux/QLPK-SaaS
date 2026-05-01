@@ -14,6 +14,11 @@ import { cn } from '@/lib/utils/cn';
 import { formatDobForInput } from '@/lib/utils/age';
 import Loading from '@/components/Loading/Loading';
 
+function toTitleCase(str: string): string {
+  if (!str) return str;
+  return str.toLowerCase().replace(/(?:^|\s)\S/g, (char) => char.toUpperCase());
+}
+
 interface PatientFormDialogProps {
   open: boolean;
   onClose: () => void;
@@ -133,7 +138,7 @@ export default function PatientFormDialog({
               </button>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="overflow-y-auto max-h-[calc(100vh-200px)]">
+            <form autoComplete="off" onSubmit={handleSubmit(onSubmit)} className="overflow-y-auto max-h-[calc(100vh-200px)]">
               <div className="p-6 space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   {/* Name - Full Width */}
@@ -147,7 +152,9 @@ export default function PatientFormDialog({
                       render={({ field }) => (
                         <input
                           {...field}
+                          onChange={(e) => field.onChange(toTitleCase(e.target.value))}
                           id="patient-name"
+                          autoComplete="off"
                           className={cn(
                             "input-field",
                             errors.name && "border-red-500 focus:border-red-500 focus:ring-red-500/20"
@@ -230,6 +237,7 @@ export default function PatientFormDialog({
                         <input
                           {...field}
                           id="patient-phone"
+                          autoComplete="off"
                           className={cn(
                             "input-field",
                             errors.phone && "border-red-500 focus:border-red-500 focus:ring-red-500/20"
@@ -255,6 +263,7 @@ export default function PatientFormDialog({
                         <input
                           {...field}
                           id="patient-weight"
+                          autoComplete="off"
                           className="input-field"
                           placeholder="VD: 60"
                         />
@@ -274,6 +283,7 @@ export default function PatientFormDialog({
                         <textarea
                           {...field}
                           id="patient-address"
+                          autoComplete="off"
                           rows={2}
                           className="input-field resize-none"
                           placeholder="Số nhà, đường, phường/xã..."
@@ -294,6 +304,7 @@ export default function PatientFormDialog({
                         <textarea
                           {...field}
                           id="patient-diagnosis"
+                          autoComplete="off"
                           rows={3}
                           className="input-field resize-none"
                           placeholder="Chẩn đoán ban đầu hoặc ghi chú đặc biệt về bệnh nhân..."

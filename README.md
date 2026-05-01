@@ -1,87 +1,82 @@
-# QLPK SaaS - Hệ Thống Quản Lý Phòng Khám Hiện Đại
+# QLPK-SaaS - Hệ Thống Quản Lý Phòng Khám Hiện Đại
 
-QLPK SaaS là một nền tảng quản lý phòng khám toàn diện, được thiết kế để tối ưu hóa quy trình làm việc của bác sĩ và nhân viên y tế. Ứng dụng cung cấp các công cụ mạnh mẽ từ quản lý hồ sơ bệnh nhân, theo dõi kho thuốc đến tính toán liều lượng thuốc chính xác.
+QLPK-SaaS là một giải pháp phần mềm hiện đại được thiết kế để tối ưu hóa quy trình quản lý phòng khám, hồ sơ bệnh nhân và lịch hẹn. Ứng dụng được xây dựng trên nền tảng web với giao diện mượt mà, thân thiện và hiệu năng cao.
 
 ## 🚀 Tính Năng Chính
 
-- **Quản Lý Bệnh Nhân**: Lưu trữ hồ sơ chi tiết, lịch sử khám bệnh, và chẩn đoán. Hỗ trợ tìm kiếm thông minh và lọc theo tiêu chí.
-- **Quản Lý Kho Thuốc**: Theo dõi số lượng tồn kho, quản lý danh mục thuốc, và cảnh báo thuốc sắp hết.
-- **Tính Liều Thuốc (Dose Calculator)**: Công cụ hỗ trợ bác sĩ tính toán liều lượng thuốc chính xác dựa trên cân nặng và phác đồ điều trị.
-- **Thống Kê & Báo Cáo**: Biểu đồ trực quan về lượng bệnh nhân, doanh thu, và các chỉ số vận hành quan trọng.
-- **Tùy Chỉnh Thương Hiệu**: Cho phép thay đổi tên phòng khám và thông tin liên hệ một cách linh hoạt.
+- **Quản lý Bệnh nhân**: Thêm mới, cập nhật và theo dõi hồ sơ bệnh nhân chi tiết.
+- **Hồ sơ Y tế**: Lưu trữ lịch sử khám bệnh, chẩn đoán và cân nặng.
+- **Giao diện Responsive**: Hoạt động hoàn hảo trên cả máy tính và thiết bị di động.
+- **Chế độ Tối (Dark Mode)**: Tối ưu trải nghiệm người dùng trong mọi điều kiện ánh sáng.
+- **Tự động hóa**: Các tính năng thông minh giúp nhập liệu nhanh chóng và chính xác.
 
 ## 🛠️ Công Nghệ Sử Dụng
 
-Dự án được xây dựng trên các công nghệ hiện đại nhất hiện nay:
+Dự án được xây dựng với các công nghệ tiên tiến nhất hiện nay:
 
-- **Frontend**: [Next.js 16](https://nextjs.org/) (React 19), [Tailwind CSS 4](https://tailwindcss.com/)
-- **Ngôn ngữ**: [TypeScript](https://www.typescriptlang.org/)
-- **Cơ sở dữ liệu & Auth**: [Supabase](https://supabase.com/) (PostgreSQL)
-- **Quản lý form**: [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/)
-- **Hiệu ứng & Hoạt ảnh**: [Framer Motion](https://www.framer.com/motion/)
-- **Biểu đồ**: [Recharts](https://recharts.org/)
-- **Kiểm thử**: [Vitest](https://vitest.dev/) & [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
+- **Frontend**: [Next.js 14+](https://nextjs.org/) (App Router), [React](https://reactjs.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **State Management & Validation**: [React Hook Form](https://react-hook-form.com/), [Zod](https://zod.dev/)
+- **Icons**: [React Icons](https://react-icons.github.io/react-icons/), [Lucide React](https://lucide.dev/)
+- **Backend**: [Supabase](https://supabase.com/) (Database & Auth)
+- **Deployment**: [Vercel](https://vercel.com/)
 
 ## 📂 Cấu Trúc Thư Mục
 
 ```text
-├── src/
-│   ├── app/            # Next.js App Router (Pages & Layouts)
-│   ├── components/     # UI Components (Feature-based & Common)
-│   ├── actions/        # Server Actions (API & Database logic)
-│   ├── contexts/       # React Contexts (Settings, Auth, v.v.)
-│   ├── lib/            # Utilities & Helpers
-│   └── types/          # TypeScript interfaces/types
-├── supabase/           # Migrations & Database schema
-├── public/             # Static assets (Images, Fonts)
-├── tests/              # Global test setup
-└── .brain/             # Tri thức & Context của dự án (Eternal Context)
+src/
+├── app/            # Next.js App Router (Pages & Layouts)
+├── actions/        # Server Actions (Xử lý logic Database)
+├── components/     # UI Components
+│   ├── features/   # Các component theo tính năng (bệnh nhân,...)
+│   └── ui/         # Các component UI dùng chung
+├── lib/            # Tiện ích (utils) và Validation (zod)
+├── types/          # Định nghĩa kiểu TypeScript
+└── plans/          # Kế hoạch phát triển dự án
 ```
 
-## ⚙️ Cài Đặt
+## ⚙️ Hướng Dẫn Cài Đặt
 
-### 1. Yêu cầu hệ thống
+### Yêu cầu hệ thống:
 - Node.js 18.x trở lên
 - npm hoặc yarn
 
-### 2. Các bước cài đặt
+### Các bước cài đặt:
 
-```bash
-# Clone dự án
-git clone https://github.com/freeptbn-ux/QLPK-SaaS.git
+1. **Clone repository**:
+   ```bash
+   git clone https://github.com/freeptbn-ux/QLPK-SaaS.git
+   cd QLPK-SaaS
+   ```
 
-# Di chuyển vào thư mục dự án
-cd QLPK-SaaS
+2. **Cài đặt dependencies**:
+   ```bash
+   npm install
+   ```
 
-# Cài đặt dependencies
-npm install
-```
+3. **Cấu hình biến môi trường**:
+   Tạo file `.env.local` từ mẫu và điền thông tin Supabase của bạn:
+   ```bash
+   NEXT_PUBLIC_SUPABASE_URL=your_project_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+   ```
 
-### 3. Cấu hình biến môi trường
-Tạo file `.env.local` dựa trên mẫu `.env.example` và điền các thông số Supabase của bạn:
+4. **Chạy ứng dụng ở chế độ phát triển**:
+   ```bash
+   npm run dev
+   ```
+   Mở [http://localhost:3000](http://localhost:3000) trên trình duyệt để xem kết quả.
 
-```bash
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
+## 🔒 Bảo Mật & Lưu Ý
 
-### 4. Chạy ứng dụng
+- Tuyệt đối không commit các file chứa API key (như `.env.local`) lên Github.
+- Dự án đã được cấu hình `.gitignore` chuẩn cho Next.js và Supabase.
+- Thư mục `.brain` chứa dữ liệu ngữ cảnh phát triển được phép upload để đồng bộ hóa.
 
-```bash
-# Chế độ phát triển (Development)
-npm run dev
+## 📄 Bản Quyền
 
-# Xây dựng bản production
-npm run build
-```
-
-## 📝 Cách Sử Dụng
-
-1. Đăng nhập vào hệ thống bằng tài khoản được cấp.
-2. Truy cập mục **Bệnh nhân** để tạo hồ sơ mới hoặc xem lịch sử khám.
-3. Sử dụng công cụ **Tính liều** để hỗ trợ kê đơn thuốc nhanh chóng.
-4. Kiểm tra **Thống kê** định kỳ để nắm bắt tình hình hoạt động của phòng khám.
+Copyright 2026 Nguyễn Duy Trường
 
 ---
-
-**Copyright 2026 Nguyễn Duy Trường**
+*Dự án được phát triển với sự hỗ trợ của Antigravity AI.*

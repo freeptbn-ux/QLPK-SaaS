@@ -137,4 +137,21 @@ describe('PatientFormDialog', () => {
       expect(screen.getByText('Ngày sinh không hợp lệ (DD/MM/YYYY)')).toBeInTheDocument();
     });
   });
+
+  it('should auto-capitalize the first letter of each word in the name field', async () => {
+    render(
+      <PatientFormDialog
+        open={true}
+        onClose={mockOnClose}
+        onSuccess={mockOnSuccess}
+      />
+    );
+
+    const nameInput = screen.getByLabelText(/Họ và tên/) as HTMLInputElement;
+    fireEvent.change(nameInput, { target: { value: 'nguyễn duy trƯỜng' } });
+    
+    await waitFor(() => {
+      expect(nameInput.value).toBe('Nguyễn Duy Trường');
+    });
+  });
 });

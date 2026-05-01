@@ -164,6 +164,7 @@ export const DateInput: React.FC<DateInputProps> = ({
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
             placeholder={placeholder.day || 'DD'}
+            autoComplete="off"
             disabled={disabled}
             inputMode="numeric"
             className="w-full bg-transparent border-none outline-none text-center text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-slate-600 font-medium"
@@ -182,6 +183,7 @@ export const DateInput: React.FC<DateInputProps> = ({
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
             placeholder={placeholder.month || 'MM'}
+            autoComplete="off"
             disabled={disabled}
             inputMode="numeric"
             className="w-full bg-transparent border-none outline-none text-center text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-slate-600 font-medium"
@@ -200,6 +202,7 @@ export const DateInput: React.FC<DateInputProps> = ({
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
             placeholder={placeholder.year || 'YYYY'}
+            autoComplete="off"
             disabled={disabled}
             inputMode="numeric"
             className="w-full bg-transparent border-none outline-none text-center text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-slate-600 font-medium"
