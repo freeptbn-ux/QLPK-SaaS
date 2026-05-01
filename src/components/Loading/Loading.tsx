@@ -29,10 +29,10 @@ export interface LoadingProps {
 }
 
 const sizeMap: Record<LoadingSize, string> = {
-  sm: 'w-4 h-4',
-  md: 'w-8 h-8',
-  lg: 'w-12 h-12',
-  xl: 'w-16 h-16',
+  sm: 'text-xs',
+  md: 'text-sm',
+  lg: 'text-base',
+  xl: 'text-lg',
 };
 
 const skeletonSizeMap: Record<LoadingSize, string> = {
@@ -107,13 +107,16 @@ export function Loading({
         return (
           <div
             className={cn(
-              styles.spinner,
+              'flex items-center gap-1 font-medium text-slate-500 dark:text-slate-400',
               sizeMap[size],
               className
             )}
             aria-label={ariaLabel}
             role="status"
-          />
+          >
+            <span>Loading</span>
+            <span className={styles.dots} />
+          </div>
         );
     }
   };

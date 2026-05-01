@@ -26,47 +26,53 @@ export function useLoadingState(
 
   useEffect(() => {
     if (isLoading) {
-      // Logic for showing the loader...
+      // Clear any pending min duration timer
       if (minDurationTimerRef.current) {
         clearTimeout(minDurationTimerRef.current);
         minDurationTimerRef.current = null;
       }
 
-      if (!shouldShow) {
+      // Start delay timer if not already showing
+      if (!shouldShow && !delayTimerRef.current) {
         delayTimerRef.current = setTimeout(() => {
           setShouldShow(true);
           loadingStartedAt.current = Date.now();
+          delayTimerRef.current = null;
         }, delay);
       }
 
-      // Slow loading warning
+      // Slow loading warning (start if not already running)
       if (!slowLoadingTimerRef.current) {
         slowLoadingTimerRef.current = setTimeout(() => {
-          console.warn('[ui.loading.long] Loading state persisted for > 2000ms');
-        }, 2000);
+          console.warn(`[ui.loading.long] Loading state persisted for > 2000ms. (delay: ${delay}ms)`);
+        }, 2000 + delay);
       }
     } else {
+      // Clear delay timer if it hasn't fired yet
+      if (delayTimerRef.current) {
+        clearTimeout(delayTimerRef.current);
+        delayTimerRef.current = null;
+      }
+
       // Clear slow loading timer
       if (slowLoadingTimerRef.current) {
         clearTimeout(slowLoadingTimerRef.current);
         slowLoadingTimerRef.current = null;
       }
 
-      // Logic for hiding the loader...
-      if (delayTimerRef.current) {
-        clearTimeout(delayTimerRef.current);
-        delayTimerRef.current = null;
-      }
-
+      // If we are currently showing, check minDuration
       if (shouldShow && loadingStartedAt.current) {
         const elapsed = Date.now() - loadingStartedAt.current;
         const remaining = Math.max(0, minDuration - elapsed);
 
         if (remaining > 0) {
-          minDurationTimerRef.current = setTimeout(() => {
-            setShouldShow(false);
-            loadingStartedAt.current = null;
-          }, remaining);
+          if (!minDurationTimerRef.current) {
+            minDurationTimerRef.current = setTimeout(() => {
+              setShouldShow(false);
+              loadingStartedAt.current = null;
+              minDurationTimerRef.current = null;
+            }, remaining);
+          }
         } else {
           setShouldShow(false);
           loadingStartedAt.current = null;
@@ -75,13 +81,15 @@ export function useLoadingState(
         setShouldShow(false);
       }
     }
+  }, [isLoading, delay, minDuration, shouldShow]);
 
+  useEffect(() => {
     return () => {
       if (delayTimerRef.current) clearTimeout(delayTimerRef.current);
       if (minDurationTimerRef.current) clearTimeout(minDurationTimerRef.current);
       if (slowLoadingTimerRef.current) clearTimeout(slowLoadingTimerRef.current);
     };
-  }, [isLoading, delay, minDuration, shouldShow]);
+  }, []);
 
   return shouldShow;
 }

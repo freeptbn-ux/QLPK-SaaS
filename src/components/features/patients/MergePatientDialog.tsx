@@ -13,6 +13,7 @@ import {
 import { getPotentialDuplicates, mergePatients } from '@/actions/patients';
 import { useToast } from '@/hooks/useToast';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
+import Loading from '@/components/Loading/Loading';
 
 interface DuplicateGroup {
   name_normalized: string;
@@ -192,29 +193,9 @@ export default function MergePatientDialog({
             {/* Content */}
             <div className="flex-grow overflow-y-auto p-6 space-y-6">
               {loading ? (
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3 text-primary-600 animate-pulse">
-                    <HiOutlineArrowPath className="w-5 h-5 animate-spin" />
-                    <span className="font-medium">Đang quét dữ liệu...</span>
-                  </div>
-                  <div className="space-y-4 mt-4">
-                    {Array.from({ length: 3 }).map((_, i) => (
-                      <div key={i} className="border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden animate-pulse">
-                        <div className="bg-gray-50 dark:bg-gray-800/50 px-4 py-3 border-b border-gray-100 dark:border-gray-800">
-                          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
-                        </div>
-                        <div className="p-4 space-y-4">
-                          <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                            <div className="space-y-2 flex-1">
-                              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
-                              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                <div className="py-12 flex flex-col items-center justify-center">
+                  <Loading isLoading={true} variant="spinner" size="lg" className="text-primary-600" />
+                  <p className="mt-4 text-gray-500 font-medium">Đang quét dữ liệu trùng lặp...</p>
                 </div>
               ) : groups.length === 0 ? (
                 <div className="py-12 flex flex-col items-center justify-center text-center space-y-3">
@@ -261,7 +242,7 @@ export default function MergePatientDialog({
                             className="text-xs font-bold text-primary-600 hover:text-primary-700 dark:text-primary-400 flex items-center gap-1 disabled:opacity-50"
                           >
                             {mergingGroups.has(getGroupKey(group)) ? (
-                              <HiOutlineArrowPath className="w-3 h-3 animate-spin" />
+                              <Loading isLoading={true} size="sm" className="text-primary-600" />
                             ) : (
                               <HiOutlineTrash className="w-3 h-3" />
                             )}
@@ -350,7 +331,7 @@ export default function MergePatientDialog({
                   >
                     {merging ? (
                       <>
-                        <HiOutlineArrowPath className="w-4 h-4 animate-spin" />
+                        <Loading isLoading={true} size="sm" className="text-white" />
                         Đang gộp...
                       </>
                     ) : (

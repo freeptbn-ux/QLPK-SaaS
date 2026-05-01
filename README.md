@@ -11,10 +11,11 @@ QLPK-SaaS là giải pháp phần mềm chuyên dụng được thiết kế đ�
 - **Báo Cáo & Thống Kê**: Cung cấp cái nhìn tổng quan về tình hình hoạt động của phòng khám qua các biểu đồ trực quan.
 - **Trải Nghiệm Đa Nền Tảng**: Giao diện Responsive hoàn hảo trên Desktop, Tablet và Mobile.
 - **Chế Độ Tối (Dark Mode)**: Giao diện hiện đại, giảm mỏi mắt cho bác sĩ khi làm việc cường độ cao.
+- **Hiệu Ứng Loading Mượt Mà**: Tích hợp các Skeleton Screen và Animation tinh tế giúp trải nghiệm người dùng luôn liền mạch.
 
 ## 🛠️ Công Nghệ Sử Dụng
 
-Dự án được phát triển dựa trên những công nghệ web mạnh mẽ và hiện đại nhất hiện nay:
+Dự án được xây dựng trên nền tảng công nghệ hiện đại nhất:
 
 - **Framework**: [Next.js 16](https://nextjs.org/) (App Router, React 19)
 - **Cơ sở dữ liệu & Auth**: [Supabase](https://supabase.com/) (PostgreSQL)
