@@ -185,7 +185,7 @@ export default function PrescriptionForm({ patient, consultationFee }: Prescript
                         <thead className="bg-gray-50 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider text-[11px]">
                           <tr>
                             <th className="px-4 py-3">Tên thuốc</th>
-                            <th className="px-4 py-3 w-[100px]">SL</th>
+                            <th className="px-4 py-3 min-w-[80px] w-[100px]">SL</th>
                             <th className="px-4 py-3 w-[140px]">Đơn giá</th>
                             <th className="px-4 py-3 text-right">Thành tiền</th>
                             <th className="px-4 py-3 w-[50px]"></th>

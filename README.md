@@ -1,82 +1,84 @@
 # QLPK-SaaS - Hệ Thống Quản Lý Phòng Khám Hiện Đại
 
-QLPK-SaaS là một giải pháp phần mềm hiện đại được thiết kế để tối ưu hóa quy trình quản lý phòng khám, hồ sơ bệnh nhân và lịch hẹn. Ứng dụng được xây dựng trên nền tảng web với giao diện mượt mà, thân thiện và hiệu năng cao.
+QLPK-SaaS là giải pháp phần mềm chuyên dụng được thiết kế để tối ưu hóa quy trình vận hành cho các phòng khám vừa và nhỏ. Với triết lý tập trung vào trải nghiệm người dùng và tính chính xác trong y tế, hệ thống giúp bác sĩ quản lý hồ sơ bệnh nhân, kê đơn và theo dõi kho thuốc một cách hiệu quả nhất.
 
-## 🚀 Tính Năng Chính
+## 🌟 Tính Năng Nổi Bật
 
-- **Quản lý Bệnh nhân**: Thêm mới, cập nhật và theo dõi hồ sơ bệnh nhân chi tiết.
-- **Hồ sơ Y tế**: Lưu trữ lịch sử khám bệnh, chẩn đoán và cân nặng.
-- **Giao diện Responsive**: Hoạt động hoàn hảo trên cả máy tính và thiết bị di động.
-- **Chế độ Tối (Dark Mode)**: Tối ưu trải nghiệm người dùng trong mọi điều kiện ánh sáng.
-- **Tự động hóa**: Các tính năng thông minh giúp nhập liệu nhanh chóng và chính xác.
+- **Quản Lý Bệnh Nhân Toàn Diện**: Lưu trữ thông tin cá nhân, tiểu sử bệnh lý và lịch sử thăm khám chi tiết.
+- **Kê Đơn Thuốc Thông Minh**: Giao diện kê đơn nhanh chóng, hỗ trợ tính toán tổng tiền tự động và quản lý liều lượng.
+- **Công Cụ Tính Liều Nhanh**: Tích hợp bộ tính liều chuyên dụng (đặc biệt hữu ích cho nhi khoa), hỗ trợ tính toán liều dùng dựa trên cân nặng.
+- **Quản Lý Kho Thuốc**: Theo dõi số lượng tồn kho, đơn giá và quy cách đóng gói thuốc.
+- **Báo Cáo & Thống Kê**: Cung cấp cái nhìn tổng quan về tình hình hoạt động của phòng khám qua các biểu đồ trực quan.
+- **Trải Nghiệm Đa Nền Tảng**: Giao diện Responsive hoàn hảo trên Desktop, Tablet và Mobile.
+- **Chế Độ Tối (Dark Mode)**: Giao diện hiện đại, giảm mỏi mắt cho bác sĩ khi làm việc cường độ cao.
 
 ## 🛠️ Công Nghệ Sử Dụng
 
-Dự án được xây dựng với các công nghệ tiên tiến nhất hiện nay:
+Dự án được phát triển dựa trên những công nghệ web mạnh mẽ và hiện đại nhất hiện nay:
 
-- **Frontend**: [Next.js 14+](https://nextjs.org/) (App Router), [React](https://reactjs.org/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **Animations**: [Framer Motion](https://www.framer.com/motion/)
-- **State Management & Validation**: [React Hook Form](https://react-hook-form.com/), [Zod](https://zod.dev/)
-- **Icons**: [React Icons](https://react-icons.github.io/react-icons/), [Lucide React](https://lucide.dev/)
-- **Backend**: [Supabase](https://supabase.com/) (Database & Auth)
-- **Deployment**: [Vercel](https://vercel.com/)
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router, React 19)
+- **Cơ sở dữ liệu & Auth**: [Supabase](https://supabase.com/) (PostgreSQL)
+- **Styling**: [Tailwind CSS 4.0](https://tailwindcss.com/)
+- **Animation**: [Framer Motion](https://www.framer.com/motion/)
+- **Quản lý Form**: [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/)
+- **Biểu đồ**: [Recharts](https://recharts.org/)
+- **Testing**: [Vitest](https://vitest.dev/)
+- **Ngôn ngữ**: [TypeScript](https://www.typescriptlang.org/)
 
-## 📂 Cấu Trúc Thư Mục
+## 📂 Cấu Trúc Dự Án
 
 ```text
 src/
-├── app/            # Next.js App Router (Pages & Layouts)
-├── actions/        # Server Actions (Xử lý logic Database)
-├── components/     # UI Components
-│   ├── features/   # Các component theo tính năng (bệnh nhân,...)
-│   └── ui/         # Các component UI dùng chung
-├── lib/            # Tiện ích (utils) và Validation (zod)
-├── types/          # Định nghĩa kiểu TypeScript
-└── plans/          # Kế hoạch phát triển dự án
+├── app/            # Tuyến đường và giao diện chính (App Router)
+├── actions/        # Các hàm xử lý phía Server (Server Actions)
+├── components/     # Các thành phần giao diện tái sử dụng
+│   ├── features/   # Thành phần UI theo chức năng (Bệnh nhân, Thuốc, Đơn thuốc...)
+│   └── ui/         # Thành phần UI cơ bản (Button, Input, Card...)
+├── lib/            # Thư viện tiện ích, cấu hình Supabase và định nghĩa Validation
+├── types/          # Định nghĩa kiểu dữ liệu (TypeScript Interfaces)
+└── supabase/       # Cấu hình Database, Migrations và Types
 ```
 
 ## ⚙️ Hướng Dẫn Cài Đặt
 
-### Yêu cầu hệ thống:
+### Yêu cầu:
 - Node.js 18.x trở lên
-- npm hoặc yarn
+- Tài khoản Supabase (đã thiết lập Database)
 
-### Các bước cài đặt:
+### Các bước thực hiện:
 
-1. **Clone repository**:
+1. **Clone mã nguồn**:
    ```bash
    git clone https://github.com/freeptbn-ux/QLPK-SaaS.git
    cd QLPK-SaaS
    ```
 
-2. **Cài đặt dependencies**:
+2. **Cài đặt thư viện**:
    ```bash
    npm install
    ```
 
-3. **Cấu hình biến môi trường**:
-   Tạo file `.env.local` từ mẫu và điền thông tin Supabase của bạn:
-   ```bash
-   NEXT_PUBLIC_SUPABASE_URL=your_project_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+3. **Cấu hình môi trường**:
+   Tạo file `.env.local` trong thư mục gốc và điền các thông tin sau:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=địa_chỉ_supabase_của_bạn
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=mã_anon_key_của_bạn
    ```
 
-4. **Chạy ứng dụng ở chế độ phát triển**:
+4. **Khởi chạy ứng dụng**:
    ```bash
    npm run dev
    ```
-   Mở [http://localhost:3000](http://localhost:3000) trên trình duyệt để xem kết quả.
+   Truy cập [http://localhost:3000](http://localhost:3000) để trải nghiệm.
 
 ## 🔒 Bảo Mật & Lưu Ý
 
-- Tuyệt đối không commit các file chứa API key (như `.env.local`) lên Github.
-- Dự án đã được cấu hình `.gitignore` chuẩn cho Next.js và Supabase.
-- Thư mục `.brain` chứa dữ liệu ngữ cảnh phát triển được phép upload để đồng bộ hóa.
+- **API Keys**: Tuyệt đối không chia sẻ hoặc upload file `.env.local` chứa các khóa bảo mật lên các nền tảng công khai.
+- **Lưu trữ**: Toàn bộ dữ liệu được lưu trữ bảo mật trên nền tảng Supabase với chính sách RLS (Row Level Security).
 
 ## 📄 Bản Quyền
 
 Copyright 2026 Nguyễn Duy Trường
 
 ---
-*Dự án được phát triển với sự hỗ trợ của Antigravity AI.*
+*Dự án được xây dựng và phát triển với sự hỗ trợ của Antigravity AI.*

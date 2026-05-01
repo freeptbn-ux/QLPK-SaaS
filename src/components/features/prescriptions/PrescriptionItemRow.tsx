@@ -24,7 +24,7 @@ const PrescriptionItemRow = React.memo(function PrescriptionItemRow({ item, inde
           {item.packing_spec}
         </div>
       </td>
-      <td className="px-4 py-3 w-[100px]">
+      <td className="px-4 py-3 min-w-[80px] w-[100px]">
         <input
           type="number"
           min="1"
