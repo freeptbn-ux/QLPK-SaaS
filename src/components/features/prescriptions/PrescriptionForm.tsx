@@ -20,7 +20,7 @@ interface PrescriptionFormProps {
 
 export default function PrescriptionForm({ patient, consultationFee }: PrescriptionFormProps) {
   const router = useRouter();
-  const [diagnosis, setDiagnosis] = useState(patient.diagnosis || '');
+  const [diagnosis, setDiagnosis] = useState('');
   const [items, setItems] = useState<PrescriptionItem[]>([]);
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);

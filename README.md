@@ -1,59 +1,49 @@
-# QLPK-SaaS - Hệ Thống Quản Lý Phòng Khám Hiện Đại
+# 🏥 Hệ Thống Quản Lý Phòng Khám (QLPK-SaaS)
 
-QLPK-SaaS là giải pháp phần mềm chuyên dụng được thiết kế để tối ưu hóa quy trình vận hành cho các phòng khám vừa và nhỏ. Với triết lý tập trung vào trải nghiệm người dùng và tính chính xác trong y tế, hệ thống giúp bác sĩ quản lý hồ sơ bệnh nhân, kê đơn và theo dõi kho thuốc một cách hiệu quả nhất.
+Chào mừng bạn đến với dự án **QLPK-SaaS** - Một giải pháp quản lý phòng khám hiện đại, tinh gọn và hiệu quả, được xây dựng trên nền tảng công nghệ mới nhất.
 
-## 🌟 Tính Năng Nổi Bật
+## 🌟 Tổng Quan Dự Án
 
-- **Quản Lý Bệnh Nhân Toàn Diện**: Lưu trữ thông tin cá nhân, tiểu sử bệnh lý và lịch sử thăm khám chi tiết.
-- **Kê Đơn Thuốc Thông Minh**: Giao diện kê đơn nhanh chóng, hỗ trợ tính toán tổng tiền tự động và quản lý liều lượng.
-- **Công Cụ Tính Liều Nhanh**: Tích hợp bộ tính liều chuyên dụng (đặc biệt hữu ích cho nhi khoa), hỗ trợ tính toán liều dùng dựa trên cân nặng.
-- **Quản Lý Kho Thuốc**: Theo dõi số lượng tồn kho, đơn giá và quy cách đóng gói thuốc.
-- **Báo Cáo & Thống Kê**: Cung cấp cái nhìn tổng quan về tình hình hoạt động của phòng khám qua các biểu đồ trực quan.
-- **Trải Nghiệm Đa Nền Tảng**: Giao diện Responsive hoàn hảo trên Desktop, Tablet và Mobile.
-- **Chế Độ Tối (Dark Mode)**: Giao diện hiện đại, giảm mỏi mắt cho bác sĩ khi làm việc cường độ cao.
-- **Hiệu Ứng Loading Mượt Mà**: Tích hợp các Skeleton Screen và Animation tinh tế giúp trải nghiệm người dùng luôn liền mạch.
+QLPK-SaaS là ứng dụng quản lý phòng khám đa năng, hỗ trợ các bác sĩ và nhân viên y tế trong việc:
+- Quản lý hồ sơ bệnh nhân chi tiết và khoa học.
+- Theo dõi lịch sử khám bệnh và kê đơn thuốc điện tử.
+- Công cụ tính liều thuốc nhanh chóng, chính xác theo cân nặng.
+- Thống kê doanh thu và hoạt động phòng khám qua biểu đồ trực quan.
+- Hệ thống phân quyền bảo mật, đảm bảo an toàn dữ liệu y tế.
 
 ## 🛠️ Công Nghệ Sử Dụng
 
-Dự án được xây dựng trên nền tảng công nghệ hiện đại nhất:
+Dự án được xây dựng với các công nghệ tiên tiến nhất hiện nay:
 
-- **Framework**: [Next.js 16](https://nextjs.org/) (App Router, React 19)
-- **Cơ sở dữ liệu & Auth**: [Supabase](https://supabase.com/) (PostgreSQL)
-- **Styling**: [Tailwind CSS 4.0](https://tailwindcss.com/)
-- **Animation**: [Framer Motion](https://www.framer.com/motion/)
-- **Quản lý Form**: [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/)
-- **Biểu đồ**: [Recharts](https://recharts.org/)
-- **Testing**: [Vitest](https://vitest.dev/)
-- **Ngôn ngữ**: [TypeScript](https://www.typescriptlang.org/)
+- **Frontend Core**: [Next.js 16](https://nextjs.org/) (App Router), [React 19](https://reactjs.org/) & [TypeScript](https://www.typescriptlang.org/).
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/) & [Framer Motion](https://www.framer.com/motion/) cho các hiệu ứng tương tác mượt mà.
+- **Database & Auth**: [Supabase](https://supabase.com/) (Postgres + RLS) cung cấp hạ tầng backend thời gian thực và bảo mật.
+- **Form Management**: [React Hook Form](https://react-hook-form.com/) kết hợp với [Zod](https://zod.dev/) để xác thực dữ liệu chặt chẽ.
+- **Biểu Đồ**: [Recharts](https://recharts.org/) giúp trực quan hóa dữ liệu y tế.
+- **Testing**: [Vitest](https://vitest.dev/) đảm bảo tính ổn định và chính xác của các tính năng cốt lõi.
 
-## 📂 Cấu Trúc Dự Án
+## 📂 Cấu Trúc Thư Mục
 
 ```text
-.
-├── src/                # Mã nguồn chính của ứng dụng
-│   ├── app/            # Tuyến đường và giao diện chính (Next.js App Router)
-│   ├── actions/        # Các hàm xử lý phía Server (Server Actions)
-│   ├── components/     # Các thành phần giao diện tái sử dụng
-│   │   ├── features/   # Thành phần UI theo chức năng (Bệnh nhân, Thuốc...)
-│   │   └── ui/         # Thành phần UI cơ bản (Button, Input, Card...)
-│   ├── contexts/       # React Contexts quản lý trạng thái (Settings, Theme...)
-│   ├── hooks/          # Các Custom Hooks tái sử dụng
-│   ├── lib/            # Tiện ích, cấu hình Supabase và định nghĩa Validation
-│   ├── theme/          # Cấu hình Theme và các biến CSS nâng cao
-│   └── types/          # Định nghĩa kiểu dữ liệu (TypeScript Interfaces)
-├── supabase/           # Cấu hình Database, Migrations và các script SQL
-├── public/             # Các tệp tĩnh (hình ảnh, icons, favicon)
-├── plans/              # Các kế hoạch phát triển và tài liệu thiết kế tính năng
-└── .brain/             # Bộ nhớ ngữ cảnh của AI Antigravity
+src/
+├── actions/        # Server Actions xử lý logic backend
+├── app/            # Next.js App Router (Auth, Dashboard, Patients...)
+├── components/     # Các thành phần UI tái sử dụng và logic UI phức tạp
+│   ├── features/   # Thành phần UI theo chức năng (Patient, Prescription...)
+│   └── ui/         # Thành phần UI cơ bản (Button, Input, Card...)
+├── hooks/          # Custom Hooks cho logic React
+├── lib/            # Tiện ích (Utils, Supabase Client, Validations)
+├── types/          # Định nghĩa kiểu dữ liệu TypeScript
+└── theme/          # Cấu hình giao diện và màu sắc
 ```
 
 ## ⚙️ Hướng Dẫn Cài Đặt
 
-### Yêu cầu:
+### 1. Yêu cầu hệ thống
 - Node.js 18.x trở lên
-- Tài khoản Supabase (đã thiết lập Database)
+- Tài khoản Supabase (để cấu hình Database)
 
-### Các bước thực hiện:
+### 2. Các bước thực hiện
 
 1. **Clone mã nguồn**:
    ```bash
@@ -67,33 +57,28 @@ Dự án được xây dựng trên nền tảng công nghệ hiện đại nh�
    ```
 
 3. **Cấu hình môi trường**:
-   Tạo file `.env.local` trong thư mục gốc và điền các thông tin sau:
+   Tạo file `.env.local` trong thư mục gốc và điền các thông tin từ dự án Supabase của bạn:
    ```env
-   NEXT_PUBLIC_SUPABASE_URL=địa_chỉ_supabase_của_bạn
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=mã_anon_key_của_bạn
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
    ```
 
 4. **Khởi chạy ứng dụng**:
    ```bash
    npm run dev
    ```
-   Truy cập [http://localhost:3000](http://localhost:3000) để trải nghiệm.
+   Ứng dụng sẽ chạy tại địa chỉ: [http://localhost:3000](http://localhost:3000)
 
-## 🚀 Quy Trình Phát Triển
+## 🚀 Cách Sử Dụng
 
-Dự án tuân thủ quy trình phát triển hiện đại với:
-- **Linting**: Kiểm tra lỗi cú pháp và style code với ESLint.
-- **Testing**: Đảm bảo tính ổn định với Vitest.
-- **Type Safety**: Tận dụng tối đa sức mạnh của TypeScript để hạn chế lỗi runtime.
-
-## 🔒 Bảo Mật & Lưu Ý
-
-- **API Keys**: Tuyệt đối không chia sẻ hoặc upload file `.env.local` chứa các khóa bảo mật lên các nền tảng công khai.
-- **Lưu trữ**: Toàn bộ dữ liệu được lưu trữ bảo mật trên nền tảng Supabase với chính sách RLS (Row Level Security).
+1. **Đăng nhập**: Sử dụng tài khoản bác sĩ hoặc nhân viên y tế để truy cập hệ thống.
+2. **Tiếp đón bệnh nhân**: Tìm kiếm hoặc tạo mới hồ sơ bệnh nhân tại mục "Bệnh nhân".
+3. **Khám & Kê đơn**: Nhập chẩn đoán, sử dụng bộ công cụ tính liều để kê đơn thuốc nhanh chóng.
+4. **Theo dõi**: Xem lại lịch sử khám và xuất hóa đơn thuốc cho bệnh nhân.
 
 ## 📄 Bản Quyền
 
 Copyright 2026 Nguyễn Duy Trường
 
 ---
-*Dự án được xây dựng và phát triển với sự hỗ trợ của Antigravity AI.*
+*Dự án được phát triển và duy trì với sự hỗ trợ của Antigravity AI.*
