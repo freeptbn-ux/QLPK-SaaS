@@ -29,15 +29,22 @@ Dự án được xây dựng trên nền tảng công nghệ hiện đại nh�
 ## 📂 Cấu Trúc Dự Án
 
 ```text
-src/
-├── app/            # Tuyến đường và giao diện chính (App Router)
-├── actions/        # Các hàm xử lý phía Server (Server Actions)
-├── components/     # Các thành phần giao diện tái sử dụng
-│   ├── features/   # Thành phần UI theo chức năng (Bệnh nhân, Thuốc, Đơn thuốc...)
-│   └── ui/         # Thành phần UI cơ bản (Button, Input, Card...)
-├── lib/            # Thư viện tiện ích, cấu hình Supabase và định nghĩa Validation
-├── types/          # Định nghĩa kiểu dữ liệu (TypeScript Interfaces)
-└── supabase/       # Cấu hình Database, Migrations và Types
+.
+├── src/                # Mã nguồn chính của ứng dụng
+│   ├── app/            # Tuyến đường và giao diện chính (Next.js App Router)
+│   ├── actions/        # Các hàm xử lý phía Server (Server Actions)
+│   ├── components/     # Các thành phần giao diện tái sử dụng
+│   │   ├── features/   # Thành phần UI theo chức năng (Bệnh nhân, Thuốc...)
+│   │   └── ui/         # Thành phần UI cơ bản (Button, Input, Card...)
+│   ├── contexts/       # React Contexts quản lý trạng thái (Settings, Theme...)
+│   ├── hooks/          # Các Custom Hooks tái sử dụng
+│   ├── lib/            # Tiện ích, cấu hình Supabase và định nghĩa Validation
+│   ├── theme/          # Cấu hình Theme và các biến CSS nâng cao
+│   └── types/          # Định nghĩa kiểu dữ liệu (TypeScript Interfaces)
+├── supabase/           # Cấu hình Database, Migrations và các script SQL
+├── public/             # Các tệp tĩnh (hình ảnh, icons, favicon)
+├── plans/              # Các kế hoạch phát triển và tài liệu thiết kế tính năng
+└── .brain/             # Bộ nhớ ngữ cảnh của AI Antigravity
 ```
 
 ## ⚙️ Hướng Dẫn Cài Đặt
