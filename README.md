@@ -79,6 +79,13 @@ Dự án được xây dựng trên nền tảng công nghệ hiện đại nh�
    ```
    Truy cập [http://localhost:3000](http://localhost:3000) để trải nghiệm.
 
+## 🚀 Quy Trình Phát Triển
+
+Dự án tuân thủ quy trình phát triển hiện đại với:
+- **Linting**: Kiểm tra lỗi cú pháp và style code với ESLint.
+- **Testing**: Đảm bảo tính ổn định với Vitest.
+- **Type Safety**: Tận dụng tối đa sức mạnh của TypeScript để hạn chế lỗi runtime.
+
 ## 🔒 Bảo Mật & Lưu Ý
 
 - **API Keys**: Tuyệt đối không chia sẻ hoặc upload file `.env.local` chứa các khóa bảo mật lên các nền tảng công khai.
