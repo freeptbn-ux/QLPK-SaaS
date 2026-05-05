@@ -138,7 +138,7 @@ export const DateInput: React.FC<DateInputProps> = ({
       )}
       
       <div
-        onClick={() => {
+        onClick={(e) => {
           if (disabled) return;
           if (!day) dayRef.current?.focus();
           else if (!month) monthRef.current?.focus();
@@ -159,6 +159,7 @@ export const DateInput: React.FC<DateInputProps> = ({
             ref={dayRef}
             value={day}
             onChange={handleDayChange}
+            onClick={(e) => e.stopPropagation()}
             onKeyDown={(e) => handleKeyDown('day', e)}
             onPaste={handlePaste}
             onFocus={() => setFocused(true)}
@@ -178,6 +179,7 @@ export const DateInput: React.FC<DateInputProps> = ({
             ref={monthRef}
             value={month}
             onChange={handleMonthChange}
+            onClick={(e) => e.stopPropagation()}
             onKeyDown={(e) => handleKeyDown('month', e)}
             onPaste={handlePaste}
             onFocus={() => setFocused(true)}
@@ -197,6 +199,7 @@ export const DateInput: React.FC<DateInputProps> = ({
             ref={yearRef}
             value={year}
             onChange={handleYearChange}
+            onClick={(e) => e.stopPropagation()}
             onKeyDown={(e) => handleKeyDown('year', e)}
             onPaste={handlePaste}
             onFocus={() => setFocused(true)}

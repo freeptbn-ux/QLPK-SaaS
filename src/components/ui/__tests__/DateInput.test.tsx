@@ -108,4 +108,41 @@ describe('DateInput Component', () => {
     
     expect(dayInput.value).toBe('12');
   });
+
+  it('keeps focus on day input when clicked, even if fully filled', async () => {
+    const user = userEvent.setup();
+    render(<DateInput value="15/08/1990" onChange={() => {}} />);
+    
+    const dayInput = screen.getByPlaceholderText('DD');
+    const yearInput = screen.getByPlaceholderText('YYYY');
+    
+    await user.click(dayInput);
+    expect(dayInput).toHaveFocus();
+    expect(yearInput).not.toHaveFocus();
+  });
+
+  it('keeps focus on month input when clicked, even if fully filled', async () => {
+    const user = userEvent.setup();
+    render(<DateInput value="15/08/1990" onChange={() => {}} />);
+    
+    const monthInput = screen.getByPlaceholderText('MM');
+    const yearInput = screen.getByPlaceholderText('YYYY');
+    
+    await user.click(monthInput);
+    expect(monthInput).toHaveFocus();
+    expect(yearInput).not.toHaveFocus();
+  });
+
+  it('jumps to year input when clicking on separator and day/month are filled', async () => {
+    const user = userEvent.setup();
+    render(<DateInput value="15/08/1990" onChange={() => {}} />);
+    
+    const yearInput = screen.getByPlaceholderText('YYYY');
+    
+    // Find the separator (/)
+    const separators = screen.getAllByText('/');
+    await user.click(separators[0]);
+    
+    expect(yearInput).toHaveFocus();
+  });
 });

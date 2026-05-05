@@ -24,7 +24,7 @@ const PrescriptionItemRow = React.memo(function PrescriptionItemRow({ item, inde
           {item.packing_spec}
         </div>
       </td>
-      <td className="px-4 py-3 min-w-[80px] w-[100px]">
+      <td className="px-2 py-3 min-w-[60px] sm:min-w-[80px] max-w-[80px]">
         <input
           type="number"
           min="1"
@@ -33,7 +33,7 @@ const PrescriptionItemRow = React.memo(function PrescriptionItemRow({ item, inde
             const val = e.target.value;
             onUpdate(index, { quantity: val === '' ? 0 : parseInt(val) || 0 });
           }}
-          className="input-field py-1 px-2 text-center"
+          className="input-field py-1 px-1 sm:px-2 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         />
       </td>
       <td className="px-4 py-3 min-w-[140px]">
