@@ -10,7 +10,8 @@ import {
   HiOutlineQueueList,
   HiOutlineXMark,
   HiOutlineTrash,
-  HiOutlinePencilSquare
+  HiOutlinePencilSquare,
+  HiOutlineCheck
 } from 'react-icons/hi2';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Medicine, PrescriptionWithDetails } from '@/types/database';
@@ -23,7 +24,8 @@ import { getMedicineStockByIds } from '@/actions/medicines';
 import MedicineUsageDialog from './MedicineUsageDialog';
 import { cn } from '@/lib/utils/cn';
 import { getPatientPrescriptionsPaginated } from '@/actions/patients';
-import { HiOutlineArrowPath } from 'react-icons/hi2';
+import { HiOutlineArrowPath, HiOutlineCalculator } from 'react-icons/hi2';
+import CountUp from '@/components/ui/CountUp';
 
 interface PrescriptionHistoryProps {
   patientId: number;
@@ -119,6 +121,11 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
   const handleAppendSubmit = async () => {
     if (!selectedPrescriptionId || itemsToAppend.length === 0) return;
 
+    if (itemsToAppend.some(i => i.quantity <= 0)) {
+      alert('Số lượng thuốc phải lớn hơn 0');
+      return;
+    }
+
     setLoading(true);
     try {
       const result = await appendToPrescription(selectedPrescriptionId, itemsToAppend, patientId);
@@ -200,7 +207,7 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
 
   const handleEditUpdateQuantity = (medicineId: number, quantity: number) => {
     const updatedItems = editItems.map(i => 
-      i.medicine_id === medicineId ? { ...i, quantity: Math.max(1, quantity) } : i
+      i.medicine_id === medicineId ? { ...i, quantity: quantity } : i
     );
     setEditItems(updatedItems);
     checkStockWarnings(updatedItems);
@@ -248,6 +255,10 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
     }
     if (editItems.length === 0) {
       setEditError('Đơn thuốc phải có ít nhất một loại thuốc');
+      return;
+    }
+    if (editItems.some(i => i.quantity <= 0)) {
+      setEditError('Số lượng thuốc phải lớn hơn 0');
       return;
     }
 
@@ -567,20 +578,43 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
                 )}
               </div>
 
-              <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-800 flex justify-end gap-3">
-                <button
-                  onClick={() => setAppendDialogOpen(false)}
-                  className="px-6 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all"
-                >
-                  Hủy
-                </button>
-                <button
-                  onClick={handleAppendSubmit}
-                  disabled={itemsToAppend.length === 0 || loading}
-                  className="btn-primary min-w-[100px] flex items-center justify-center"
-                >
-                  {loading ? 'Đang lưu...' : 'Lưu thêm'}
-                </button>
+              <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                <div className="text-right">
+                  <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Tiền thêm</p>
+                  <p className="text-xl font-bold text-primary-600">
+                    <CountUp value={itemsToAppend.reduce((sum, item) => sum + Math.round(item.quantity * item.unit_price), 0)} />
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setAppendDialogOpen(false)}
+                    className="px-6 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    onClick={handleAppendSubmit}
+                    disabled={itemsToAppend.length === 0 || loading}
+                    className={cn(
+                      "min-w-[120px] px-6 py-2.5 rounded-xl font-bold text-white shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2",
+                      "bg-gradient-to-r from-primary-600 to-blue-500 hover:from-primary-700 hover:to-blue-600",
+                      "shadow-primary-500/25 hover:shadow-primary-500/40",
+                      "disabled:opacity-50 disabled:pointer-events-none"
+                    )}
+                  >
+                    {loading ? (
+                      <>
+                        <HiOutlineArrowPath className="w-4 h-4 animate-spin" />
+                        Đang lưu...
+                      </>
+                    ) : (
+                      <>
+                        <HiOutlineCheck className="w-5 h-5" />
+                        Lưu thêm
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </motion.div>
           </div>
@@ -696,7 +730,7 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
                     onChange={(e) => setEditDiagnosis(e.target.value)}
                     rows={2}
                     className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20"
-                    placeholder="Nhập chẩn đoán..."
+                    placeholder="Ví dụ: Viêm họng cấp, Sốt siêu vi..."
                   />
                 </div>
 
@@ -783,7 +817,7 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
                     onChange={(e) => setEditNotes(e.target.value)}
                     rows={2}
                     className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20"
-                    placeholder="Ghi chú sử dụng..."
+                    placeholder="Ví dụ: Ngày uống 2 lần, sau ăn..."
                   />
                 </div>
 
@@ -797,8 +831,8 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
               <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
                 <div className="text-right">
                   <p className="text-xs text-gray-500 uppercase font-bold tracking-wider">Tổng tiền mới</p>
-                  <p className="text-2xl font-bold text-primary-600">
-                    {(editItems.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0) + (prescriptionToEdit.consultation_fee || 0)).toLocaleString('vi-VN')} đ
+                  <p className="text-2xl font-black text-primary-600 dark:text-primary-400">
+                    <CountUp value={editItems.reduce((sum, item) => sum + Math.round(item.quantity * item.unit_price), 0) + (prescriptionToEdit.consultation_fee || 0)} />
                   </p>
                 </div>
                 <div className="flex gap-3">
@@ -812,7 +846,12 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
                   <button
                     onClick={handleEditSubmit}
                     disabled={isEditing || editItems.length === 0}
-                    className="btn-primary min-w-[140px] flex items-center justify-center gap-2"
+                    className={cn(
+                      "min-w-[140px] px-6 py-2.5 rounded-xl font-bold text-white shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2",
+                      "bg-gradient-to-r from-primary-600 to-blue-500 hover:from-primary-700 hover:to-blue-600",
+                      "shadow-primary-500/25 hover:shadow-primary-500/40",
+                      "disabled:opacity-50 disabled:pointer-events-none"
+                    )}
                   >
                     {isEditing ? (
                       <>
@@ -820,7 +859,10 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
                         Đang lưu...
                       </>
                     ) : (
-                      'Lưu thay đổi'
+                      <>
+                        <HiOutlineCheck className="w-5 h-5" />
+                        Lưu thay đổi
+                      </>
                     )}
                   </button>
                 </div>
