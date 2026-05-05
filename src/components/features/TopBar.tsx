@@ -63,9 +63,9 @@ export default function TopBar({ onMenuClick, title }: TopBarProps) {
           title={`Switch to ${mode === 'light' ? 'dark' : 'light'} mode`}
         >
           {mode === 'dark' ? (
-            <HiOutlineSun className="w-5 h-5 text-foreground" />
+            <HiOutlineSun className="w-5 h-5 text-slate-600 dark:text-amber-400" />
           ) : (
-            <HiOutlineMoon className="w-5 h-5 text-foreground" />
+            <HiOutlineMoon className="w-5 h-5 text-slate-600 dark:text-slate-300" />
           )}
         </button>
 

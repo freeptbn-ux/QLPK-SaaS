@@ -150,7 +150,7 @@ export default function MedicineList({ initialData }: MedicineListProps) {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
-              <thead className="bg-slate-50/50 dark:bg-slate-800/30 text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800">
+              <thead className="bg-slate-50/50 dark:bg-slate-800/30 text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-slate-700">
                 <tr>
                   <th className="px-6 py-5 font-bold tracking-tight whitespace-nowrap">Tên thuốc</th>
                   <th className="px-6 py-5 font-bold tracking-tight whitespace-nowrap">Quy cách</th>
@@ -160,7 +160,7 @@ export default function MedicineList({ initialData }: MedicineListProps) {
                   <th className="px-6 py-5 font-bold tracking-tight text-right whitespace-nowrap">Thao tác</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                 {filteredData.map((medicine) => {
                   const isLowStock = medicine.stock_quantity <= medicine.min_stock_level;
                   return (

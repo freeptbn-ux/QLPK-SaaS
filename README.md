@@ -2,55 +2,55 @@
 
 Phần mềm quản lý phòng khám (QLPK SaaS) là một giải pháp toàn diện giúp tự động hóa và tối ưu hóa quy trình hoạt động của phòng khám, bao gồm quản lý bệnh nhân, khám bệnh, kê đơn thuốc, và quản lý kho thuốc. Hệ thống được thiết kế với giao diện trực quan, thân thiện, và hiệu năng cao.
 
-## Các tính năng chính
+## 🚀 Các tính năng chính
 
-- **Quản lý bệnh nhân**: Thêm mới, tìm kiếm, xem hồ sơ, và quản lý thông tin bệnh nhân.
-- **Khám bệnh & Kê đơn**: Hỗ trợ kê đơn thuốc nhanh chóng với tính năng tự động tìm kiếm thuốc, tính liều lượng, và kiểm tra tồn kho.
-- **Quản lý Kho thuốc**: Theo dõi số lượng tồn kho, cảnh báo thuốc sắp hết, và quản lý danh mục thuốc.
-- **Thống kê & Báo cáo**: Cung cấp cái nhìn tổng quan về doanh thu và hoạt động của phòng khám.
-- **Hệ thống Loading đồng bộ**: Trải nghiệm mượt mà, không giật lag nhờ hệ thống loading toàn cầu tiên tiến.
-- **Hỗ trợ Dark Mode**: Giao diện sáng/tối thân thiện với mắt người dùng.
+- **Quản lý bệnh nhân**: Thêm mới, tìm kiếm, xem hồ sơ, và quản lý thông tin bệnh nhân chi tiết.
+- **Khám bệnh & Kê đơn**: Hỗ trợ quy trình khám bệnh khép kín, kê đơn thuốc nhanh chóng với tính năng tự động tìm kiếm, tính liều lượng và kiểm tra tồn kho thời gian thực.
+- **Quản lý Kho thuốc**: Theo dõi số lượng tồn kho, cảnh báo thuốc sắp hết, quản lý danh mục thuốc và lịch sử điều chỉnh kho.
+- **Thống kê & Báo cáo**: Cung cấp cái nhìn tổng quan về doanh thu, lượt khám, cơ cấu giới tính và nhóm tuổi của bệnh nhân.
+- **Hệ thống Loading đồng bộ**: Trải nghiệm người dùng mượt mà với hệ thống loading toàn cầu (Global Loading) và các hiệu ứng chuyển cảnh cao cấp.
+- **Hỗ trợ Dark Mode**: Giao diện tối/sáng linh hoạt, tối ưu cho sự thoải mái của người dùng trong nhiều môi trường làm việc.
 
-## Công nghệ sử dụng
+## 🛠 Công nghệ sử dụng
 
-Dự án được xây dựng dựa trên các công nghệ hiện đại và mạnh mẽ nhất:
+Dự án được xây dựng dựa trên các công nghệ hiện đại và mạnh mẽ:
 
-- **Frontend**: Next.js (App Router), React, TypeScript.
-- **Styling**: Tailwind CSS, CSS Modules.
-- **Animations**: Framer Motion.
-- **Backend & Database**: Supabase (PostgreSQL, Authentication).
-- **Form Management & Validation**: React Hook Form, Zod.
-- **Icons**: React Icons (Heroicons).
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router), [React 19](https://react.dev/).
+- **Ngôn ngữ**: [TypeScript](https://www.typescriptlang.org/).
+- **Cơ sở dữ liệu & Auth**: [Supabase](https://supabase.com/) (PostgreSQL).
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/).
+- **Animations**: [Framer Motion](https://www.framer.com/motion/).
+- **Biểu đồ**: [Recharts](https://recharts.org/).
+- **Quản lý Form**: [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/).
+- **Testing**: [Vitest](https://vitest.dev/) & [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/).
 
-## Hướng dẫn cài đặt
+## 📦 Hướng dẫn cài đặt
 
-Để chạy dự án trên môi trường local, vui lòng làm theo các bước sau:
+Để triển khai dự án trên môi trường local, hãy thực hiện theo các bước sau:
 
 ### Yêu cầu hệ thống
 - Node.js (phiên bản 18.x trở lên)
 - npm, yarn, hoặc pnpm
-- Tài khoản Supabase (để cấu hình Database và Auth)
+- Tài khoản Supabase để cấu hình Database và Authentication.
 
 ### Các bước thực hiện
 
-1. **Clone repository về máy**:
+1. **Clone repository**:
    ```bash
    git clone https://github.com/freeptbn-ux/QLPK-SaaS.git
    cd QLPK-SaaS
    ```
 
-2. **Cài đặt dependencies**:
+2. **Cài đặt thư viện**:
    ```bash
    npm install
-   # hoặc
-   yarn install
    # hoặc
    pnpm install
    ```
 
 3. **Cấu hình biến môi trường**:
-   - Tạo file `.env.local` ở thư mục gốc của dự án.
-   - Thêm các biến môi trường cần thiết kết nối với Supabase:
+   - Tạo file `.env.local` ở thư mục gốc.
+   - Copy nội dung từ `.env.example` và điền thông tin Supabase của bạn:
      ```env
      NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
      NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
@@ -59,24 +59,35 @@ Dự án được xây dựng dựa trên các công nghệ hiện đại và m�
 4. **Khởi chạy ứng dụng**:
    ```bash
    npm run dev
-   # hoặc
-   yarn dev
-   # hoặc
-   pnpm dev
    ```
-   Ứng dụng sẽ chạy tại `http://localhost:3000`.
+   Truy cập tại: `http://localhost:3000`.
 
-## Cấu trúc thư mục
+## 📂 Cấu trúc thư mục
 
-- `src/app/`: Chứa các trang (pages) và layouts của ứng dụng (theo Next.js App Router).
-- `src/components/`: Chứa các thành phần UI có thể tái sử dụng, bao gồm features (chức năng cụ thể), UI components cơ bản, và hệ thống Loading.
-- `src/actions/`: Chứa các Server Actions để tương tác với cơ sở dữ liệu.
-- `src/types/`: Định nghĩa các kiểu dữ liệu TypeScript.
-- `src/lib/`: Chứa các tiện ích, cấu hình Supabase client, và logic validation.
-- `plans/`: Chứa các tài liệu lên kế hoạch phát triển (development plans).
+```text
+QLPK-SaaS/
+├── src/
+│   ├── app/          # Pages & Layouts (App Router)
+│   ├── components/   # UI & Feature Components
+│   ├── actions/      # Server Actions (Logic Backend)
+│   ├── lib/          # Utilities, Config & Validation
+│   ├── types/        # TypeScript Definitions
+│   └── styles/       # Global CSS & Tailwind Config
+├── supabase/         # Database migrations & RPCs
+├── public/           # Static assets
+├── tests/            # Unit & Integration tests
+├── plans/            # Tài liệu kế hoạch phát triển
+└── docs/             # Tài liệu hướng dẫn & Specs
+```
 
-## Bản quyền và Giấy phép
+## 📝 Thông tin bổ sung
+
+- Hệ thống sử dụng **Supabase RPC** cho các logic thống kê phức tạp để tối ưu hiệu năng.
+- Toàn bộ dữ liệu được bảo mật bằng hệ thống **Row Level Security (RLS)** của PostgreSQL.
+- Dự án hỗ trợ tích hợp tốt với các môi trường CI/CD như Vercel.
+
+## ⚖️ Bản quyền
 
 Copyright 2026 Nguyễn Duy Trường.
 
-Dự án này là tài sản trí tuệ thuộc về Nguyễn Duy Trường và không được phép sao chép, sử dụng hoặc phân phối khi chưa có sự đồng ý.
+Mọi quyền được bảo lưu. Dự án này là tài sản trí tuệ thuộc về Nguyễn Duy Trường. Việc sao chép, phân phối hoặc sử dụng trái phép mã nguồn này bị nghiêm cấm.
