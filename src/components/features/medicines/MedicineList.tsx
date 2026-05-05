@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   HiOutlineMagnifyingGlass, 
   HiOutlinePencil, 
@@ -22,7 +23,12 @@ interface MedicineListProps {
 }
 
 export default function MedicineList({ initialData }: MedicineListProps) {
+  const router = useRouter();
   const [data, setData] = useState<Medicine[]>(initialData);
+
+  useEffect(() => {
+    setData(initialData);
+  }, [initialData]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showLowStockOnly, setShowLowStockOnly] = useState(false);
   
@@ -83,7 +89,7 @@ export default function MedicineList({ initialData }: MedicineListProps) {
   };
 
   const refreshData = async () => {
-    window.location.reload(); 
+    router.refresh();
   };
 
   return (

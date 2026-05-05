@@ -45,8 +45,9 @@ next-env.d.ts
 # database & migration
 clinic.db
 clinic.db.backup-*
+__pycache__/
+*.pyc
 venv/
-scripts/__pycache__/
 *.txt
 
 # Eternal Context (Antigravity)
