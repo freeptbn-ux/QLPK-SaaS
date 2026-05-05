@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import ThemeRegistry from "@/components/ThemeRegistry";
+import { NavigationEvents, GlobalLoader } from "@/components/Loading";
+import { LoadingProvider } from "@/components/Loading/LoadingProvider";
 
 import { getAllSettings } from "@/actions/settings";
 
@@ -38,7 +40,11 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         <ThemeRegistry>
-          {children}
+          <LoadingProvider>
+            <NavigationEvents />
+            <GlobalLoader />
+            {children}
+          </LoadingProvider>
         </ThemeRegistry>
       </body>
     </html>

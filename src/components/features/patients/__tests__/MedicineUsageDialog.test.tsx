@@ -19,8 +19,8 @@ vi.mock('framer-motion', () => ({
 }));
 
 // Mock Loading component
-vi.mock('@/components/Loading/Loading', () => ({
-  default: () => <div>Loading...</div>,
+vi.mock('@/components/Loading', () => ({
+  BallLoader: () => <div>Loading...</div>,
 }));
 
 const mockData = [

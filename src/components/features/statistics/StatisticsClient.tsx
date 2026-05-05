@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import PageHeader from '@/components/ui/PageHeader';
-import Loading from '@/components/Loading/Loading';
+import { BallLoader } from '@/components/Loading';
 import StatsOverview from '@/components/features/statistics/StatsOverview';
 import StatsFilter from '@/components/features/statistics/StatsFilter';
 import TopLocations from '@/components/features/statistics/TopLocations';
@@ -21,22 +21,22 @@ import dayjs from 'dayjs';
 
 const VisitChart = dynamic(
   () => import('@/components/features/statistics/VisitChart'),
-  { ssr: false, loading: () => <Loading variant="skeleton" delay={0} className="h-[400px] w-full rounded-2xl border border-slate-200 dark:border-slate-800" /> }
+  { ssr: false, loading: () => <div className="h-[400px] w-full flex items-center justify-center rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50"><BallLoader size="md" text="Đang tải biểu đồ..." /></div> }
 );
 
 const RevenueChart = dynamic(
   () => import('@/components/features/statistics/RevenueChart'),
-  { ssr: false, loading: () => <Loading variant="skeleton" delay={0} className="h-[400px] w-full rounded-2xl border border-slate-200 dark:border-slate-800" /> }
+  { ssr: false, loading: () => <div className="h-[400px] w-full flex items-center justify-center rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50"><BallLoader size="md" text="Đang tải dữ liệu..." /></div> }
 );
 
 const GenderPieChart = dynamic(
   () => import('@/components/features/statistics/GenderPieChart'),
-  { ssr: false, loading: () => <Loading variant="skeleton" delay={0} className="h-[400px] w-full rounded-2xl border border-slate-200 dark:border-slate-800" /> }
+  { ssr: false, loading: () => <div className="h-[400px] w-full flex items-center justify-center rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50"><BallLoader size="sm" text="Đang tải..." /></div> }
 );
 
 const AgeGroupChart = dynamic(
   () => import('@/components/features/statistics/AgeGroupChart'),
-  { ssr: false, loading: () => <Loading variant="skeleton" delay={0} className="h-[400px] w-full rounded-2xl border border-slate-200 dark:border-slate-800" /> }
+  { ssr: false, loading: () => <div className="h-[400px] w-full flex items-center justify-center rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50"><BallLoader size="sm" text="Đang tải..." /></div> }
 );
 
 interface StatisticsClientProps {

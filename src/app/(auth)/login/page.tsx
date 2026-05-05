@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { loginAction } from '@/actions/auth'
 import { HiEnvelope, HiLockClosed } from 'react-icons/hi2'
-import { CgSpinner } from 'react-icons/cg'
+import { BallLoader } from '@/components/Loading'
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
@@ -97,7 +97,7 @@ export default function LoginPage() {
               className="w-full py-4 px-6 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white font-bold rounded-2xl shadow-lg shadow-blue-500/30 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 group disabled:transform-none"
             >
               {loading ? (
-                <CgSpinner className="w-6 h-6 animate-spin" />
+                <BallLoader size="sm" text="" className="!gap-0" />
               ) : (
                 'Đăng nhập hệ thống'
               )}

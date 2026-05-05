@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { HiOutlineXMark, HiChevronUpDown, HiChevronUp, HiChevronDown } from 'react-icons/hi2';
 import { getMedicineUsageByPatient } from '@/actions/patients';
 import { cn } from '@/lib/utils/cn';
-import Loading from '@/components/Loading/Loading';
+import { BallLoader } from '@/components/Loading';
 
 interface MedicineUsageDialogProps {
   open: boolean;
@@ -113,7 +113,7 @@ export default function MedicineUsageDialog({ open, onClose, patientId, patientN
             <div className="p-6 overflow-y-auto max-h-[calc(100vh-200px)]">
               {loading ? (
                 <div className="flex justify-center py-12">
-                   <Loading variant="spinner" size="lg" delay={0} ariaLabel="Đang tải lịch sử dùng thuốc..." />
+                   <BallLoader size="md" text="Đang tải lịch sử dùng thuốc..." />
                 </div>
               ) : data.length === 0 ? (
                 <div className="text-center py-12">

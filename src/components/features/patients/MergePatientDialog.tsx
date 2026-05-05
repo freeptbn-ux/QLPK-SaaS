@@ -13,7 +13,7 @@ import {
 import { getPotentialDuplicates, mergePatients } from '@/actions/patients';
 import { useToast } from '@/hooks/useToast';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
-import Loading from '@/components/Loading/Loading';
+import { BallLoader } from '@/components/Loading';
 
 interface DuplicateGroup {
   name_normalized: string;
@@ -194,8 +194,7 @@ export default function MergePatientDialog({
             <div className="flex-grow overflow-y-auto p-6 space-y-6">
               {loading ? (
                 <div className="py-12 flex flex-col items-center justify-center">
-                  <Loading isLoading={true} variant="spinner" size="lg" className="text-primary-600" />
-                  <p className="mt-4 text-gray-500 font-medium">Đang quét dữ liệu trùng lặp...</p>
+                  <BallLoader size="lg" text="Đang quét dữ liệu trùng lặp..." />
                 </div>
               ) : groups.length === 0 ? (
                 <div className="py-12 flex flex-col items-center justify-center text-center space-y-3">
@@ -242,7 +241,7 @@ export default function MergePatientDialog({
                             className="text-xs font-bold text-primary-600 hover:text-primary-700 dark:text-primary-400 flex items-center gap-1 disabled:opacity-50"
                           >
                             {mergingGroups.has(getGroupKey(group)) ? (
-                              <Loading isLoading={true} size="sm" className="text-primary-600" />
+                               <BallLoader size="sm" text="" className="!gap-0" />
                             ) : (
                               <HiOutlineTrash className="w-3 h-3" />
                             )}
@@ -330,8 +329,8 @@ export default function MergePatientDialog({
                     className="btn-primary min-w-[120px] flex items-center justify-center gap-2"
                   >
                     {merging ? (
-                      <>
-                        <Loading isLoading={true} size="sm" className="text-white" />
+                       <>
+                        <BallLoader size="sm" text="" className="!gap-0" />
                         Đang gộp...
                       </>
                     ) : (

@@ -4,7 +4,7 @@ import React, { Suspense } from 'react';
 import PageHeader from '@/components/ui/PageHeader';
 import MedicineList from '@/components/features/medicines/MedicineList';
 import { getAllMedicines } from '@/actions/medicines';
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton';
+import { LoadingReporter } from '@/components/Loading';
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getAllSettings().catch(() => ({} as Record<string, string>));
@@ -21,15 +21,6 @@ async function MedicineListWrapper() {
 }
 
 export default function MedicinesPage() {
-  const tableHeaders = [
-    { label: 'Tên thuốc' },
-    { label: 'Quy cách' },
-    { label: 'Giá (VNĐ)', className: 'text-right' },
-    { label: 'Tồn kho', className: 'text-right' },
-    { label: 'Trạng thái', className: 'text-center' },
-    { label: 'Thao tác', className: 'text-right' },
-  ];
-
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
@@ -38,9 +29,7 @@ export default function MedicinesPage() {
       />
       
       <div className="">
-        <Suspense fallback={
-          <TableSkeleton rows={10} columns={6} headers={tableHeaders} />
-        }>
+        <Suspense fallback={<LoadingReporter text="Đang tải danh mục thuốc..." />}>
           <MedicineListWrapper />
         </Suspense>
       </div>

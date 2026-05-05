@@ -26,6 +26,7 @@ import { cn } from '@/lib/utils/cn';
 import { getPatientPrescriptionsPaginated } from '@/actions/patients';
 import { HiOutlineArrowPath, HiOutlineCalculator } from 'react-icons/hi2';
 import CountUp from '@/components/ui/CountUp';
+import { BallLoader } from '@/components/Loading';
 
 interface PrescriptionHistoryProps {
   patientId: number;
@@ -494,7 +495,7 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
             className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-primary-600 bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-xl hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-all active:scale-95 disabled:opacity-50"
           >
             {loadingMore ? (
-              <HiOutlineArrowPath className="w-5 h-5 animate-spin" />
+              <BallLoader size="sm" text="" className="!gap-0" />
             ) : (
               <HiOutlineChevronDown className="w-5 h-5" />
             )}
@@ -604,7 +605,7 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
                   >
                     {loading ? (
                       <>
-                        <HiOutlineArrowPath className="w-4 h-4 animate-spin" />
+                        <BallLoader size="sm" text="" className="!gap-0" />
                         Đang lưu...
                       </>
                     ) : (
@@ -667,7 +668,7 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
                 >
                   {isDeleting ? (
                     <>
-                      <HiOutlineArrowPath className="w-4 h-4 animate-spin" />
+                      <BallLoader size="sm" text="" className="!gap-0" />
                       Đang xóa...
                     </>
                   ) : (
@@ -855,7 +856,7 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
                   >
                     {isEditing ? (
                       <>
-                        <HiOutlineArrowPath className="w-4 h-4 animate-spin" />
+                        <BallLoader size="sm" text="" className="!gap-0" />
                         Đang lưu...
                       </>
                     ) : (

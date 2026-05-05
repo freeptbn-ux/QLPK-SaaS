@@ -1,91 +1,82 @@
-# QLPK-SaaS - Hệ thống Quản lý Phòng khám Thông minh
+# QLPK SaaS - Hệ Thống Quản Lý Phòng Khám Hiện Đại
 
-![QLPK-SaaS](https://raw.githubusercontent.com/freeptbn-ux/QLPK-SaaS/main/public/logo.png)
+Phần mềm quản lý phòng khám (QLPK SaaS) là một giải pháp toàn diện giúp tự động hóa và tối ưu hóa quy trình hoạt động của phòng khám, bao gồm quản lý bệnh nhân, khám bệnh, kê đơn thuốc, và quản lý kho thuốc. Hệ thống được thiết kế với giao diện trực quan, thân thiện, và hiệu năng cao.
 
-QLPK-SaaS là một giải pháp phần mềm dưới dạng dịch vụ (SaaS) hiện đại, được thiết kế để tối ưu hóa quy trình quản lý tại các phòng khám vừa và nhỏ. Hệ thống cung cấp các công cụ mạnh mẽ từ quản lý bệnh nhân, kê đơn thuốc điện tử đến theo dõi kho thuốc và báo cáo doanh thu.
+## Các tính năng chính
 
-## 🚀 Tính năng chính
+- **Quản lý bệnh nhân**: Thêm mới, tìm kiếm, xem hồ sơ, và quản lý thông tin bệnh nhân.
+- **Khám bệnh & Kê đơn**: Hỗ trợ kê đơn thuốc nhanh chóng với tính năng tự động tìm kiếm thuốc, tính liều lượng, và kiểm tra tồn kho.
+- **Quản lý Kho thuốc**: Theo dõi số lượng tồn kho, cảnh báo thuốc sắp hết, và quản lý danh mục thuốc.
+- **Thống kê & Báo cáo**: Cung cấp cái nhìn tổng quan về doanh thu và hoạt động của phòng khám.
+- **Hệ thống Loading đồng bộ**: Trải nghiệm mượt mà, không giật lag nhờ hệ thống loading toàn cầu tiên tiến.
+- **Hỗ trợ Dark Mode**: Giao diện sáng/tối thân thiện với mắt người dùng.
 
-- **Quản lý Bệnh nhân**: Lưu trữ thông tin cá nhân, tiểu sử bệnh lý và lịch sử khám chữa bệnh tập trung.
-- **Kê đơn thuốc thông minh**: Tự động tính toán liều lượng, đơn giá và tổng tiền đơn thuốc. Giao diện tối ưu cho cả máy tính và thiết bị di động.
-- **Quản lý Kho thuốc**: Theo dõi số lượng tồn kho, cảnh báo khi thuốc sắp hết và quản lý quy cách đóng gói.
-- **Dashboard & Báo cáo**: Trực quan hóa dữ liệu khám bệnh và doanh thu thông qua biểu đồ sinh động.
-- **Giao diện hiện đại**: Hỗ trợ Dark Mode, thiết kế theo phong cách Glassmorphism và hiệu ứng chuyển động mượt mà.
+## Công nghệ sử dụng
 
-## 🛠️ Công nghệ sử dụng
+Dự án được xây dựng dựa trên các công nghệ hiện đại và mạnh mẽ nhất:
 
-Dự án được xây dựng trên nền tảng công nghệ mới nhất:
+- **Frontend**: Next.js (App Router), React, TypeScript.
+- **Styling**: Tailwind CSS, CSS Modules.
+- **Animations**: Framer Motion.
+- **Backend & Database**: Supabase (PostgreSQL, Authentication).
+- **Form Management & Validation**: React Hook Form, Zod.
+- **Icons**: React Icons (Heroicons).
 
-- **Frontend**: [Next.js 16](https://nextjs.org/) (App Router), [React 19](https://react.dev/)
-- **Ngôn ngữ**: [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/), [Framer Motion](https://www.framer.com/motion/) (Animations)
-- **Backend/Database**: [Supabase](https://supabase.com/) (PostgreSQL, Auth, Realtime)
-- **Form Handling**: [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/)
-- **Charts**: [Recharts](https://recharts.org/)
-- **Icons**: [React Icons](https://react-icons.github.io/react-icons/)
-- **Testing**: [Vitest](https://vitest.dev/)
+## Hướng dẫn cài đặt
 
-## 📦 Cấu trúc thư mục
+Để chạy dự án trên môi trường local, vui lòng làm theo các bước sau:
 
-```text
-QLPK-SaaS/
-├── src/
-│   ├── app/            # Next.js App Router (Pages & Layouts)
-│   ├── components/     # UI Components (Feature-based & Shared)
-│   ├── actions/        # Server Actions (Database logic)
-│   ├── lib/            # Shared utilities & configurations
-│   ├── types/          # TypeScript definitions
-│   └── styles/         # Global styles
-├── supabase/           # Database migrations & configuration
-├── public/             # Static assets
-├── tests/              # Unit & Integration tests
-└── .brain/             # Agent Knowledge & Context
-```
+### Yêu cầu hệ thống
+- Node.js (phiên bản 18.x trở lên)
+- npm, yarn, hoặc pnpm
+- Tài khoản Supabase (để cấu hình Database và Auth)
 
-## ⚙️ Hướng dẫn cài đặt
+### Các bước thực hiện
 
-### 1. Yêu cầu hệ thống
-- Node.js 18.x trở lên
-- npm hoặc yarn
+1. **Clone repository về máy**:
+   ```bash
+   git clone https://github.com/freeptbn-ux/QLPK-SaaS.git
+   cd QLPK-SaaS
+   ```
 
-### 2. Các bước cài đặt
+2. **Cài đặt dependencies**:
+   ```bash
+   npm install
+   # hoặc
+   yarn install
+   # hoặc
+   pnpm install
+   ```
 
-```bash
-# Clone repository
-git clone https://github.com/freeptbn-ux/QLPK-SaaS.git
-cd QLPK-SaaS
+3. **Cấu hình biến môi trường**:
+   - Tạo file `.env.local` ở thư mục gốc của dự án.
+   - Thêm các biến môi trường cần thiết kết nối với Supabase:
+     ```env
+     NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+     NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+     ```
 
-# Cài đặt dependencies
-npm install
+4. **Khởi chạy ứng dụng**:
+   ```bash
+   npm run dev
+   # hoặc
+   yarn dev
+   # hoặc
+   pnpm dev
+   ```
+   Ứng dụng sẽ chạy tại `http://localhost:3000`.
 
-# Cấu hình biến môi trường
-cp .env.example .env.local
-# Sau đó cập nhật các thông số Supabase của bạn vào .env.local
-```
+## Cấu trúc thư mục
 
-### 3. Chạy ứng dụng
+- `src/app/`: Chứa các trang (pages) và layouts của ứng dụng (theo Next.js App Router).
+- `src/components/`: Chứa các thành phần UI có thể tái sử dụng, bao gồm features (chức năng cụ thể), UI components cơ bản, và hệ thống Loading.
+- `src/actions/`: Chứa các Server Actions để tương tác với cơ sở dữ liệu.
+- `src/types/`: Định nghĩa các kiểu dữ liệu TypeScript.
+- `src/lib/`: Chứa các tiện ích, cấu hình Supabase client, và logic validation.
+- `plans/`: Chứa các tài liệu lên kế hoạch phát triển (development plans).
 
-```bash
-# Chế độ phát triển (Development)
-npm run dev
+## Bản quyền và Giấy phép
 
-# Xây dựng bản sản xuất (Build)
-npm run build
+Copyright 2026 Nguyễn Duy Trường.
 
-# Chạy bản sản xuất (Start)
-npm run start
-```
-
-## 📝 Cách sử dụng
-
-1. **Đăng nhập**: Sử dụng tài khoản bác sĩ/quản trị viên được cấp.
-2. **Tiếp nhận bệnh nhân**: Tìm kiếm hoặc tạo mới hồ sơ bệnh nhân tại màn hình chính.
-3. **Kê đơn**: Nhấn "Kê đơn mới", chọn thuốc từ danh sách gợi ý tự động (Autocomplete), nhập số lượng và chẩn đoán.
-4. **Quản lý kho**: Cập nhật danh mục thuốc và số lượng nhập kho tại mục Quản lý thuốc.
-
-## 🔒 Bản quyền
-
-Copyright 2026 Nguyễn Duy Trường. All rights reserved.
-
----
-*Dự án được phát triển với sự hỗ trợ của Antigravity AI.*
+Dự án này là tài sản trí tuệ thuộc về Nguyễn Duy Trường và không được phép sao chép, sử dụng hoặc phân phối khi chưa có sự đồng ý.

@@ -12,7 +12,7 @@ import { useToast } from '@/hooks/useToast';
 import DateInput from '@/components/ui/DateInput';
 import { cn } from '@/lib/utils/cn';
 import { formatDobForInput } from '@/lib/utils/age';
-import Loading from '@/components/Loading/Loading';
+import { BallLoader } from '@/components/Loading';
 
 function toTitleCase(str: string): string {
   if (!str) return str;
@@ -332,7 +332,7 @@ export default function PatientFormDialog({
                 >
                   {isSubmitting ? (
                     <div className="flex items-center gap-2">
-                       <Loading variant="spinner" size="sm" delay={0} className="text-white" />
+                       <BallLoader size="sm" text="" className="!gap-0" />
                       Đang lưu...
                     </div>
                   ) : 'Lưu'}

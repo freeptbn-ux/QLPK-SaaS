@@ -16,7 +16,7 @@ import PatientFormDialog from './PatientFormDialog';
 import MergePatientDialog from './MergePatientDialog';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import EmptyState from '@/components/ui/EmptyState';
-import Loading from '@/components/Loading/Loading';
+import { LoadingReporter } from '@/components/Loading';
 import Link from 'next/link';
 import { formatAge } from '@/lib/utils/age';
 
@@ -154,7 +154,7 @@ export default function PatientList() {
               {loading ? (
                 <tr>
                   <td colSpan={8} className="p-0 border-none">
-                    <Loading variant="skeleton" isLoading={true} delay={0} className="h-[500px] w-full rounded-none" ariaLabel="Đang tải danh sách bệnh nhân..." />
+                    <LoadingReporter text="Đang tải danh sách bệnh nhân..." />
                   </td>
                 </tr>
               ) : patients.length === 0 ? (
@@ -231,10 +231,8 @@ export default function PatientList() {
         {/* Mobile Cards */}
         <div className="md:hidden divide-y divide-gray-100 dark:divide-gray-800">
           {loading ? (
-             <div className="p-4 space-y-4">
-                {[...Array(3)].map((_, i) => (
-                  <Loading key={i} variant="skeleton" isLoading={true} delay={0} className="h-24 w-full" />
-                ))}
+             <div className="p-4">
+                <LoadingReporter text="Đang tải danh sách..." />
              </div>
           ) : patients.length === 0 ? (
             <div className="p-8 text-center">

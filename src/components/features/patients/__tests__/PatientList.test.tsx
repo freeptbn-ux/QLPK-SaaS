@@ -32,8 +32,9 @@ vi.mock('@/components/ui/EmptyState', () => ({
   default: () => <div data-testid="empty-state" />,
 }));
 
-vi.mock('@/components/Loading/Loading', () => ({
-  default: () => <div data-testid="loading" />,
+vi.mock('@/components/Loading', () => ({
+  LoadingReporter: () => <div data-testid="loading-reporter" />,
+  BallLoader: () => <div data-testid="ball-loader" />,
 }));
 
 describe('PatientList', () => {

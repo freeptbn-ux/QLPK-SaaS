@@ -10,7 +10,7 @@ import { updateMultipleSettings, changePassword } from '@/actions/settings';
 import { useThemeContext } from '@/theme/ThemeContext';
 import { cn } from '@/lib/utils/cn';
 import { HiOutlineDatabase } from 'react-icons/hi';
-import Loading from '@/components/Loading/Loading';
+import { BallLoader } from '@/components/Loading';
 
 const settingsSchema = z.object({
   clinic_name: z.string().min(1, 'Tên phòng khám là bắt buộc'),
@@ -183,7 +183,7 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
               className="btn-primary min-w-[200px] flex items-center justify-center gap-2 py-4 rounded-2xl shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 transition-all duration-500 group"
             >
               {isSubmitting ? (
-                <Loading variant="spinner" size="sm" delay={0} ariaLabel="Đang lưu..." className="text-white" />
+                <BallLoader size="sm" text="" className="!gap-0" />
               ) : (
                 <HiOutlineCheck className="w-5 h-5 group-hover:scale-125 transition-transform duration-300" />
               )}
@@ -293,7 +293,7 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                 className="w-full btn-outlined border-slate-200 hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/10 flex items-center justify-center gap-2 mt-4 py-3 rounded-xl transition-all duration-300 font-bold uppercase tracking-widest text-[11px]"
               >
                 {isChangingPassword ? (
-                  <Loading variant="spinner" size="sm" delay={0} ariaLabel="Đang đổi mật khẩu..." className="text-primary-600" />
+                  <BallLoader size="sm" text="" className="!gap-0" />
                 ) : null}
                 Đổi mật khẩu truy cập
               </button>
