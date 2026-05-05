@@ -526,12 +526,12 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
                 </div>
 
                 {itemsToAppend.length > 0 && (
-                  <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
+                  <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
                         <tr>
-                          <th className="px-4 py-2 text-left font-semibold">Thuốc</th>
-                          <th className="px-4 py-2 text-right font-semibold w-24">SL</th>
+                          <th className="px-4 py-2 text-left font-semibold min-w-[150px]">Thuốc</th>
+                          <th className="px-4 py-2 text-right font-semibold w-24 min-w-[70px]">SL</th>
                           <th className="px-4 py-2 text-right font-semibold w-12"></th>
                         </tr>
                       </thead>
@@ -542,10 +542,13 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
                             <td className="px-4 py-2">
                               <input
                                 type="number"
-                                value={item.quantity}
+                                value={item.quantity === 0 ? '' : item.quantity}
                                 min="1"
-                                onChange={(e) => handleUpdateAppendItem(item.medicine_id, parseInt(e.target.value) || 1)}
-                                className="w-full px-2 py-1 text-right bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  handleUpdateAppendItem(item.medicine_id, val === '' ? 0 : parseInt(val) || 0);
+                                }}
+                                className="w-full px-1 py-1 text-center bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500/20 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                               />
                             </td>
                             <td className="px-4 py-2 text-right">
@@ -703,14 +706,14 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
                     <span className="text-xs font-medium text-gray-500">{editItems.length} loại</span>
                   </div>
                   
-                  <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
+                  <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
                         <tr>
-                          <th className="px-4 py-2 text-left font-semibold">Tên thuốc</th>
-                          <th className="px-4 py-2 text-right font-semibold w-24">SL</th>
-                          <th className="px-4 py-2 text-right font-semibold">Đơn giá</th>
-                          <th className="px-4 py-2 text-right font-semibold">Thành tiền</th>
+                          <th className="px-4 py-2 text-left font-semibold min-w-[150px]">Tên thuốc</th>
+                          <th className="px-4 py-2 text-right font-semibold w-24 min-w-[70px]">SL</th>
+                          <th className="px-4 py-2 text-right font-semibold min-w-[100px]">Đơn giá</th>
+                          <th className="px-4 py-2 text-right font-semibold min-w-[100px]">Thành tiền</th>
                           <th className="px-4 py-2 text-right font-semibold w-12"></th>
                         </tr>
                       </thead>
@@ -724,10 +727,13 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
                             <td className="px-4 py-3">
                               <input
                                 type="number"
-                                value={item.quantity}
+                                value={item.quantity === 0 ? '' : item.quantity}
                                 min="1"
-                                onChange={(e) => handleEditUpdateQuantity(item.medicine_id, parseInt(e.target.value) || 1)}
-                                className="w-full px-2 py-1 text-right bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  handleEditUpdateQuantity(item.medicine_id, val === '' ? 0 : parseInt(val) || 0);
+                                }}
+                                className="w-full px-1 py-1 text-center bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500/20 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                               />
                             </td>
                             <td className="px-4 py-3 text-right text-gray-500">{item.unit_price.toLocaleString('vi-VN')}</td>
