@@ -1,0 +1,160 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { HiOutlineXMark } from 'react-icons/hi2';
+import { Medicine } from '@/types/database';
+import { updateMedicineStock } from '@/actions/medicines';
+import { cn } from '@/lib/utils/cn';
+import { BallLoader } from '@/components/Loading';
+
+interface StockAdjustDialogProps {
+  open: boolean;
+  onClose: () => void;
+  medicine: Medicine | null;
+  onSuccess: () => void;
+}
+
+export default function StockAdjustDialog({ open, onClose, medicine, onSuccess }: StockAdjustDialogProps) {
+  const [adjustment, setAdjustment] = useState<string>('0');
+  const [reason, setReason] = useState<string>('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setAdjustment('0');
+      setReason('');
+      setError(null);
+    }
+  }, [open]);
+
+  if (!medicine) return null;
+
+  const handleAdjust = async () => {
+    const adjustmentValue = parseInt(adjustment) || 0;
+    if (adjustmentValue === 0) {
+      setError('Vui lòng nhập số lượng thay đổi');
+      return;
+    }
+    if (!reason.trim()) {
+      setError('Vui lòng nhập lý do điều chỉnh');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    try {
+      await updateMedicineStock(medicine.id, adjustmentValue, reason);
+      onSuccess();
+      onClose();
+    } catch (err: any) {
+      setError(err.message || 'Không thể cập nhật tồn kho');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden"
+          >
+            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">Điều chỉnh tồn kho</h3>
+              <button 
+                onClick={onClose}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+              >
+                <HiOutlineXMark className="w-6 h-6 text-gray-500" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div>
+                <p className="text-sm font-bold text-gray-900 dark:text-white mb-1">Thuốc: {medicine.name}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Tồn hiện tại: <span className="font-bold">{medicine.stock_quantity}</span></p>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Số lượng thay đổi</label>
+                <input
+                  type="text"
+                  value={adjustment}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === '' || /^-?\d*$/.test(val)) {
+                      setAdjustment(val);
+                    }
+                  }}
+                  className={cn(
+                    "input-field bg-white dark:bg-slate-900",
+                    error && (parseInt(adjustment) || 0) === 0 && "border-red-500 focus:ring-red-500/20"
+                  )}
+                />
+                <p className="text-[10px] text-gray-400 font-medium italic">Nhập số dương để tăng, số âm để giảm</p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Lý do điều chỉnh</label>
+                <textarea
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  placeholder="VD: Nhập thêm hàng, Kiểm kê bù, Hủy thuốc hỏng..."
+                  className={cn(
+                    "input-field min-h-[80px] py-2 resize-none bg-white dark:bg-slate-900 text-sm",
+                    error && !reason.trim() && "border-red-500 focus:ring-red-500/20"
+                  )}
+                />
+                {error && <p className="text-xs font-medium text-red-500">{error}</p>}
+              </div>
+
+              <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-800">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Tồn kho mới (dự kiến): <span className="font-bold text-gray-900 dark:text-white text-base ml-1">{medicine.stock_quantity + (parseInt(adjustment) || 0)}</span>
+                </p>
+              </div>
+            </div>
+
+            <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-800 flex justify-end gap-3">
+              <button
+                onClick={onClose}
+                disabled={loading}
+                className="px-6 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={handleAdjust}
+                disabled={loading}
+                className="btn-primary min-w-[120px] flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <>
+                    <BallLoader size="sm" text="" className="!gap-0" />
+                    Đang lưu...
+                  </>
+                ) : (
+                  'Cập nhật'
+                )}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+}
