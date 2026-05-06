@@ -11,7 +11,7 @@ import { useThemeContext } from '@/theme/ThemeContext';
 import Link from 'next/link';
 
 export default function Home() {
-  const { mode, toggleTheme } = useThemeContext();
+  const { mode, toggleTheme, mounted } = useThemeContext();
 
   const hasSupabaseKeys = 
     !!process.env.NEXT_PUBLIC_SUPABASE_URL && 
@@ -22,16 +22,23 @@ export default function Home() {
       <div className="max-w-3xl w-full">
         <div className="bg-white dark:bg-slate-900 shadow-xl rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 transition-all duration-300">
           <div className={`p-8 md:p-12 text-center relative ${
-            mode === 'light' 
+            mounted && mode === 'light' 
               ? 'bg-gradient-to-br from-white to-slate-50'
-              : 'bg-gradient-to-br from-slate-900 to-slate-950'
+              : mounted && mode === 'dark'
+                ? 'bg-gradient-to-br from-slate-900 to-slate-950'
+                : 'bg-white dark:bg-slate-900'
           }`}>
             <div className="absolute top-6 right-6">
               <button 
                 onClick={toggleTheme}
                 className="p-3 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                title={mounted ? `Switch to ${mode === 'light' ? 'dark' : 'light'} mode` : 'Loading...'}
               >
-                {mode === 'dark' ? <HiSun className="w-6 h-6" /> : <HiMoon className="w-6 h-6" />}
+                {mounted ? (
+                  mode === 'dark' ? <HiSun className="w-6 h-6" /> : <HiMoon className="w-6 h-6" />
+                ) : (
+                  <div className="w-6 h-6" />
+                )}
               </button>
             </div>
 

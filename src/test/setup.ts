@@ -19,6 +19,7 @@ vi.mock('@/theme/ThemeContext', () => ({
   useThemeContext: () => ({
     mode: 'light',
     toggleTheme: vi.fn(),
+    mounted: true,
   }),
 }));
 

@@ -17,7 +17,7 @@ interface TopBarProps {
 }
 
 export default function TopBar({ onMenuClick, title }: TopBarProps) {
-  const { mode, toggleTheme } = useThemeContext()
+  const { mode, toggleTheme, mounted } = useThemeContext()
   const { clinic_name } = useSettings()
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -60,13 +60,16 @@ export default function TopBar({ onMenuClick, title }: TopBarProps) {
         <button
           onClick={toggleTheme}
           className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-          title={`Switch to ${mode === 'light' ? 'dark' : 'light'} mode`}
+          title={mounted ? `Switch to ${mode === 'light' ? 'dark' : 'light'} mode` : 'Loading...'}
         >
-          {mode === 'dark' ? (
-            <HiOutlineSun className="w-5 h-5 text-slate-600 dark:text-amber-400" />
-          ) : (
-            <HiOutlineMoon className="w-5 h-5 text-slate-600 dark:text-slate-300" />
+          {mounted && (
+            mode === 'dark' ? (
+              <HiOutlineSun className="w-5 h-5 text-slate-600 dark:text-amber-400" />
+            ) : (
+              <HiOutlineMoon className="w-5 h-5 text-slate-600 dark:text-slate-300" />
+            )
           )}
+          {!mounted && <div className="w-5 h-5" />}
         </button>
 
         <div className="relative" ref={menuRef}>

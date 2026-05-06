@@ -19,7 +19,7 @@ vi.mock('@/actions/auth', () => ({
 
 describe('TopBar', () => {
   it('renders correctly in light mode', () => {
-    vi.mocked(useThemeContext).mockReturnValue({ mode: 'light', toggleTheme: vi.fn() })
+    vi.mocked(useThemeContext).mockReturnValue({ mode: 'light', toggleTheme: vi.fn(), mounted: true })
     vi.mocked(useSettings).mockReturnValue({ clinic_name: 'Test Clinic', settings: { clinic_name: 'Test Clinic' } })
 
     render(<TopBar />)
@@ -31,7 +31,7 @@ describe('TopBar', () => {
   })
 
   it('renders correctly in dark mode', () => {
-    vi.mocked(useThemeContext).mockReturnValue({ mode: 'dark', toggleTheme: vi.fn() })
+    vi.mocked(useThemeContext).mockReturnValue({ mode: 'dark', toggleTheme: vi.fn(), mounted: true })
     vi.mocked(useSettings).mockReturnValue({ clinic_name: 'Test Clinic', settings: { clinic_name: 'Test Clinic' } })
 
     render(<TopBar />)

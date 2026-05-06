@@ -36,7 +36,7 @@ interface SettingsFormProps {
 
 export default function SettingsForm({ initialSettings }: SettingsFormProps) {
   const { showToast } = useToast();
-  const { mode, toggleTheme } = useThemeContext();
+  const { mode, toggleTheme, mounted } = useThemeContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
 
@@ -215,13 +215,13 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                 type="button"
                 className={cn(
                   "relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ring-4 ring-transparent focus:ring-primary-500/10",
-                  mode === 'dark' ? "bg-primary-600" : "bg-slate-200 dark:bg-slate-700"
+                  mounted && mode === 'dark' ? "bg-primary-600" : "bg-slate-200 dark:bg-slate-700"
                 )}
               >
                 <span
                   className={cn(
                     "inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm",
-                    mode === 'dark' ? "translate-x-6" : "translate-x-1"
+                    mounted && mode === 'dark' ? "translate-x-6" : "translate-x-1"
                   )}
                 />
               </button>

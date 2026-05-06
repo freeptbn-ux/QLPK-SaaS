@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useTransition } from 'react';
 import { 
   HiOutlinePencil, 
   HiOutlineTrash, 
@@ -39,6 +39,7 @@ export default function PatientListClient({
 }: PatientListClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
   
   // Dialog states
   const [formOpen, setFormOpen] = useState(false);
@@ -54,14 +55,16 @@ export default function PatientListClient({
   const handleChangePage = (newPage: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('page', String(newPage + 1)); // UI uses 0-indexed internally but URL uses 1-indexed
-    router.push(`/patients?${params.toString()}`);
+    startTransition(() => {
+      router.replace(`/patients?${params.toString()}`, { scroll: false });
+    });
   };
 
   const handleChangeRowsPerPage = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('size', e.target.value);
     params.set('page', '1');
-    router.push(`/patients?${params.toString()}`);
+    router.push(`/patients?${params.toString()}`, { scroll: false });
   };
 
   const handleSearch = React.useCallback((term: string) => {
@@ -75,7 +78,9 @@ export default function PatientListClient({
       params.delete('q');
     }
     params.set('page', '1');
-    router.push(`/patients?${params.toString()}`);
+    startTransition(() => {
+      router.replace(`/patients?${params.toString()}`, { scroll: false });
+    });
   }, [searchParams, router]);
 
   const handleAddPatient = () => {
@@ -121,7 +126,11 @@ export default function PatientListClient({
       {/* Search and Add Action */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-4">
         <div className="flex-grow">
-          <PatientSearch onSearch={handleSearch} initialValue={searchQuery} />
+          <PatientSearch 
+            onSearch={handleSearch} 
+            initialValue={searchQuery} 
+            isLoading={isPending}
+          />
         </div>
         <div className="flex items-center gap-2">
           <button

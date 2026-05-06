@@ -1,24 +1,23 @@
-# QLPK SaaS - Hệ Thống Quản Lý Phòng Khám Hiện Đại
+# QLPK SaaS - Hệ Thống Quản Lý Phòng Khám Nhi Khoa Thông Minh
 
-Phần mềm quản lý phòng khám (QLPK SaaS) là một giải pháp toàn diện giúp tự động hóa và tối ưu hóa quy trình hoạt động của phòng khám, bao gồm quản lý bệnh nhân, khám bệnh, kê đơn thuốc, và quản lý kho thuốc. Hệ thống được thiết kế với giao diện trực quan, thân thiện, và hiệu năng cao.
+Phần mềm quản lý phòng khám (QLPK SaaS) là một giải pháp toàn diện được thiết kế chuyên biệt cho các phòng khám nhi khoa. Dự án nhằm tối ưu hóa quy trình khám chữa bệnh, từ khâu tiếp nhận bệnh nhân, khám lâm sàng, kê đơn thuốc cho đến quản lý kho dược và báo cáo tài chính. Hệ thống được xây dựng trên nền tảng công nghệ hiện đại, đảm bảo tính bảo mật, tốc độ và trải nghiệm người dùng vượt trội.
 
-## 🚀 Các tính năng chính
+## 🚀 Tính năng nổi bật
 
-- **Quản lý bệnh nhân**: Thêm mới, tìm kiếm, xem hồ sơ, và quản lý thông tin bệnh nhân chi tiết.
-- **Khám bệnh & Kê đơn**: Hỗ trợ quy trình khám bệnh khép kín, kê đơn thuốc nhanh chóng với tính năng tự động tìm kiếm, tính liều lượng và kiểm tra tồn kho thời gian thực.
-- **Quản lý Kho thuốc**: Theo dõi số lượng tồn kho, cảnh báo thuốc sắp hết, quản lý danh mục thuốc và lịch sử điều chỉnh kho.
-- **Thống kê & Báo cáo**: Cung cấp cái nhìn tổng quan về doanh thu, lượt khám, cơ cấu giới tính và nhóm tuổi của bệnh nhân.
-- **Hệ thống Loading đồng bộ**: Trải nghiệm người dùng mượt mà với hệ thống loading toàn cầu (Global Loading) và các hiệu ứng chuyển cảnh cao cấp.
-- **Hỗ trợ Dark Mode**: Giao diện tối/sáng linh hoạt, tối ưu cho sự thoải mái của người dùng trong nhiều môi trường làm việc.
+- **Quản lý Bệnh nhân Toàn diện**: Lưu trữ hồ sơ bệnh án điện tử, lịch sử khám bệnh, thông tin liên lạc và các chỉ số sinh tồn của bệnh nhi.
+- **Quy trình Khám bệnh Chuyên nghiệp**: Hỗ trợ bác sĩ ghi chép triệu chứng, chẩn đoán và chỉ định điều trị một cách nhanh chóng.
+- **Kê đơn Thuốc Thông minh**: Tự động gợi ý liều lượng theo độ tuổi/cân nặng, kiểm tra tồn kho thời gian thực và in đơn thuốc chuyên nghiệp.
+- **Quản lý Kho thuốc & Vật tư**: Theo dõi nhập-xuất-tồn, cảnh báo hạn sử dụng và thuốc sắp hết.
+- **Thống kê & Dashboard**: Biểu đồ trực quan về doanh thu, lượt khám, và phân tích nhân khẩu học bệnh nhân giúp chủ phòng khám có cái nhìn tổng quan.
+- **Tùy biến Giao diện (Theme)**: Hỗ trợ Light/Dark mode với hệ thống hydration-safe, đảm bảo không có lỗi hiển thị khi tải trang.
+- **Bảo mật Đa lớp**: Sử dụng Supabase Auth và Row Level Security (RLS) để bảo vệ dữ liệu nhạy cảm của bệnh nhân.
 
 ## 🛠 Công nghệ sử dụng
 
-Dự án được xây dựng dựa trên các công nghệ hiện đại và mạnh mẽ:
-
-- **Framework**: [Next.js 16](https://nextjs.org/) (App Router), [React 19](https://react.dev/).
+- **Frontend**: [Next.js 16](https://nextjs.org/) (App Router), [React 19](https://react.dev/).
 - **Ngôn ngữ**: [TypeScript](https://www.typescriptlang.org/).
-- **Cơ sở dữ liệu & Auth**: [Supabase](https://supabase.com/) (PostgreSQL).
-- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/).
+- **Backend & Database**: [Supabase](https://supabase.com/) (PostgreSQL).
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/) - Modern CSS engine.
 - **Animations**: [Framer Motion](https://www.framer.com/motion/).
 - **Biểu đồ**: [Recharts](https://recharts.org/).
 - **Quản lý Form**: [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/).
@@ -26,14 +25,11 @@ Dự án được xây dựng dựa trên các công nghệ hiện đại và m�
 
 ## 📦 Hướng dẫn cài đặt
 
-Để triển khai dự án trên môi trường local, hãy thực hiện theo các bước sau:
-
 ### Yêu cầu hệ thống
-- Node.js (phiên bản 18.x trở lên)
-- npm, yarn, hoặc pnpm
-- Tài khoản Supabase để cấu hình Database và Authentication.
+- Node.js >= 18.x
+- Một project trên Supabase (để lấy API URL và Anon Key)
 
-### Các bước thực hiện
+### Các bước cài đặt
 
 1. **Clone repository**:
    ```bash
@@ -41,53 +37,50 @@ Dự án được xây dựng dựa trên các công nghệ hiện đại và m�
    cd QLPK-SaaS
    ```
 
-2. **Cài đặt thư viện**:
+2. **Cài đặt dependencies**:
    ```bash
    npm install
-   # hoặc
-   pnpm install
    ```
 
 3. **Cấu hình biến môi trường**:
-   - Tạo file `.env.local` ở thư mục gốc.
-   - Copy nội dung từ `.env.example` và điền thông tin Supabase của bạn:
-     ```env
-     NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-     NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-     ```
+   Tạo file `.env.local` tại thư mục gốc và cấu hình các thông số sau:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+   ```
 
-4. **Khởi chạy ứng dụng**:
+4. **Khởi chạy môi trường phát triển**:
    ```bash
    npm run dev
    ```
-   Truy cập tại: `http://localhost:3000`.
+   Mở trình duyệt và truy cập `http://localhost:3000`.
+
+## 💻 Cách sử dụng
+
+1. **Đăng nhập**: Sử dụng tài khoản bác sĩ/quản trị viên được cấp quyền trên Supabase.
+2. **Tiếp nhận**: Thêm mới bệnh nhân hoặc tìm kiếm bệnh nhân cũ tại mục "Bệnh nhân".
+3. **Khám bệnh**: Chọn bệnh nhân và bắt đầu phiên khám, nhập triệu chứng và chẩn đoán.
+4. **Kê đơn**: Tìm kiếm thuốc trong danh mục, nhập số lượng và in đơn.
+5. **Cài đặt**: Tùy chỉnh thông tin phòng khám và chế độ hiển thị (Sáng/Tối) tại mục "Cài đặt".
 
 ## 📂 Cấu trúc thư mục
 
-```text
-QLPK-SaaS/
-├── src/
-│   ├── app/          # Pages & Layouts (App Router)
-│   ├── components/   # UI & Feature Components
-│   ├── actions/      # Server Actions (Logic Backend)
-│   ├── lib/          # Utilities, Config & Validation
-│   ├── types/        # TypeScript Definitions
-│   └── styles/       # Global CSS & Tailwind Config
-├── supabase/         # Database migrations & RPCs
-├── public/           # Static assets
-├── tests/            # Unit & Integration tests
-├── plans/            # Tài liệu kế hoạch phát triển
-└── docs/             # Tài liệu hướng dẫn & Specs
-```
+- `src/app/`: Chứa các route và layout của ứng dụng (Next.js App Router).
+- `src/components/`: Các thành phần giao diện dùng chung và theo tính năng.
+- `src/actions/`: Các Server Actions xử lý logic nghiệp vụ và tương tác DB.
+- `src/theme/`: Hệ thống quản lý giao diện và Theme Context.
+- `src/lib/`: Các tiện ích, cấu hình và schema xác thực.
+- `supabase/`: Chứa các file cấu hình database, migrations và RPC functions.
+- `.brain/`: Lưu trữ kiến thức và ngữ cảnh phát triển của dự án (Antigravity Eternal Context).
 
 ## 📝 Thông tin bổ sung
 
-- Hệ thống sử dụng **Supabase RPC** cho các logic thống kê phức tạp để tối ưu hiệu năng.
-- Toàn bộ dữ liệu được bảo mật bằng hệ thống **Row Level Security (RLS)** của PostgreSQL.
-- Dự án hỗ trợ tích hợp tốt với các môi trường CI/CD như Vercel.
+- Dự án được tối ưu hóa cho hiệu năng cao với việc sử dụng Server Components và RPC.
+- Mọi thay đổi về schema database đều được quản lý qua migrations trong thư mục `supabase/`.
+- Hệ thống có khả năng mở rộng (SaaS) để phục vụ nhiều phòng khám khác nhau trong tương lai.
 
 ## ⚖️ Bản quyền
 
 Copyright 2026 Nguyễn Duy Trường.
 
-Mọi quyền được bảo lưu. Dự án này là tài sản trí tuệ thuộc về Nguyễn Duy Trường. Việc sao chép, phân phối hoặc sử dụng trái phép mã nguồn này bị nghiêm cấm.
+Mọi quyền được bảo lưu. Dự án này là tài sản trí tuệ thuộc về Nguyễn Duy Trường. Việc sao chép, sửa đổi hoặc phân phối trái phép mã nguồn này dưới bất kỳ hình thức nào đều bị nghiêm cấm.

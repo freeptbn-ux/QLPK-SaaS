@@ -5,7 +5,7 @@ import Sidebar from '../Sidebar';
 
 // Mock context and hooks
 vi.mock('@/theme/ThemeContext', () => ({
-  useThemeContext: () => ({ mode: 'light', toggleTheme: vi.fn() })
+  useThemeContext: () => ({ mode: 'light', toggleTheme: vi.fn(), mounted: true })
 }));
 vi.mock('@/actions/auth', () => ({
   logoutAction: vi.fn()

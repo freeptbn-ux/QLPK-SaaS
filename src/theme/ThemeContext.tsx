@@ -7,11 +7,13 @@ type ThemeMode = 'light' | 'dark';
 interface ThemeContextType {
   mode: ThemeMode;
   toggleTheme: () => void;
+  mounted: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [mounted, setMounted] = useState(false);
   const [mode, setMode] = useState<ThemeMode>(() => {
     if (typeof window !== 'undefined') {
       const savedMode = localStorage.getItem('themeMode') as ThemeMode;
@@ -23,6 +25,7 @@ export const ThemeContextProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   // Apply theme class on mount and mode change
   useEffect(() => {
+    setMounted(true);
     if (mode === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
@@ -43,7 +46,7 @@ export const ThemeContextProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   return (
-    <ThemeContext.Provider value={{ mode, toggleTheme }}>
+    <ThemeContext.Provider value={{ mode, toggleTheme, mounted }}>
       {children}
     </ThemeContext.Provider>
   );
