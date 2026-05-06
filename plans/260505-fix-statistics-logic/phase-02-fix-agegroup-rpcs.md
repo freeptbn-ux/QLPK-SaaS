@@ -1,6 +1,6 @@
 # Phase 02: Fix AgeGroup RPCs — DISTINCT + filter_type='all'
 
-Status: ⬜ Pending
+Status: ✅ Completed
 Dependencies: Không (có thể chạy song song với Phase 01)
 Fixes: Bug #3 (🔴), Bug #4 (🔴)
 
@@ -99,13 +99,13 @@ SELECT dob, COUNT(*) FROM (
 - **KHÔNG cần sửa frontend** — `StatisticsClient.tsx` đã gọi đúng tham số
 
 ## Test Criteria
-- [ ] `get_patient_dobs_by_time('all', '')` trả về danh sách DOB (không rỗng)
-- [ ] `get_patient_dobs_by_time('month', '2026-05')` trả về DOB DISTINCT (không trùng)
-- [ ] Biểu đồ AgeGroupChart hiển thị đúng khi chọn tab "Theo ngày" (có dữ liệu)
-- [ ] Biểu đồ AgeGroupChart hiển thị đúng khi chọn tab "Theo tuần" (có dữ liệu)
-- [ ] Biểu đồ AgeGroupChart hiển thị đúng khi chọn tab "Theo tháng" (có dữ liệu)
-- [ ] Biểu đồ AgeGroupChart hiển thị đúng khi chọn tab "Theo năm" (có dữ liệu)
-- [ ] Số lượng tổng trong biểu đồ nhóm tuổi hợp lý (không thổi phồng)
+- [x] `get_patient_dobs_by_time('all', '')` trả về danh sách DOB (không rỗng)
+- [x] `get_patient_dobs_by_time('month', '2026-05')` trả về DOB DISTINCT (không trùng)
+- [x] Biểu đồ AgeGroupChart hiển thị đúng khi chọn tab "Theo ngày" (có dữ liệu)
+- [x] Biểu đồ AgeGroupChart hiển thị đúng khi chọn tab "Theo tuần" (có dữ liệu)
+- [x] Biểu đồ AgeGroupChart hiển thị đúng khi chọn tab "Theo tháng" (có dữ liệu)
+- [x] Biểu đồ AgeGroupChart hiển thị đúng khi chọn tab "Theo năm" (có dữ liệu)
+- [x] Số lượng tổng trong biểu đồ nhóm tuổi hợp lý (không thổi phồng)
 
 ## Notes
 

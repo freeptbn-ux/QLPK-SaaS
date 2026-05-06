@@ -1,6 +1,6 @@
 # Phase 04: Frontend Quick Fixes — Static Data + Estimated Count
 
-Status: ⬜ Pending
+Status: ✅ DONE
 Dependencies: Không (có thể chạy song song)
 Fixes: Bug #5 (🟡), Bug #8 (🟡)
 

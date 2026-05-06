@@ -114,3 +114,41 @@ export function formatDobForInput(dob: string): string {
   }
   return ''; // unrecognized format
 }
+
+/**
+ * Parse DOB dạng legacy ("25 tuổi", "7 tháng", "5.5 tuổi") → age group name.
+ * Chỉ dùng cho AgeGroupChart khi parseAgeParts() trả về null.
+ * 
+ * Returns tên nhóm tuổi trực tiếp, hoặc null nếu không parse được.
+ */
+export function parseLegacyAgeGroup(dob: string): string | null {
+  if (!dob) return null;
+  
+  const normalized = dob.trim().toLowerCase();
+  
+  // Pattern: "X tháng" hoặc "X tháng tuổi"
+  const monthMatch = normalized.match(/^(\d+(?:[.,]\d+)?)\s*tháng/);
+  if (monthMatch) {
+    const months = parseFloat(monthMatch[1].replace(',', '.'));
+    if (months <= 2) return '0-2 tháng';
+    if (months <= 6) return '2-6 tháng';
+    if (months <= 24) return '6 tháng-2 tuổi';
+    return '2-6 tuổi'; // > 24 months = > 2 years
+  }
+  
+  // Pattern: "X tuổi" hoặc "X,Y tuổi" hoặc "X.Y tuổi"
+  const yearMatch = normalized.match(/^(\d+(?:[.,]\d+)?)\s*tuổi/);
+  if (yearMatch) {
+    const years = parseFloat(yearMatch[1].replace(',', '.'));
+    const ageInMonths = years * 12;
+    if (ageInMonths <= 2) return '0-2 tháng';
+    if (ageInMonths <= 6) return '2-6 tháng';
+    if (ageInMonths <= 24) return '6 tháng-2 tuổi';
+    if (ageInMonths <= 72) return '2-6 tuổi';
+    if (ageInMonths <= 192) return '6-16 tuổi';
+    return 'Người lớn';
+  }
+  
+  // Không nhận dạng được (VD: "không tuổi")
+  return null;
+}

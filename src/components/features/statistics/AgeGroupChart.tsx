@@ -11,7 +11,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts';
-import { parseAgeParts } from '@/lib/utils/age';
+import { parseAgeParts, parseLegacyAgeGroup } from '@/lib/utils/age';
 
 interface AgeGroupChartProps {
   dobs: string[];
@@ -30,7 +30,15 @@ export default function AgeGroupChart({ dobs }: AgeGroupChartProps) {
 
     dobs.forEach((dob) => {
       const parts = parseAgeParts(dob);
-      if (!parts) return; // Skip invalid/legacy DOBs
+      
+      if (!parts) {
+        // Fallback: try parse legacy format ("25 tuổi", "7 tháng",...)
+        const legacyGroup = parseLegacyAgeGroup(dob);
+        if (legacyGroup && legacyGroup in groups) {
+          groups[legacyGroup as keyof typeof groups]++;
+        }
+        return;
+      }
 
       // Convert to months for grouping consistent with original logic
       let ageInMonths: number;

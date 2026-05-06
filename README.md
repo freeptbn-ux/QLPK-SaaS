@@ -65,13 +65,22 @@ Phần mềm quản lý phòng khám (QLPK SaaS) là một giải pháp toàn di
 
 ## 📂 Cấu trúc thư mục
 
-- `src/app/`: Chứa các route và layout của ứng dụng (Next.js App Router).
-- `src/components/`: Các thành phần giao diện dùng chung và theo tính năng.
-- `src/actions/`: Các Server Actions xử lý logic nghiệp vụ và tương tác DB.
-- `src/theme/`: Hệ thống quản lý giao diện và Theme Context.
-- `src/lib/`: Các tiện ích, cấu hình và schema xác thực.
-- `supabase/`: Chứa các file cấu hình database, migrations và RPC functions.
-- `.brain/`: Lưu trữ kiến thức và ngữ cảnh phát triển của dự án (Antigravity Eternal Context).
+```text
+QLPK-SaaS/
+├── src/
+│   ├── app/          # Routes & Layouts (App Router)
+│   ├── components/   # UI & Feature Components
+│   ├── actions/      # Server Actions (Business Logic)
+│   ├── lib/          # Utils, Config & Validation
+│   ├── types/        # TypeScript Definitions
+│   └── theme/        # Theme Context & Global Styles
+├── supabase/         # Database Migrations & RPCs
+├── public/           # Static Assets
+├── tests/            # Unit & Integration Tests
+├── plans/            # Development Plans & Roadmaps
+├── docs/             # Documentation & Specs
+└── .brain/           # Eternal Context (Knowledge Base)
+```
 
 ## 📝 Thông tin bổ sung
 

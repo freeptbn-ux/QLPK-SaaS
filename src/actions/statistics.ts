@@ -130,12 +130,10 @@ export async function getMedicineUsageStats(yearMonth?: string) {
 export async function getRevenueStats(timeRange: string = 'month', selectedMonth?: string) {
   const supabase = await createClient();
   
-  // Logic: if timeRange is 'month' or 'day', use selectedMonth (format: YYYY-MM)
-  // Currently, the RPC 'get_revenue_stats' only supports filtering by month.
-  const p_year_month = (timeRange === 'month' || timeRange === 'day') ? selectedMonth : null;
-
-  const { data, error } = await supabase.rpc('get_revenue_stats', {
-    p_year_month: p_year_month || null,
+  const { data, error } = await supabase.rpc('get_revenue_stats_v2', {
+    p_granularity: timeRange,
+    p_year_month: (timeRange === 'day' || timeRange === 'month') ? (selectedMonth || null) : null,
+    p_limit: timeRange === 'week' ? 8 : 12,
   });
 
   if (error) {
@@ -154,7 +152,7 @@ export async function getOverviewStats() {
   const startOfMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
   
   const results = await Promise.all([
-    supabase.from('patients').select('*', { count: 'estimated', head: true }),
+    supabase.from('patients').select('*', { count: 'exact', head: true }),
     supabase.from('prescriptions_header')
       .select('*', { count: 'exact', head: true })
       .gte('prescription_date', startOfMonth),

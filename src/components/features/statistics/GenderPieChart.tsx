@@ -20,9 +20,12 @@ export default function GenderPieChart({ data }: GenderPieChartProps) {
   return (
     <div className="card h-full border-none shadow-sm">
       <div className="p-6">
-        <h3 className="text-base font-black text-slate-900 dark:text-white mb-6 uppercase tracking-tight">
+        <h3 className="text-base font-black text-slate-900 dark:text-white uppercase tracking-tight">
           Phân bố giới tính
         </h3>
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 mb-5">
+          Tổng quan tất cả bệnh nhân
+        </p>
         <div className="w-full h-[320px]">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>

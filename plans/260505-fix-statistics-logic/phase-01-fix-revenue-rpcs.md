@@ -1,6 +1,6 @@
 # Phase 01: Fix Revenue RPCs — Thêm consultation_fee vào doanh thu
 
-Status: ⬜ Pending
+Status: ✅ DONE
 Dependencies: Không
 Fixes: Bug #1 (🔴 Nghiêm trọng)
 
