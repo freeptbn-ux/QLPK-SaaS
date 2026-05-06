@@ -73,25 +73,33 @@ export const getPatientById = cache(async (id: number) => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Unauthorized');
 
-  // Fetch patient info separately
-  const { data: patient, error: pErr } = await supabase
+  // Create promises for parallel execution
+  const patientPromise = supabase
     .from('patients')
     .select('*')
     .eq('id', id)
     .maybeSingle();
 
-  if (pErr || !patient) {
-    if (pErr) console.error('Error fetching patient by id:', pErr.message || pErr);
-    return null;
-  }
-
-  // Fetch prescriptions with limit + ordering
-  const { data: prescriptions, error: rxErr, count } = await supabase
+  const prescriptionsPromise = supabase
     .from('prescriptions_header')
     .select('*, prescription_details(*, medicines(name, packing_spec))', { count: 'exact' })
     .eq('patient_id', id)
     .order('prescription_date', { ascending: false })
     .limit(10);
+
+  // Execute both queries in parallel
+  const [patientRes, rxRes] = await Promise.all([
+    patientPromise,
+    prescriptionsPromise
+  ]);
+
+  const { data: patient, error: pErr } = patientRes;
+  const { data: prescriptions, error: rxErr, count } = rxRes;
+
+  if (pErr || !patient) {
+    if (pErr) console.error('Error fetching patient by id:', pErr.message || pErr);
+    return null;
+  }
 
   if (rxErr) {
     console.error('Error fetching patient prescriptions:', rxErr.message || rxErr);

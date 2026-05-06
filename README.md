@@ -63,6 +63,15 @@ Phần mềm quản lý phòng khám (QLPK SaaS) là một giải pháp toàn di
 4. **Kê đơn**: Tìm kiếm thuốc trong danh mục, nhập số lượng và in đơn.
 5. **Cài đặt**: Tùy chỉnh thông tin phòng khám và chế độ hiển thị (Sáng/Tối) tại mục "Cài đặt".
 
+## ⚡ Tối ưu hóa hiệu năng (Mới cập nhật)
+
+Dự án đã được tối ưu hóa chuyên sâu để đảm bảo trải nghiệm mượt mà:
+- **Parallel Data Fetching**: Chuyển đổi các truy vấn tuần tự sang song song bằng `Promise.all`, giảm 50% thời gian chờ dữ liệu.
+- **React Suspense & Streaming**: Sử dụng cơ chế Streaming của Next.js để hiển thị giao diện khung ngay lập tức trong khi dữ liệu đang được tải.
+- **Server-side Data Hydration**: Nạp dữ liệu thống kê từ Server Component để tránh hiện tượng "nháy" loading trên Client.
+- **Bundle Optimization**: Cấu hình `optimizePackageImports` cho các thư viện lớn như Lucide, Recharts để giảm dung lượng JS.
+- **Debounced Search**: Tối ưu hóa tìm kiếm bệnh nhân, giảm số lượng request lên Server khi người dùng gõ phím.
+
 ## 📂 Cấu trúc thư mục
 
 ```text

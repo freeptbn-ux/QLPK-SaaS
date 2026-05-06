@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import PageHeader from '@/components/ui/PageHeader';
 import { BallLoader } from '@/components/Loading';
@@ -49,6 +49,12 @@ interface StatisticsClientProps {
   } | null;
   initialGenderData: { name: string; value: number }[];
   initialLocationData: { name: string; count: number }[];
+  initialChartData?: {
+    visitData: { name: string; count: number }[];
+    revenueData: { name: string; revenue: number }[];
+    dobData: string[];
+    medicineData: { name: string; totalQuantity: number; totalRevenue: number }[];
+  };
 }
 
 export default function StatisticsClient({ 
@@ -56,9 +62,11 @@ export default function StatisticsClient({
   initialOverview,
   initialGenderData,
   initialLocationData,
+  initialChartData,
 }: StatisticsClientProps) {
   const [selectedMonth, setSelectedMonth] = useState(availableMonths[0] || dayjs().format('YYYY-MM'));
   const [timeRange, setTimeRange] = useState<'day' | 'week' | 'month' | 'year'>('day');
+  const isFirstRender = useRef(true);
   
   const [overview] = useState<{
     totalPatients: number;
@@ -73,7 +81,7 @@ export default function StatisticsClient({
     revenueData: { name: string; revenue: number }[];
     dobData: string[];
     medicineData: { name: string; totalQuantity: number; totalRevenue: number }[];
-  }>({
+  }>(initialChartData || {
     visitData: [],
     revenueData: [],
     dobData: [],
@@ -126,7 +134,10 @@ export default function StatisticsClient({
   }, [timeRange, selectedMonth]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
     void fetchData();
   }, [fetchData]);
 

@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  compress: true,
+  experimental: {
+    optimizePackageImports: ["lucide-react", "recharts", "dayjs", "react-icons/hi2"],
+  },
   async headers() {
     return [
       {
