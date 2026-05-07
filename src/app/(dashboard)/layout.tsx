@@ -1,5 +1,5 @@
 import DashboardShell from '@/components/features/DashboardShell'
-import { getAllSettings } from '@/actions/settings'
+import { getCachedSettings } from '@/actions/settings'
 import { SettingsProvider } from '@/contexts/SettingsContext'
 
 export default async function DashboardLayout({
@@ -7,7 +7,7 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  const settings = await getAllSettings()
+  const settings = await getCachedSettings()
 
   return (
     <SettingsProvider initialSettings={settings}>

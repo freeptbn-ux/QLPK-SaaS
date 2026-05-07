@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { getPatientById } from './patients';
-import { createClient } from '@/lib/supabase/server';
+import { getAuthUser } from '@/lib/supabase/auth';
 
 // Mock Supabase and Next.js cache
-vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn(),
+vi.mock('@/lib/supabase/auth', () => ({
+  getAuthUser: vi.fn(),
 }));
 
 vi.mock('react', async () => {
@@ -25,8 +25,10 @@ describe('getPatientById Optimization', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (createClient as any).mockResolvedValue(mockSupabase);
-    mockSupabase.auth.getUser.mockResolvedValue({ data: { user: { id: 'test-user' } }, error: null });
+    (getAuthUser as any).mockResolvedValue({ 
+      user: { id: 'test-user' }, 
+      supabase: mockSupabase 
+    });
   });
 
   it('should fetch patient and prescriptions in parallel and return combined data', async () => {

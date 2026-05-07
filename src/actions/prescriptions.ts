@@ -1,6 +1,6 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { getAuthUser } from '@/lib/supabase/auth';
 import { CreatePrescriptionData, PrescriptionItem, UpdatePrescriptionData } from '@/types/forms';
 import { revalidatePath } from 'next/cache';
 import { createPrescriptionSchema, updatePrescriptionSchema } from '@/lib/validations/prescription';
@@ -8,9 +8,7 @@ import { formatZodError } from '@/lib/validations/helpers';
 import { getGenericErrorMessage } from '@/lib/error-handler';
 
 export async function createPrescription(rawData: CreatePrescriptionData) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
+  const { supabase } = await getAuthUser();
 
   // Validate and whitelist
   const validation = createPrescriptionSchema.safeParse(rawData);
@@ -54,9 +52,7 @@ export async function createPrescription(rawData: CreatePrescriptionData) {
 }
 
 export async function appendToPrescription(prescriptionId: number, items: PrescriptionItem[], patientId: number) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
+  const { supabase } = await getAuthUser();
 
   const { error } = await supabase.rpc('append_to_prescription', {
     p_header_id: prescriptionId,
@@ -72,9 +68,7 @@ export async function appendToPrescription(prescriptionId: number, items: Prescr
 }
 
 export async function getPrescriptionsByPatient(patientId: number) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
+  const { supabase } = await getAuthUser();
 
   const { data, error } = await supabase
     .from('prescriptions_header')
@@ -100,9 +94,7 @@ export async function getPrescriptionsByPatient(patientId: number) {
 }
 
 export async function getLatestPrescriptionId(patientId: number) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
+  const { supabase } = await getAuthUser();
 
   // Get prescriptions created today
   const today = new Date();
@@ -124,9 +116,7 @@ export async function getLatestPrescriptionId(patientId: number) {
 }
 
 export async function getConsultationFee() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
+  const { supabase } = await getAuthUser();
 
   const { data, error } = await supabase
     .from('settings')
@@ -143,9 +133,7 @@ export async function getConsultationFee() {
 }
 
 export async function deletePrescription(prescriptionId: number, patientId: number) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
+  const { supabase } = await getAuthUser();
 
   const { error } = await supabase.rpc('delete_prescription', {
     p_prescription_id: prescriptionId
@@ -160,9 +148,7 @@ export async function deletePrescription(prescriptionId: number, patientId: numb
 }
 
 export async function updatePrescription(rawData: UpdatePrescriptionData) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
+  const { supabase } = await getAuthUser();
 
   // Validate
   const validation = updatePrescriptionSchema.safeParse(rawData);

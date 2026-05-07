@@ -1,7 +1,7 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
-import { revalidatePath } from 'next/cache';
+import { getAuthUser } from '@/lib/supabase/auth';
+import { revalidatePath, updateTag, unstable_cache } from 'next/cache';
 import { getGenericErrorMessage } from '@/lib/error-handler';
  
 const ALLOWED_SETTING_KEYS = [
@@ -14,9 +14,7 @@ const ALLOWED_SETTING_KEYS = [
 ];
 
 export async function getAllSettings(): Promise<Record<string, string>> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
+  const { supabase } = await getAuthUser();
   const { data, error } = await supabase
     .from('settings')
     .select('key, value');
@@ -32,10 +30,23 @@ export async function getAllSettings(): Promise<Record<string, string>> {
   }, {} as Record<string, string>);
 }
 
+/**
+ * Cached version of getAllSettings for use in layouts.
+ * Revalidates every 5 minutes or when the 'settings' tag is invalidated.
+ */
+export const getCachedSettings = unstable_cache(
+  async () => {
+    return getAllSettings();
+  },
+  ['dashboard-settings'],
+  {
+    revalidate: 300,
+    tags: ['settings'],
+  }
+);
+
 export async function updateSetting(key: string, value: string) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
+  const { supabase } = await getAuthUser();
 
   if (!ALLOWED_SETTING_KEYS.includes(key)) {
     throw new Error(`Setting key "${key}" is not allowed`);
@@ -50,12 +61,11 @@ export async function updateSetting(key: string, value: string) {
   }
 
   revalidatePath('/', 'layout');
+  updateTag('settings');
 }
 
 export async function updateMultipleSettings(settings: Record<string, string>) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
+  const { supabase } = await getAuthUser();
 
   const upsertData = Object.entries(settings)
     .filter(([key]) => ALLOWED_SETTING_KEYS.includes(key))
@@ -75,12 +85,11 @@ export async function updateMultipleSettings(settings: Record<string, string>) {
   }
 
   revalidatePath('/', 'layout');
+  updateTag('settings');
 }
 
 export async function changePassword(currentPassword: string, newPassword: string) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
+  const { user, supabase } = await getAuthUser();
 
   // Verify old password by re-signing in
   const { error: signInError } = await supabase.auth.signInWithPassword({
@@ -102,9 +111,7 @@ export async function changePassword(currentPassword: string, newPassword: strin
 }
 
 export async function getDrugPresets() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
+  const { supabase } = await getAuthUser();
   const { data, error } = await supabase
     .from('settings')
     .select('value')
@@ -123,9 +130,7 @@ export async function getDrugPresets() {
 }
 
 export async function saveDrugPresets(presets: unknown[]) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
+  const { supabase } = await getAuthUser();
   const { error } = await supabase
     .from('settings')
     .upsert({ key: 'drug_presets', value: JSON.stringify(presets) }, { onConflict: 'clinic_id, key' });
@@ -135,4 +140,5 @@ export async function saveDrugPresets(presets: unknown[]) {
   }
 
   revalidatePath('/dose-calculator');
+  updateTag('settings');
 }

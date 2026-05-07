@@ -71,6 +71,8 @@ Dự án đã được tối ưu hóa chuyên sâu để đảm bảo trải ngh
 - **Server-side Data Hydration**: Nạp dữ liệu thống kê từ Server Component để tránh hiện tượng "nháy" loading trên Client.
 - **Bundle Optimization**: Cấu hình `optimizePackageImports` cho các thư viện lớn như Lucide, Recharts để giảm dung lượng JS.
 - **Debounced Search**: Tối ưu hóa tìm kiếm bệnh nhân, giảm số lượng request lên Server khi người dùng gõ phím.
+- **Client Bundle Optimization**: Sử dụng Dynamic Import (`next/dynamic`) cho các component nặng (như các Dialog lớn), giúp giảm kích thước JS bundle tải ban đầu và tăng tốc độ TTI (Time to Interactive).
+- **Next.js 16 Proxy Engine**: Chuyển đổi từ middleware truyền thống sang cơ chế Proxy mới của Next.js 16 để tối ưu hóa việc quản lý session và routing ở tầng mạng.
 
 ## 📂 Cấu trúc thư mục
 

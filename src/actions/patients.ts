@@ -1,6 +1,6 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { getAuthUser } from '@/lib/supabase/auth';
 import { removeDiacritics } from '@/lib/utils/normalize';
 import { PatientFormData } from '@/types/forms';
 import { Patient } from '@/types/database';
@@ -11,9 +11,7 @@ import { cache } from 'react';
 import { getGenericErrorMessage } from '@/lib/error-handler';
 
 export async function getPatientsPaginated(page: number, pageSize: number) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
+  const { supabase } = await getAuthUser();
   
   const offset = (page - 1) * pageSize;
 
@@ -40,9 +38,7 @@ export async function getPatientsPaginated(page: number, pageSize: number) {
 }
 
 export async function searchPatients(term: string, page: number, pageSize: number) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
+  const { supabase } = await getAuthUser();
   
   const offset = (page - 1) * pageSize;
   const normalizedTerm = removeDiacritics(term);
@@ -68,10 +64,25 @@ export async function searchPatients(term: string, page: number, pageSize: numbe
   return { data: patients, count };
 }
 
+export const getPatientBasicInfo = cache(async (id: number) => {
+  const { supabase } = await getAuthUser();
+
+  const { data: patient, error } = await supabase
+    .from('patients')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle();
+
+  if (error || !patient) {
+    if (error) console.error('Error fetching patient basic info:', error.message || error);
+    return null;
+  }
+
+  return patient as Patient;
+});
+
 export const getPatientById = cache(async (id: number) => {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
+  const { supabase } = await getAuthUser();
 
   // Create promises for parallel execution
   const patientPromise = supabase
@@ -113,9 +124,7 @@ export async function getPatientPrescriptionsPaginated(
   page: number = 1, 
   pageSize: number = 10
 ) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
+  const { supabase } = await getAuthUser();
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
@@ -138,9 +147,7 @@ export async function getPatientPrescriptionsPaginated(
 }
 
 export async function addPatient(rawData: PatientFormData) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
+  const { supabase } = await getAuthUser();
 
   // Validate and whitelist fields
   const validation = patientFormSchema.safeParse(rawData);
@@ -176,9 +183,7 @@ export async function addPatient(rawData: PatientFormData) {
 }
 
 export async function updatePatient(id: number, rawData: PatientFormData) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
+  const { supabase } = await getAuthUser();
 
   // Validate and whitelist fields
   const validation = patientFormSchema.safeParse(rawData);
@@ -217,9 +222,7 @@ export async function updatePatient(id: number, rawData: PatientFormData) {
 }
 
 export async function deletePatient(id: number) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
+  const { supabase } = await getAuthUser();
 
   const { error } = await supabase
     .from('patients')
@@ -235,9 +238,7 @@ export async function deletePatient(id: number) {
 }
 
 export async function getTotalPatientCount() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
+  const { supabase } = await getAuthUser();
 
   const { count, error } = await supabase
     .from('patients')
@@ -252,9 +253,7 @@ export async function getTotalPatientCount() {
 }
 
 export async function getMedicineUsageByPatient(patientId: number) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
+  const { supabase } = await getAuthUser();
 
   // Lấy tất cả chi tiết đơn thuốc của bệnh nhân này
   const { data, error } = await supabase
@@ -296,9 +295,7 @@ export async function getMedicineUsageByPatient(patientId: number) {
 }
 
 export async function getPotentialDuplicates() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
+  const { supabase } = await getAuthUser();
 
   const { data, error } = await supabase.rpc('get_potential_duplicates');
 
@@ -318,9 +315,7 @@ export async function getPotentialDuplicates() {
 }
 
 export async function mergePatients(masterId: number, duplicateIds: number[]) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
+  const { supabase } = await getAuthUser();
 
   // duplicateIds should not include masterId
   const idsToDelete = duplicateIds.filter(id => id !== masterId);

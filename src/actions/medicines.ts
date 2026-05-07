@@ -1,6 +1,6 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { getAuthUser } from '@/lib/supabase/auth';
 import { Medicine } from '@/types/database';
 import { medicineFormSchema, stockAdjustmentSchema } from '@/lib/validations/medicine';
 import { formatZodError } from '@/lib/validations/helpers';
@@ -8,7 +8,7 @@ import { revalidatePath } from 'next/cache';
 import { getGenericErrorMessage } from '@/lib/error-handler';
 
 export async function getAllMedicines() {
-  const supabase = await createClient();
+  const { supabase } = await getAuthUser();
 
   const { data, error } = await supabase
     .from('medicines')
@@ -23,7 +23,7 @@ export async function getAllMedicines() {
 }
 
 export async function addMedicine(rawData: unknown) {
-  const supabase = await createClient();
+  const { supabase } = await getAuthUser();
 
   // Validate and whitelist
   const validation = medicineFormSchema.safeParse(rawData);
@@ -47,7 +47,7 @@ export async function addMedicine(rawData: unknown) {
 }
 
 export async function updateMedicine(id: number, rawData: unknown) {
-  const supabase = await createClient();
+  const { supabase } = await getAuthUser();
 
   // Validate and whitelist
   const validation = medicineFormSchema.safeParse(rawData);
@@ -72,7 +72,7 @@ export async function updateMedicine(id: number, rawData: unknown) {
 }
 
 export async function deleteMedicine(id: number) {
-  const supabase = await createClient();
+  const { supabase } = await getAuthUser();
 
   // Check if medicine is in use
   const inUse = await isMedicineInUse(id);
@@ -94,7 +94,7 @@ export async function deleteMedicine(id: number) {
 }
 
 export async function updateMedicineStock(id: number, adjustment: number, reason?: string) {
-  const supabase = await createClient();
+  const { supabase } = await getAuthUser();
 
   // Validate
   const validation = stockAdjustmentSchema.safeParse({ id, adjustment, reason });
@@ -117,7 +117,7 @@ export async function updateMedicineStock(id: number, adjustment: number, reason
 }
 
 export async function getLowStockMedicines() {
-  const supabase = await createClient();
+  const { supabase } = await getAuthUser();
 
   // medicines where stock_quantity <= min_stock_level
   const { data, error } = await supabase
@@ -142,7 +142,7 @@ export async function getLowStockMedicines() {
 }
 
 export async function isMedicineInUse(id: number): Promise<boolean> {
-  const supabase = await createClient();
+  const { supabase } = await getAuthUser();
 
   const { count, error } = await supabase
     .from('prescription_details')
@@ -157,7 +157,7 @@ export async function isMedicineInUse(id: number): Promise<boolean> {
   return (count || 0) > 0;
 }
 export async function getMedicines(query: string) {
-  const supabase = await createClient();
+  const { supabase } = await getAuthUser();
 
   let q = supabase
     .from('medicines')
@@ -179,7 +179,7 @@ export async function getMedicines(query: string) {
 }
 
 export async function getMedicineStockByIds(ids: number[]) {
-  const supabase = await createClient();
+  const { supabase } = await getAuthUser();
   
   const { data, error } = await supabase
     .from('medicines')

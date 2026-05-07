@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as statistics from './statistics';
-import { createClient } from '@/lib/supabase/server';
+import { getAuthUser } from '@/lib/supabase/auth';
 
 // Mock Supabase
-vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn(),
+vi.mock('@/lib/supabase/auth', () => ({
+  getAuthUser: vi.fn(),
 }));
 
 describe('Statistics Actions (RPC-based)', () => {
@@ -19,7 +19,10 @@ describe('Statistics Actions (RPC-based)', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (createClient as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(mockSupabase);
+    (getAuthUser as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({ 
+      user: { id: 'test-user' }, 
+      supabase: mockSupabase 
+    });
   });
 
   it('getDistinctMonthsYears should call get_distinct_months_years RPC', async () => {
@@ -67,7 +70,11 @@ describe('Statistics Actions (RPC-based)', () => {
 
     const result = await statistics.getRevenueStats('month', '2024-05');
 
-    expect(mockSupabase.rpc).toHaveBeenCalledWith('get_revenue_stats', { p_year_month: '2024-05' });
+    expect(mockSupabase.rpc).toHaveBeenCalledWith('get_revenue_stats_v2', { 
+      p_granularity: 'month', 
+      p_year_month: '2024-05',
+      p_limit: 12
+    });
     expect(result).toEqual(mockData);
   });
 

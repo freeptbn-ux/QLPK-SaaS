@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { getPatientsPaginated, getPatientById, getPatientPrescriptionsPaginated } from './patients';
 import { getOverviewStats } from './statistics';
-import { createClient } from '@/lib/supabase/server';
+import { getAuthUser } from '@/lib/supabase/auth';
 
 // Mock Supabase
-vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn(),
+vi.mock('@/lib/supabase/auth', () => ({
+  getAuthUser: vi.fn(),
 }));
 
 describe('Phase 05: Data Fetching Optimization Tests', () => {
@@ -23,17 +23,19 @@ describe('Phase 05: Data Fetching Optimization Tests', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (createClient as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(mockSupabase);
+    (getAuthUser as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({ 
+      user: { id: 'test-user' }, 
+      supabase: mockSupabase 
+    });
   });
 
   describe('getPatientsPaginated', () => {
-    it('should use estimated count', async () => {
-      mockSupabase.maybeSingle.mockResolvedValue({ data: [], error: null });
-      mockSupabase.range.mockResolvedValue({ data: [], error: null, count: 100 });
+    it('should use RPC for fetching patients', async () => {
+      mockSupabase.rpc.mockResolvedValue({ data: [], error: null });
 
       await getPatientsPaginated(1, 10);
 
-      expect(mockSupabase.select).toHaveBeenCalledWith('*', { count: 'estimated' });
+      expect(mockSupabase.rpc).toHaveBeenCalledWith('get_patients_with_last_visit', expect.any(Object));
     });
   });
 
@@ -99,7 +101,7 @@ describe('Phase 05: Data Fetching Optimization Tests', () => {
 
       const result = await getOverviewStats();
 
-      expect(mockSupabase.select).toHaveBeenCalledWith('*', { count: 'estimated', head: true });
+      expect(mockSupabase.select).toHaveBeenCalledWith('*', { count: 'exact', head: true });
       expect(mockSupabase.rpc).toHaveBeenCalledWith('get_monthly_revenue_total');
       expect(result.monthlyRevenue).toBe(5000000);
       expect(result.totalPatients).toBe(1000);

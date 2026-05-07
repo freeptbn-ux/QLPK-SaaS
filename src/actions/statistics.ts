@@ -1,9 +1,9 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { getAuthUser } from '@/lib/supabase/auth';
 
 export async function getDistinctMonthsYears() {
-  const supabase = await createClient();
+  const { supabase } = await getAuthUser();
   const { data, error } = await supabase.rpc('get_distinct_months_years');
 
   if (error) {
@@ -17,7 +17,7 @@ export async function getDistinctMonthsYears() {
 }
 
 export async function getStatsByDayForMonth(yearMonth: string) {
-  const supabase = await createClient();
+  const { supabase } = await getAuthUser();
   const { data, error } = await supabase.rpc('get_stats_by_day_for_month', {
     p_year_month: yearMonth,
   });
@@ -31,7 +31,7 @@ export async function getStatsByDayForMonth(yearMonth: string) {
 }
 
 export async function getStatsByWeek(limit: number = 8) {
-  const supabase = await createClient();
+  const { supabase } = await getAuthUser();
   const { data, error } = await supabase.rpc('get_stats_by_week', {
     p_limit: limit,
   });
@@ -45,7 +45,7 @@ export async function getStatsByWeek(limit: number = 8) {
 }
 
 export async function getStatsByMonth(limit: number = 12) {
-  const supabase = await createClient();
+  const { supabase } = await getAuthUser();
   const { data, error } = await supabase.rpc('get_stats_by_month', {
     p_limit: limit,
   });
@@ -59,7 +59,7 @@ export async function getStatsByMonth(limit: number = 12) {
 }
 
 export async function getStatsByYear() {
-  const supabase = await createClient();
+  const { supabase } = await getAuthUser();
   const { data, error } = await supabase.rpc('get_stats_by_year');
 
   if (error) {
@@ -71,7 +71,7 @@ export async function getStatsByYear() {
 }
 
 export async function getStatsByGender() {
-  const supabase = await createClient();
+  const { supabase } = await getAuthUser();
   const { data, error } = await supabase.rpc('get_stats_by_gender');
 
   if (error) {
@@ -83,7 +83,7 @@ export async function getStatsByGender() {
 }
 
 export async function getStatsByLocation(limit: number = 20) {
-  const supabase = await createClient();
+  const { supabase } = await getAuthUser();
   const { data, error } = await supabase.rpc('get_stats_by_location', {
     p_limit: limit,
   });
@@ -97,7 +97,7 @@ export async function getStatsByLocation(limit: number = 20) {
 }
 
 export async function getPatientDobsByTime(filterType: string, timeValue: string) {
-  const supabase = await createClient();
+  const { supabase } = await getAuthUser();
   const { data, error } = await supabase.rpc('get_patient_dobs_by_time', {
     p_filter_type: filterType,
     p_time_value: timeValue,
@@ -114,7 +114,7 @@ export async function getPatientDobsByTime(filterType: string, timeValue: string
 }
 
 export async function getMedicineUsageStats(yearMonth?: string) {
-  const supabase = await createClient();
+  const { supabase } = await getAuthUser();
   const { data, error } = await supabase.rpc('get_medicine_usage_stats', {
     p_year_month: yearMonth || null,
   });
@@ -128,7 +128,7 @@ export async function getMedicineUsageStats(yearMonth?: string) {
 }
 
 export async function getRevenueStats(timeRange: string = 'month', selectedMonth?: string) {
-  const supabase = await createClient();
+  const { supabase } = await getAuthUser();
   
   const { data, error } = await supabase.rpc('get_revenue_stats_v2', {
     p_granularity: timeRange,
@@ -145,7 +145,7 @@ export async function getRevenueStats(timeRange: string = 'month', selectedMonth
 }
 
 export async function getOverviewStats() {
-  const supabase = await createClient();
+  const { supabase } = await getAuthUser();
   
   const now = new Date();
   // Use YYYY-MM-DD format to avoid timezone offset issues when comparing in Postgres

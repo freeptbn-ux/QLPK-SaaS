@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mergePatients, getPotentialDuplicates } from './patients';
-import { createClient } from '@/lib/supabase/server';
+import { getAuthUser } from '@/lib/supabase/auth';
 import { revalidatePath } from 'next/cache';
 
 // Mock Supabase and Next.js cache
-vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn(),
+vi.mock('@/lib/supabase/auth', () => ({
+  getAuthUser: vi.fn(),
 }));
 
 vi.mock('next/cache', () => ({
@@ -22,8 +22,10 @@ describe('Patient Merge Actions', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (createClient as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(mockSupabase);
-    mockSupabase.auth.getUser.mockResolvedValue({ data: { user: { id: 'test-user' } }, error: null });
+    (getAuthUser as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({ 
+      user: { id: 'test-user' }, 
+      supabase: mockSupabase 
+    });
   });
 
   describe('getPotentialDuplicates', () => {

@@ -2,16 +2,16 @@
 
 import React, { useState } from 'react';
 import { HiOutlinePencil, HiOutlineTrash, HiOutlineArrowLeft } from 'react-icons/hi2';
-import { PatientWithPrescriptions } from '@/types/database';
+import { Patient } from '@/types/database';
 import { useRouter } from 'next/navigation';
-import PrescriptionHistory from './PrescriptionHistory';
-import PatientFormDialog from './PatientFormDialog';
-import ConfirmDialog from '@/components/ui/ConfirmDialog';
+import dynamic from 'next/dynamic';
+const PatientFormDialog = dynamic(() => import('./PatientFormDialog'), { ssr: false });
+const ConfirmDialog = dynamic(() => import('@/components/ui/ConfirmDialog'), { ssr: false });
 import { deletePatient } from '@/actions/patients';
 import { formatAge, formatDobForInput } from '@/lib/utils/age';
 
 interface PatientDetailProps {
-  patient: PatientWithPrescriptions; 
+  patient: Patient; 
 }
 
 export default function PatientDetail({ patient }: PatientDetailProps) {
@@ -104,13 +104,6 @@ export default function PatientDetail({ patient }: PatientDetailProps) {
           </div>
         </div>
       </div>
-
-      <PrescriptionHistory 
-        patientId={patient.id} 
-        patientName={patient.name}
-        prescriptions={patient.prescriptions || []} 
-        totalCount={patient.totalPrescriptions}
-      />
 
       <PatientFormDialog
         open={formOpen}
