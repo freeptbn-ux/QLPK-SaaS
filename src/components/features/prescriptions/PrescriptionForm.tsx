@@ -17,9 +17,10 @@ import { BallLoader } from '@/components/Loading';
 interface PrescriptionFormProps {
   patient: Patient;
   consultationFee: number;
+  presets: any[]; // Ideally use DrugPreset[] if shared
 }
 
-export default function PrescriptionForm({ patient, consultationFee }: PrescriptionFormProps) {
+export default function PrescriptionForm({ patient, consultationFee, presets }: PrescriptionFormProps) {
   const router = useRouter();
   const [diagnosis, setDiagnosis] = useState('');
   const [items, setItems] = useState<PrescriptionItem[]>([]);
@@ -170,6 +171,7 @@ export default function PrescriptionForm({ patient, consultationFee }: Prescript
                           initialWeight={weight || undefined} 
                           initialTimesPerDay={2} 
                           isEmbedded={true} 
+                          presets={presets}
                         />
                       </div>
                     )}

@@ -1,7 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
-import { getPatientById } from '@/actions/patients';
+import { getPatientBasicInfo } from '@/actions/patients';
 import { getConsultationFee } from '@/actions/prescriptions';
+import { getDrugPresets } from '@/actions/settings';
 import PrescriptionForm from '@/components/features/prescriptions/PrescriptionForm';
 import { notFound } from 'next/navigation';
 import { HiChevronRight } from 'react-icons/hi2';
@@ -18,9 +19,10 @@ export default async function PrescribePage({ params }: PrescribePageProps) {
     notFound();
   }
 
-  const [patient, consultationFee] = await Promise.all([
-    getPatientById(patientId),
-    getConsultationFee()
+  const [patient, consultationFee, presets] = await Promise.all([
+    getPatientBasicInfo(patientId),
+    getConsultationFee(),
+    getDrugPresets()
   ]);
 
   if (!patient) {
@@ -58,7 +60,11 @@ export default async function PrescribePage({ params }: PrescribePageProps) {
         </p>
       </div>
 
-      <PrescriptionForm patient={patient} consultationFee={consultationFee} />
+      <PrescriptionForm 
+        patient={patient} 
+        consultationFee={consultationFee} 
+        presets={presets} 
+      />
     </div>
   );
 }

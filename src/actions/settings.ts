@@ -110,24 +110,31 @@ export async function changePassword(currentPassword: string, newPassword: strin
   }
 }
 
-export async function getDrugPresets() {
-  const { supabase } = await getAuthUser();
-  const { data, error } = await supabase
-    .from('settings')
-    .select('value')
-    .eq('key', 'drug_presets')
-    .single();
+export const getDrugPresets = unstable_cache(
+  async () => {
+    const { supabase } = await getAuthUser();
+    const { data, error } = await supabase
+      .from('settings')
+      .select('value')
+      .eq('key', 'drug_presets')
+      .single();
 
-  if (error || !data) {
-    return [];
-  }
+    if (error || !data) {
+      return [];
+    }
 
-  try {
-    return JSON.parse(data.value);
-  } catch {
-    return [];
+    try {
+      return JSON.parse(data.value);
+    } catch {
+      return [];
+    }
+  },
+  ['drug-presets'],
+  {
+    revalidate: 300,
+    tags: ['settings'],
   }
-}
+);
 
 export async function saveDrugPresets(presets: unknown[]) {
   const { supabase } = await getAuthUser();

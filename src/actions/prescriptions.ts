@@ -3,6 +3,8 @@
 import { getAuthUser } from '@/lib/supabase/auth';
 import { CreatePrescriptionData, PrescriptionItem, UpdatePrescriptionData } from '@/types/forms';
 import { revalidatePath } from 'next/cache';
+import { getCachedSettings } from './settings';
+
 import { createPrescriptionSchema, updatePrescriptionSchema } from '@/lib/validations/prescription';
 import { formatZodError } from '@/lib/validations/helpers';
 import { getGenericErrorMessage } from '@/lib/error-handler';
@@ -116,20 +118,9 @@ export async function getLatestPrescriptionId(patientId: number) {
 }
 
 export async function getConsultationFee() {
-  const { supabase } = await getAuthUser();
-
-  const { data, error } = await supabase
-    .from('settings')
-    .select('value')
-    .eq('key', 'consultation_fee')
-    .single();
-
-  if (error) {
-    // Default fee if not found
-    return 30000;
-  }
-
-  return parseFloat(data.value);
+  const settings = await getCachedSettings();
+  const fee = settings['consultation_fee'];
+  return fee ? parseFloat(fee) : 30000;
 }
 
 export async function deletePrescription(prescriptionId: number, patientId: number) {

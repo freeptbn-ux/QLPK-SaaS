@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { HiOutlineCalculator, HiOutlineBeaker } from 'react-icons/hi2';
-import { getDrugPresets } from '@/actions/settings';
 import { cn } from '@/lib/utils/cn';
 
 interface DrugPreset {
@@ -16,14 +15,15 @@ interface DoseCalculatorProps {
   initialWeight?: string | number;
   initialTimesPerDay?: number;
   isEmbedded?: boolean;
+  presets?: DrugPreset[];
 }
 
 export default function DoseCalculator({ 
   initialWeight, 
   initialTimesPerDay = 2,
-  isEmbedded = false
+  isEmbedded = false,
+  presets = []
 }: DoseCalculatorProps) {
-  const [presets, setPresets] = useState<DrugPreset[]>([]);
   const [selectedPreset, setSelectedPreset] = useState<string>('');
   
   const [mg, setMg] = useState<string>('');
@@ -34,10 +34,6 @@ export default function DoseCalculator({
   
   const [result, setResult] = useState<{ mlPerTime: string; totalMl: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    getDrugPresets().then(setPresets);
-  }, []);
 
   useEffect(() => {
     if (initialWeight !== undefined) {

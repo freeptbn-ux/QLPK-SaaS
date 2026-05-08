@@ -49,6 +49,11 @@ __pycache__/
 *.pyc
 venv/
 *.txt
+load3.md
+kedon.txt
+
+# agent folders
+.agent/
 
 # Eternal Context (Antigravity)
 !/.brain/

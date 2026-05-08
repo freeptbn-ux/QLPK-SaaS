@@ -61,7 +61,7 @@ const mockPatient: Patient = {
 
 describe('PrescriptionForm', () => {
   test('renders PrescriptionForm with basic info', () => {
-    render(<PrescriptionForm patient={mockPatient} consultationFee={50000} />);
+    render(<PrescriptionForm patient={mockPatient} consultationFee={50000} presets={[]} />);
 
     expect(screen.getByText('Nguyễn Văn A')).toBeInTheDocument();
     expect(screen.getByText('34 tuổi')).toBeInTheDocument();
@@ -70,7 +70,7 @@ describe('PrescriptionForm', () => {
 
   describe('Weight field', () => {
     test('renders weight input with label and mandatory asterisk', () => {
-      render(<PrescriptionForm patient={mockPatient} consultationFee={50000} />);
+      render(<PrescriptionForm patient={mockPatient} consultationFee={50000} presets={[]} />);
       const label = screen.getByText(/Cân nặng \(kg\)/);
       expect(label).toBeInTheDocument();
       const asterisks = screen.getAllByText('*');
@@ -78,7 +78,7 @@ describe('PrescriptionForm', () => {
     });
 
     test('pre-fills weight from patient data', () => {
-      render(<PrescriptionForm patient={mockPatient} consultationFee={50000} />);
+      render(<PrescriptionForm patient={mockPatient} consultationFee={50000} presets={[]} />);
       const input = screen.getByLabelText(/Cân nặng \(kg\)/) as HTMLInputElement;
       expect(input.value).toBe('65');
     });
@@ -107,7 +107,7 @@ describe('PrescriptionForm', () => {
     });
 
     test('shows error for invalid weight (zero)', async () => {
-      render(<PrescriptionForm patient={mockPatient} consultationFee={50000} />);
+      render(<PrescriptionForm patient={mockPatient} consultationFee={50000} presets={[]} />);
       const input = screen.getByLabelText(/Cân nặng \(kg\)/);
       
       fireEvent.change(input, { target: { value: '0' } });
@@ -117,7 +117,7 @@ describe('PrescriptionForm', () => {
     });
 
     test('shows error for invalid weight (too large)', async () => {
-      render(<PrescriptionForm patient={mockPatient} consultationFee={50000} />);
+      render(<PrescriptionForm patient={mockPatient} consultationFee={50000} presets={[]} />);
       const input = screen.getByLabelText(/Cân nặng \(kg\)/);
       
       fireEvent.change(input, { target: { value: '999' } });
@@ -129,7 +129,7 @@ describe('PrescriptionForm', () => {
     test('includes weight in form data on submit', async () => {
       vi.mocked(createPrescription).mockResolvedValue({ success: true } as any);
       
-      render(<PrescriptionForm patient={mockPatient} consultationFee={50000} />);
+      render(<PrescriptionForm patient={mockPatient} consultationFee={50000} presets={[]} />);
       
       // Weight is already 65 from patient data
       

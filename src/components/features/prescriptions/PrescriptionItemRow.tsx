@@ -37,17 +37,11 @@ const PrescriptionItemRow = React.memo(function PrescriptionItemRow({ item, inde
         />
       </td>
       <td className="px-4 py-3 min-w-[140px]">
-        <div className="relative">
-          <input
-            type="number"
-            value={item.unit_price === 0 ? '' : item.unit_price}
-            onChange={(e) => {
-              const val = e.target.value;
-              onUpdate(index, { unit_price: val === '' ? 0 : parseInt(val) || 0 });
-            }}
-            className="input-field py-1 pl-2 pr-10"
-          />
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">đ</span>
+        <div className="flex items-center gap-1">
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            {new Intl.NumberFormat('vi-VN').format(item.unit_price)}
+          </span>
+          <span className="text-xs text-gray-400">đ</span>
         </div>
       </td>
       <td className="px-4 py-3 min-w-[120px] text-right">
