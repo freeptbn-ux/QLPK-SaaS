@@ -1,87 +1,102 @@
-# QLPK SaaS - Hệ Thống Quản Lý Phòng Khám Thông Minh
+# QLPK-SaaS - Hệ thống Quản lý Phòng khám Thông minh
 
-Hệ thống quản lý phòng khám (QLPK SaaS) là một giải pháp toàn diện được thiết kế để tối ưu hóa quy trình khám chữa bệnh. Dự án tập trung vào việc quản lý bệnh nhân, kê đơn thuốc thông minh với tính năng tính liều lượng tự động, và theo dõi thống kê phòng khám một cách trực quan.
+![Next.js](https://img.shields.io/badge/Next.js-16.2.4-black?style=for-the-badge&logo=next.js)
+![React](https://img.shields.io/badge/React-19.2.4-blue?style=for-the-badge&logo=react)
+![Supabase](https://img.shields.io/badge/Supabase-DB-green?style=for-the-badge&logo=supabase)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4.2-38B2AC?style=for-the-badge&logo=tailwind-css)
 
-## 🚀 Tính năng chính
+QLPK-SaaS là một giải pháp quản lý phòng khám hiện đại, được xây dựng trên nền tảng Web với kiến trúc SaaS, giúp tối ưu hóa quy trình khám chữa bệnh, kê đơn thuốc và quản lý hồ sơ bệnh nhân.
 
-- **Quản lý Bệnh nhân**: Lưu trữ thông tin chi tiết, lịch sử khám bệnh và các chỉ số sinh tồn.
-- **Kê đơn thuốc thông minh**: 
-  - Tự động tính liều lượng dựa trên cân nặng và độ tuổi.
-  - Gợi ý thuốc từ danh mục sẵn có.
-  - Quản lý đơn giá và thành tiền tự động (đã khóa chỉnh sửa đơn giá tại quầy để đảm bảo tính nhất quán).
-- **Dashboard Thống kê**: Biểu đồ trực quan về lượt khám, doanh thu và nhân khẩu học bệnh nhân.
-- **Quản lý Danh mục**: Thuốc, vật tư y tế và các thiết lập hệ thống.
-- **Giao diện hiện đại**: Hỗ trợ Dark/Light mode, tối ưu hóa trải nghiệm người dùng (UX).
+## ✨ Tính năng chính
 
-## 🛠 Công nghệ sử dụng
+- **Quản lý Bệnh nhân**: Lưu trữ thông tin cơ bản, tiểu sử bệnh lý và lịch sử khám bệnh.
+- **Kê đơn thuốc**: Giao diện kê đơn thông minh, hỗ trợ tính toán liều lượng thuốc nhi khoa và tra cứu liều dùng bằng AI.
+- **Kho thuốc**: Quản lý danh mục thuốc, đơn giá, quy cách đóng gói và tồn kho.
+- **Tính liều nhanh**: Công cụ hỗ trợ bác sĩ tính liều siro/hỗn dịch dựa trên cân nặng cho trẻ em.
+- **Thống kê**: Theo dõi doanh thu, số lượng bệnh nhân và hiệu suất phòng khám qua biểu đồ trực quan.
+- **Tích hợp Gemini AI**: Tra cứu liều dùng thuốc và hướng dẫn sử dụng nhanh chóng bằng mô hình `gemini-2.5-flash-lite`.
 
-Dự án được xây dựng trên nền tảng các công nghệ hiện đại nhất:
+## 🚀 Công nghệ sử dụng
 
-- **Frontend**: [Next.js 16](https://nextjs.org/) (App Router), [React 19](https://react.dev/).
-- **Ngôn ngữ**: [TypeScript](https://www.typescriptlang.org/).
-- **Backend & Database**: [Supabase](https://supabase.com/) (PostgreSQL + Auth + RLS).
-- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/) & [Framer Motion](https://www.framer.com/motion/).
-- **Biểu đồ**: [Recharts](https://recharts.org/).
-- **Quản lý Form**: [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/).
-- **Testing**: [Vitest](https://vitest.dev/) & [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/).
+### Frontend & Backend
+- **Framework**: Next.js 16 (App Router)
+- **UI/UX**: React 19, Tailwind CSS 4, Framer Motion (Animations)
+- **Icons**: React Icons (Heroicons 2)
+- **State Management & Forms**: React Hook Form, Zod
 
-## 📂 Cấu trúc thư mục
+### Cơ sở dữ liệu & Auth
+- **Backend-as-a-Service**: Supabase (PostgreSQL)
+- **ORM/Client**: Supabase JS, pg
+
+### AI Integration
+- **Model**: Google Gemini 2.5 Flash Lite
+- **Features**: API Rotation (Xoay tua API key), Server-side calls
+
+### Testing
+- **Framework**: Vitest
+- **Library**: React Testing Library
+
+## 📦 Cấu trúc thư mục
 
 ```text
-QLPK-SaaS/
 ├── src/
-│   ├── app/          # Routes & Layouts (App Router)
-│   ├── components/   # UI & Feature Components (Dashboard, Patients, Prescriptions, etc.)
-│   ├── actions/      # Server Actions (Xử lý logic phía Server & Supabase)
-│   ├── lib/          # Utils, Config & Validation
-│   ├── types/        # TypeScript Definitions
-│   └── theme/        # Quản lý Theme & Styles
-├── supabase/         # Database Migrations, Seed data & RPCs
-├── public/           # Tài nguyên tĩnh (Images, Fonts)
-├── tests/            # Unit Tests & Integration Tests
-└── .brain/           # Eternal Context (Dữ liệu kiến thức của AI trợ lý)
+│   ├── actions/        # Server Actions (API & DB mutations)
+│   ├── app/           # Next.js App Router (Routes & Pages)
+│   ├── components/    # Reusable UI Components
+│   ├── contexts/      # React Contexts
+│   ├── hooks/         # Custom React Hooks
+│   ├── lib/           # Tiện ích (Supabase client, utils, validations)
+│   ├── theme/         # Cấu hình giao diện
+│   └── types/         # TypeScript interfaces & types
+├── supabase/          # Database migrations & configuration
+├── tests/             # Cấu hình và file kiểm thử
+├── plans/             # Kế hoạch triển khai các tính năng
+└── .brain/            # Eternal Context (Lưu trữ ngữ cảnh AI)
 ```
 
-## 📦 Hướng dẫn cài đặt
+## 🛠️ Hướng dẫn cài đặt
 
-### Yêu cầu
-- Node.js >= 18.x
-- Tài khoản Supabase
-
-### Các bước thực hiện
-
-1. **Clone repository**:
+1. **Clone repository:**
    ```bash
    git clone https://github.com/freeptbn-ux/QLPK-SaaS.git
    cd QLPK-SaaS
    ```
 
-2. **Cài đặt dependencies**:
+2. **Cài đặt dependencies:**
    ```bash
    npm install
    ```
 
-3. **Cấu hình biến môi trường**:
-   Tạo file `.env.local` và điền thông tin Supabase của bạn:
+3. **Cấu hình biến môi trường:**
+   Tạo file `.env.local` dựa trên mẫu `.env.example`:
    ```env
-   NEXT_PUBLIC_SUPABASE_URL=your-project-url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   GEMINI_API_KEYS=key1,key2,key3
    ```
 
-4. **Chạy ứng dụng**:
+4. **Chạy dự án ở chế độ phát triển:**
    ```bash
    npm run dev
    ```
-   Ứng dụng sẽ chạy tại `http://localhost:3000`.
+
+5. **Build cho production:**
+   ```bash
+   npm run build
+   npm start
+   ```
+
+## 🧪 Kiểm thử
+
+Chạy bộ công cụ kiểm thử tự động:
+```bash
+npm test
+```
 
 ## 📝 Thông tin bổ sung
 
-- Hệ thống sử dụng **Row Level Security (RLS)** để bảo vệ dữ liệu bệnh nhân.
-- Các truy vấn được tối ưu hóa bằng **Parallel Data Fetching** và **Streaming**.
-- Mọi dữ liệu về kiến thức dự án được lưu trữ trong thư mục `.brain` để hỗ trợ AI trợ lý hiểu ngữ cảnh tốt nhất.
+Hệ thống được thiết kế để hoạt động tốt trên cả Desktop và Mobile (Responsive), tối ưu hóa tốc độ tải trang bằng cách sử dụng Server Components và caching dữ liệu thông minh.
 
 ## ⚖️ Bản quyền
 
-Copyright 2026 Nguyễn Duy Trường.
-
-Mọi quyền được bảo lưu. Dự án này là tài sản trí tuệ thuộc về Nguyễn Duy Trường. Việc sao chép, sửa đổi hoặc phân phối trái phép mã nguồn này dưới bất kỳ hình thức nào đều bị nghiêm cấm.
+Copyright 2026 Nguyễn Duy Trường. All rights reserved.
