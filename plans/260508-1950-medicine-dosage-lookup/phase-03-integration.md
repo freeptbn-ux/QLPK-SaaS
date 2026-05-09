@@ -1,6 +1,6 @@
 # Phase 03: Tích hợp vào Prescription Form
 
-Status: ⬜ Pending
+Status: ✅ Completed
 Dependencies: Phase 01 (API Route) + Phase 02 (Speech Bubble)
 
 ## Objective
@@ -10,25 +10,25 @@ Biến tên thuốc trong bảng kê đơn thành **link có thể click**, kế
 ## Requirements
 
 ### Functional
-- [ ] Tên thuốc trong cột "TÊN THUỐC" hiện dạng link (màu xanh, có underline khi hover)
-- [ ] Click tên thuốc → mở SpeechBubble → gọi API tra cứu liều dùng
-- [ ] Click thuốc khác khi đang mở bubble → đóng bubble cũ, mở bubble mới
-- [ ] Cache kết quả: cùng 1 thuốc click lần 2 → hiện kết quả ngay, không gọi API lại
-- [ ] Chỉ 1 bubble mở cùng lúc
+- [x] Tên thuốc trong cột "TÊN THUỐC" hiện dạng link (màu xanh, có underline khi hover)
+- [x] Click tên thuốc → mở SpeechBubble → gọi API tra cứu liều dùng
+- [x] Click thuốc khác khi đang mở bubble → đóng bubble cũ, mở bubble mới
+- [x] Cache kết quả: cùng 1 thuốc click lần 2 → hiện kết quả ngay, không gọi API lại
+- [x] Chỉ 1 bubble mở cùng lúc
 
 ### Non-Functional
-- [ ] Không ảnh hưởng form kê đơn (không block submit, input...)
-- [ ] Không ảnh hưởng performance render bảng thuốc
-- [ ] Tên thuốc vẫn hiển thị rõ ràng (link style không quá khác biệt)
+- [x] Không ảnh hưởng form kê đơn (không block submit, input...)
+- [x] Không ảnh hưởng performance render bảng thuốc
+- [x] Tên thuốc vẫn hiển thị rõ ràng (link style không quá khác biệt)
 
 ## Implementation Steps
 
 ### 1. Sửa PrescriptionItemRow - Tên thuốc thành link
-- [ ] Sửa file `PrescriptionItemRow.tsx`
-- [ ] Thêm prop `onMedicineClick: (medicineName: string, anchorEl: HTMLElement) => void`
-- [ ] Tên thuốc wrap trong `<button>` hoặc `<a>` có style link
-- [ ] Thêm `ref` để truyền anchor position cho SpeechBubble
-- [ ] Thêm icon nhỏ 💊 hoặc 🔍 bên cạnh tên thuốc để gợi ý "click để tra cứu"
+- [x] Sửa file `PrescriptionItemRow.tsx`
+- [x] Thêm prop `onMedicineClick: (medicineName: string, anchorEl: HTMLElement) => void`
+- [x] Tên thuốc wrap trong `<button>` hoặc `<a>` có style link
+- [x] Thêm `ref` để truyền anchor position cho SpeechBubble
+- [x] Thêm icon nhỏ 💊 hoặc 🔍 bên cạnh tên thuốc để gợi ý "click để tra cứu"
 
 **Trước:**
 ```jsx
@@ -52,10 +52,10 @@ Biến tên thuốc trong bảng kê đơn thành **link có thể click**, kế
 ```
 
 ### 2. Sửa PrescriptionForm - Quản lý state bubble
-- [ ] Thêm state: `activeDosageLookup: { medicineName: string, anchorEl: HTMLElement } | null`
-- [ ] Thêm state: `dosageCache: Map<string, string>` (cache kết quả theo tên thuốc)
-- [ ] Tạo `handleMedicineClick` function
-- [ ] Render SpeechBubble component ở cuối form
+- [x] Thêm state: `activeDosageLookup: { medicineName: string, anchorEl: HTMLElement } | null`
+- [x] Thêm state: `dosageCache: Map<string, string>` (cache kết quả theo tên thuốc)
+- [x] Tạo `handleMedicineClick` function
+- [x] Render SpeechBubble component ở cuối form
 
 **State mới:**
 ```tsx
@@ -68,10 +68,10 @@ const dosageCacheRef = useRef<Map<string, string>>(new Map());
 ```
 
 ### 3. Tạo Hook useMedicineDosage
-- [ ] Tạo file `src/hooks/useMedicineDosage.ts`
-- [ ] Quản lý: fetch state (loading, data, error), cache
-- [ ] Auto-fetch khi medicineName thay đổi
-- [ ] Retry logic (1 lần retry nếu fail)
+- [x] Tạo file `src/hooks/useMedicineDosage.ts`
+- [x] Quản lý: fetch state (loading, data, error), cache
+- [x] Auto-fetch khi medicineName thay đổi
+- [x] Retry logic (1 lần retry nếu fail)
 
 **API call flow:**
 ```
@@ -84,15 +84,15 @@ const dosageCacheRef = useRef<Map<string, string>>(new Map());
 ```
 
 ### 4. Kết nối tất cả lại
-- [ ] PrescriptionForm render SpeechBubble khi `activeDosageLookup !== null`
-- [ ] Truyền `anchorRef` từ clicked row
-- [ ] SpeechBubble hiển thị loading → kết quả / lỗi
-- [ ] Close handler reset `activeDosageLookup` về null
+- [x] PrescriptionForm render SpeechBubble khi `activeDosageLookup !== null`
+- [x] Truyền `anchorRef` từ clicked row
+- [x] SpeechBubble hiển thị loading → kết quả / lỗi
+- [x] Close handler reset `activeDosageLookup` về null
 
 ### 5. Mobile UX Considerations
-- [ ] Trên mobile, click tên thuốc → bottom sheet slide up
-- [ ] Tên thuốc trên mobile vẫn hiện link style nhưng icon nhỏ hơn
-- [ ] Bottom sheet có nút "Đóng" to rõ ràng (dễ bấm ngón tay)
+- [x] Trên mobile, click tên thuốc → bottom sheet slide up
+- [x] Tên thuốc trên mobile vẫn hiện link style nhưng icon nhỏ hơn
+- [x] Bottom sheet có nút "Đóng" to rõ ràng (dễ bấm ngón tay)
 
 ## Files to Create/Modify
 

@@ -1,6 +1,7 @@
 # Phase 01: Backend API Route - Gemini Dosage Lookup
 
-Status: ⬜ Pending
+Status: ✅ Completed
+Completed At: 2026-05-09T15:22:00Z
 Dependencies: Không
 
 ## Objective
@@ -10,25 +11,25 @@ Tạo Next.js API Route gọi Gemini `models/gemini-2.5-flash-lite` để tra c�
 ## Requirements
 
 ### Functional
-- [ ] API nhận `medicineName` (string) và trả về thông tin liều dùng
-- [ ] Response có cấu trúc rõ ràng: tiêu đề thuốc, liều người lớn, liều trẻ em theo nhóm tuổi, cách dùng, mô tả thuốc
-- [ ] Prompt Gemini được thiết kế để trả kết quả tiếng Việt, format nhất quán
-- [ ] Xử lý lỗi: API key thiếu, Gemini API lỗi, rate limit, timeout
-- [ ] **Xoay tua API key:** Khi gặp lỗi 429 (rate limit) hoặc 503 (service unavailable) → tự động chuyển sang API key tiếp theo
-- [ ] Retry với key khác tối đa = số lượng key có sẵn (thử hết tất cả key mới báo lỗi)
+- [x] API nhận `medicineName` (string) và trả về thông tin liều dùng
+- [x] Response có cấu trúc rõ ràng: tiêu đề thuốc, liều người lớn, liều trẻ em theo nhóm tuổi, cách dùng, mô tả thuốc
+- [x] Prompt Gemini được thiết kế để trả kết quả tiếng Việt, format nhất quán
+- [x] Xử lý lỗi: API key thiếu, Gemini API lỗi, rate limit, timeout
+- [x] **Xoay tua API key:** Khi gặp lỗi 429 (rate limit) hoặc 503 (service unavailable) → tự động chuyển sang API key tiếp theo
+- [x] Retry với key khác tối đa = số lượng key có sẵn (thử hết tất cả key mới báo lỗi)
 
 ### Non-Functional
-- [ ] Nhiều API key lưu trong env variable `GEMINI_API_KEYS` (dạng comma-separated, server-side only)
-- [ ] Timeout: 15s cho mỗi lần gọi Gemini API
-- [ ] Response time target: < 3s (Gemini Flash Lite rất nhanh)
-- [ ] Thuật toán xoay tua key phải stateless (không cần database/cache giữa các request)
+- [x] Nhiều API key lưu trong env variable `GEMINI_API_KEYS` (dạng comma-separated, server-side only)
+- [x] Timeout: 15s cho mỗi lần gọi Gemini API
+- [x] Response time target: < 3s (Gemini Flash Lite rất nhanh)
+- [x] Thuật toán xoay tua key phải stateless (không cần database/cache giữa các request)
 
 ## Implementation Steps
 
 ### 1. Cấu hình Environment Variable (Multi-Key)
-- [ ] Thêm `GEMINI_API_KEYS` vào `.env.local` (nhiều key, phân cách bằng dấu phẩy)
-- [ ] Thêm `GEMINI_API_KEYS` vào `.env.example` (không có giá trị)
-- [ ] Thêm `GEMINI_API_KEYS` vào Vercel Environment Variables (Production + Preview)
+- [x] Thêm `GEMINI_API_KEYS` vào `.env.local` (nhiều key, phân cách bằng dấu phẩy)
+- [x] Thêm `GEMINI_API_KEYS` vào `.env.example` (không có giá trị)
+- [x] Thêm `GEMINI_API_KEYS` vào Vercel Environment Variables (Production + Preview)
 
 **Files:**
 - `.env.local` - Thêm dòng `GEMINI_API_KEYS=key1,key2,key3`
@@ -37,11 +38,11 @@ Tạo Next.js API Route gọi Gemini `models/gemini-2.5-flash-lite` để tra c�
 **Lưu ý:** Hỗ trợ 1 key hoặc nhiều key. Nếu chỉ có 1 key thì không cần dấu phẩy.
 
 ### 2. Tạo API Route + Thuật toán xoay tua key
-- [ ] Tạo file `src/app/api/medicine-dosage/route.ts`
-- [ ] Implement POST handler nhận `{ medicineName: string }`
-- [ ] Validate input (medicineName không rỗng, max 200 ký tự)
-- [ ] **Implement key rotation logic** (chi tiết bên dưới)
-- [ ] Parse response và trả về structured JSON
+- [x] Tạo file `src/app/api/medicine-dosage/route.ts`
+- [x] Implement POST handler nhận `{ medicineName: string }`
+- [x] Validate input (medicineName không rỗng, max 200 ký tự)
+- [x] **Implement key rotation logic** (chi tiết bên dưới)
+- [x] Parse response và trả về structured JSON
 
 **Gemini API Call chi tiết:**
 ```
@@ -93,8 +94,8 @@ Input: GEMINI_API_KEYS = "key1,key2,key3"
 - Stateless: không cần lưu state giữa các request (phù hợp serverless)
 
 ### 3. Thiết kế Prompt
-- [ ] Prompt yêu cầu Gemini trả kết quả tiếng Việt
-- [ ] Format output nhất quán theo template:
+- [x] Prompt yêu cầu Gemini trả kết quả tiếng Việt
+- [x] Format output nhất quán theo template:
 
 ```
 Prompt template:
@@ -121,7 +122,7 @@ Lưu ý: Chỉ cung cấp thông tin tham khảo. Nếu không tìm thấy thu�
 ```
 
 ### 4. Response Format
-- [ ] API trả về JSON:
+- [x] API trả về JSON:
 ```json
 {
   "success": true,
@@ -131,7 +132,7 @@ Lưu ý: Chỉ cung cấp thông tin tham khảo. Nếu không tìm thấy thu�
   }
 }
 ```
-- [ ] Lỗi trả về:
+- [x] Lỗi trả về:
 ```json
 {
   "success": false,
@@ -139,9 +140,9 @@ Lưu ý: Chỉ cung cấp thông tin tham khảo. Nếu không tìm thấy thu�
 }
 ```
 
-### 5. Cập nhật CSP (Content Security Policy)
-- [ ] Cập nhật `next.config.ts` để cho phép kết nối đến `generativelanguage.googleapis.com`
-- [ ] Thêm `connect-src 'self' https://generativelanguage.googleapis.com` vào CSP header
+- [x] Cập nhật CSP (Content Security Policy)
+- [x] Cập nhật `next.config.ts` để cho phép kết nối đến `generativelanguage.googleapis.com`
+- [x] Thêm `connect-src 'self' https://generativelanguage.googleapis.com` vào CSP header
 
 **File:** `next.config.ts` - Sửa CSP header
 
@@ -156,15 +157,15 @@ Lưu ý: Chỉ cung cấp thông tin tham khảo. Nếu không tìm thấy thu�
 
 ## Test Criteria
 
-- [ ] `POST /api/medicine-dosage` với `{ "medicineName": "Atersin" }` → trả kết quả liều dùng
-- [ ] `POST /api/medicine-dosage` với body rỗng → trả lỗi 400
-- [ ] `POST /api/medicine-dosage` không có API key → trả lỗi 500 rõ ràng
-- [ ] Response format đúng cấu trúc JSON
-- [ ] API key KHÔNG xuất hiện trong browser network tab
-- [ ] **Key rotation:** Khi key1 trả 429 → tự động thử key2 → trả kết quả thành công
-- [ ] **Key rotation:** Khi key1 trả 503 → tự động thử key2 → trả kết quả thành công
-- [ ] **All keys fail:** Khi tất cả key đều 429 → trả lỗi rõ ràng cho client
-- [ ] **Single key mode:** Chỉ 1 key trong env → vẫn hoạt động bình thường
+- [x] `POST /api/medicine-dosage` với `{ "medicineName": "Atersin" }` → trả kết quả liều dùng
+- [x] `POST /api/medicine-dosage` với body rỗng → trả lỗi 400
+- [x] `POST /api/medicine-dosage` không có API key → trả lỗi 500 rõ ràng
+- [x] Response format đúng cấu trúc JSON
+- [x] API key KHÔNG xuất hiện trong browser network tab
+- [x] **Key rotation:** Khi key1 trả 429 → tự động thử key2 → trả kết quả thành công
+- [x] **Key rotation:** Khi key1 trả 503 → tự động thử key2 → trả kết quả thành công
+- [x] **All keys fail:** Khi tất cả key đều 429 → trả lỗi rõ ràng cho client
+- [x] **Single key mode:** Chỉ 1 key trong env → vẫn hoạt động bình thường
 
 ## Notes
 

@@ -1,6 +1,6 @@
 # Phase 02: Speech Bubble Component (Doraemon Style)
 
-Status: ⬜ Pending
+Status: ✅ Completed
 Dependencies: Không (UI thuần, có thể làm song song Phase 01)
 
 ## Objective
@@ -10,20 +10,20 @@ Tạo component **Speech Bubble** (bong bóng hội thoại kiểu truyện tran
 ## Requirements
 
 ### Functional
-- [ ] Hiển thị dạng bong bóng hội thoại với "đuôi" nhọn chỉ về phía tên thuốc
-- [ ] 3 trạng thái: Loading (đang tra cứu) → Kết quả → Lỗi
-- [ ] Nút đóng (X) ở góc trên phải
-- [ ] Click bên ngoài bubble → đóng
-- [ ] Nhấn ESC → đóng
-- [ ] Format text: các đầu mục (**bold**) nổi bật, dễ đọc
-- [ ] Scrollable nếu nội dung dài
+- [x] Hiển thị dạng bong bóng hội thoại với "đuôi" nhọn chỉ về phía tên thuốc
+- [x] 3 trạng thái: Loading (đang tra cứu) → Kết quả → Lỗi
+- [x] Nút đóng (X) ở góc trên phải
+- [x] Click bên ngoài bubble → đóng
+- [x] Nhấn ESC → đóng
+- [x] Format text: các đầu mục (**bold**) nổi bật, dễ đọc
+- [x] Scrollable nếu nội dung dài
 
 ### Non-Functional
-- [ ] Animation: Fade in + scale nhẹ (spring effect kiểu Framer Motion)
-- [ ] Responsive: Desktop → bubble cạnh tên thuốc, Mobile → bottom sheet
-- [ ] Breakpoint: < 768px = mobile mode
-- [ ] Dark mode support
-- [ ] Không chặn tương tác với form kê đơn (không dùng full overlay)
+- [x] Animation: Fade in + scale nhẹ (spring effect kiểu Framer Motion)
+- [x] Responsive: Desktop → bubble cạnh tên thuốc, Mobile → bottom sheet
+- [x] Breakpoint: < 768px = mobile mode
+- [x] Dark mode support
+- [x] Không chặn tương tác với form kê đơn (không dùng full overlay)
 
 ## Visual Design
 
@@ -124,42 +124,42 @@ Tạo component **Speech Bubble** (bong bóng hội thoại kiểu truyện tran
 ## Implementation Steps
 
 ### 1. Tạo SpeechBubble Component
-- [ ] Tạo file `src/components/ui/SpeechBubble.tsx`
-- [ ] Props: `open`, `onClose`, `anchorRef`, `children`, `loading`, `error`
-- [ ] Dùng `createPortal` để render bubble ngoài DOM tree (tránh bị clip bởi overflow)
-- [ ] Responsive detection: `useMediaQuery` hoặc `window.matchMedia('(max-width: 767px)')`
+- [x] Tạo file `src/components/ui/SpeechBubble.tsx`
+- [x] Props: `open`, `onClose`, `anchorRef`, `children`, `loading`, `error`
+- [x] Dùng `createPortal` để render bubble ngoài DOM tree (tránh bị clip bởi overflow)
+- [x] Responsive detection: `useMediaQuery` hoặc `window.matchMedia('(max-width: 767px)')`
 
 ### 2. CSS cho Speech Bubble
-- [ ] Tạo CSS classes trong component (hoặc inline styles với Tailwind)
-- [ ] Desktop: absolute positioning relative to anchor element
-- [ ] Mobile: fixed bottom sheet
-- [ ] "Đuôi" tam giác bằng CSS `::after` pseudo-element
-- [ ] Dark mode variants
+- [x] Tạo CSS classes trong component (hoặc inline styles với Tailwind)
+- [x] Desktop: absolute positioning relative to anchor element
+- [x] Mobile: fixed bottom sheet
+- [x] "Đuôi" tam giác bằng CSS `::after` pseudo-element
+- [x] Dark mode variants
 
 ### 3. Animation (Framer Motion)
-- [ ] Desktop bubble: `initial={{ opacity: 0, scale: 0.85, y: 10 }}` → `animate={{ opacity: 1, scale: 1, y: 0 }}`
-- [ ] Mobile sheet: `initial={{ y: '100%' }}` → `animate={{ y: 0 }}`
-- [ ] Exit animation: reverse
-- [ ] Spring transition: `type: "spring", damping: 20, stiffness: 300`
+- [x] Desktop bubble: `initial={{ opacity: 0, scale: 0.85, y: 10 }}` → `animate={{ opacity: 1, scale: 1, y: 0 }}`
+- [x] Mobile sheet: `initial={{ y: '100%' }}` → `animate={{ y: 0 }}`
+- [x] Exit animation: reverse
+- [x] Spring transition: `type: "spring", damping: 20, stiffness: 300`
 
 ### 4. Content Formatter
-- [ ] Parse Gemini response text thành formatted JSX
-- [ ] `**text**` → `<strong>` (bold) với màu đậm hơn
-- [ ] Xuống dòng → `<br />` hoặc paragraphs
-- [ ] Nhóm nội dung theo sections (Người lớn, Trẻ em, Cách dùng)
+- [x] Parse Gemini response text thành formatted JSX
+- [x] `**text**` → `<strong>` (bold) với màu đậm hơn
+- [x] Xuống dòng → `<br />` hoặc paragraphs
+- [x] Nhóm nội dung theo sections (Người lớn, Trẻ em, Cách dùng)
 
 ### 5. Positioning Logic (Desktop)
-- [ ] Tính vị trí bubble dựa trên `anchorRef.getBoundingClientRect()`
-- [ ] Mặc định: hiện phía TRÊN tên thuốc
-- [ ] Nếu không đủ chỗ phía trên → hiện phía DƯỚI
-- [ ] Nếu sát mép trái/phải → dịch ngang cho vừa viewport
-- [ ] Recalculate khi window resize / scroll
+- [x] Tính vị trí bubble dựa trên `anchorRef.getBoundingClientRect()`
+- [x] Mặc định: hiện phía TRÊN tên thuốc
+- [x] Nếu không đủ chỗ phía trên → hiện phía DƯỚI
+- [x] Nếu sát mép trái/phải → dịch ngang cho vừa viewport
+- [x] Recalculate khi window resize / scroll
 
 ### 6. Keyboard & Accessibility
-- [ ] `ESC` key → đóng
-- [ ] `aria-label` cho bubble
-- [ ] Focus trap trong mobile bottom sheet
-- [ ] `role="dialog"` cho accessibility
+- [x] `ESC` key → đóng
+- [x] `aria-label` cho bubble
+- [x] Focus trap trong mobile bottom sheet
+- [x] `role="dialog"` cho accessibility
 
 ## Files to Create/Modify
 
@@ -171,16 +171,16 @@ Tạo component **Speech Bubble** (bong bóng hội thoại kiểu truyện tran
 
 ## Test Criteria
 
-- [ ] Desktop: Bubble hiện đúng vị trí cạnh anchor element
-- [ ] Desktop: "Đuôi" chỉ đúng hướng về anchor
-- [ ] Mobile (< 768px): Chuyển sang bottom sheet
-- [ ] Loading state hiển thị đúng khi đang gọi API
-- [ ] Error state hiển thị với nút "Thử lại"
-- [ ] Click outside / ESC → đóng bubble
-- [ ] Dark mode: Màu sắc đúng
-- [ ] Scroll nội dung dài trong bubble
-- [ ] Bold text (**text**) render đúng
-- [ ] Animation mượt, không giật
+- [x] Desktop: Bubble hiện đúng vị trí cạnh anchor element
+- [x] Desktop: "Đuôi" chỉ đúng hướng về anchor
+- [x] Mobile (< 768px): Chuyển sang bottom sheet
+- [x] Loading state hiển thị đúng khi đang gọi API
+- [x] Error state hiển thị với nút "Thử lại"
+- [x] Click outside / ESC → đóng bubble
+- [x] Dark mode: Màu sắc đúng
+- [x] Scroll nội dung dài trong bubble
+- [x] Bold text (**text**) render đúng
+- [x] Animation mượt, không giật
 
 ## Notes
 

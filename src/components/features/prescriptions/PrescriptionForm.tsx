@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useRef } from 'react';
 import { HiOutlineCheck, HiOutlineArrowLeft, HiOutlineCalculator } from 'react-icons/hi2';
 import { useRouter } from 'next/navigation';
 import MedicineAutocomplete from './MedicineAutocomplete';
@@ -13,6 +13,9 @@ import { formatAge } from '@/lib/utils/age';
 import CountUp from '@/components/ui/CountUp';
 import { cn } from '@/lib/utils/cn';
 import { BallLoader } from '@/components/Loading';
+import SpeechBubble from '@/components/ui/SpeechBubble';
+import { useMedicineDosage } from '@/hooks/useMedicineDosage';
+import { formatDosageText } from '@/lib/utils/formatDosageText';
 
 interface PrescriptionFormProps {
   patient: Patient;
@@ -30,6 +33,17 @@ export default function PrescriptionForm({ patient, consultationFee, presets }: 
   const [showCalculator, setShowCalculator] = useState(false);
   const [weight, setWeight] = useState(patient.weight || '');
   const [weightError, setWeightError] = useState<string | null>(null);
+  const [activeDosageLookup, setActiveDosageLookup] = useState<{
+    medicineName: string;
+    anchorEl: HTMLElement;
+  } | null>(null);
+
+  const dosageCacheRef = useRef<Map<string, string>>(new Map());
+
+  const { data: dosageData, isLoading: isDosageLoading, error: dosageError } = useMedicineDosage({
+    medicineName: activeDosageLookup?.medicineName || null,
+    cache: dosageCacheRef,
+  });
 
   const validateWeight = (value: string): string | null => {
     if (!value) return 'Vui lòng nhập cân nặng';
@@ -70,7 +84,21 @@ export default function PrescriptionForm({ patient, consultationFee, presets }: 
   }, []);
 
   const handleRemoveItem = useCallback((index: number) => {
-    setItems(prev => prev.filter((_, i) => i !== index));
+    setItems(prev => {
+      const itemToRemove = prev[index];
+      if (activeDosageLookup?.medicineName === itemToRemove?.medicine_name) {
+        setActiveDosageLookup(null);
+      }
+      return prev.filter((_, i) => i !== index);
+    });
+  }, [activeDosageLookup]);
+
+  const handleMedicineClick = useCallback((medicineName: string, anchorEl: HTMLElement) => {
+    setActiveDosageLookup({ medicineName, anchorEl });
+  }, []);
+
+  const handleCloseDosage = useCallback(() => {
+    setActiveDosageLookup(null);
   }, []);
 
   const subtotal = useMemo(() => {
@@ -209,6 +237,7 @@ export default function PrescriptionForm({ patient, consultationFee, presets }: 
                                 index={index}
                                 onUpdate={handleUpdateItem}
                                 onRemove={handleRemoveItem}
+                                onMedicineClick={handleMedicineClick}
                               />
                             ))
                           )}
@@ -344,6 +373,20 @@ export default function PrescriptionForm({ patient, consultationFee, presets }: 
           </div>
         </div>
       </div>
+
+      {activeDosageLookup && (
+        <SpeechBubble
+          anchorEl={activeDosageLookup.anchorEl}
+          isOpen={!!activeDosageLookup}
+          onClose={handleCloseDosage}
+          title={`Liều dùng: ${activeDosageLookup.medicineName}`}
+          isLoading={isDosageLoading}
+          error={!!dosageError}
+          onRetry={() => handleMedicineClick(activeDosageLookup.medicineName, activeDosageLookup.anchorEl)}
+        >
+          {formatDosageText(dosageData || '')}
+        </SpeechBubble>
+      )}
     </div>
   );
 }

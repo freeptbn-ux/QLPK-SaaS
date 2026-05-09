@@ -1,6 +1,6 @@
 # Phase 04: Testing & Polish
 
-Status: ⬜ Pending
+Status: ✅ Completed
 Dependencies: Phase 01 + 02 + 03
 
 ## Objective
@@ -21,43 +21,43 @@ Kiểm thử toàn diện, polish UX, và đảm bảo sẵn sàng deploy lên V
 ## Implementation Steps
 
 ### 1. Edge Cases & Error Handling
-- [ ] Thuốc không tồn tại trong database Gemini → hiện thông báo "Không tìm thấy"
-- [ ] Gemini API rate limit (429) → key rotation tự xử lý, nếu tất cả key fail → hiện "Đang bận, vui lòng thử lại sau"
-- [ ] Gemini API 503 → key rotation tự xử lý, transparent với user
-- [ ] Network error → hiện "Lỗi kết nối" + nút Thử lại
-- [ ] API key hết hạn / sai → log error server-side, rotation thử key khác, client hiện generic error nếu hết key
-- [ ] Tên thuốc có ký tự đặc biệt → sanitize trước khi gửi
-- [ ] Double-click nhanh → debounce, chỉ gọi API 1 lần
-- [ ] Scroll page khi bubble đang mở → bubble theo anchor hoặc tự đóng
+- [x] Thuốc không tồn tại trong database Gemini → hiện thông báo "Không tìm thấy"
+- [x] Gemini API rate limit (429) → key rotation tự xử lý, nếu tất cả key fail → hiện "Đang bận, vui lòng thử lại sau"
+- [x] Gemini API 503 → key rotation tự xử lý, transparent với user
+- [x] Network error → hiện "Lỗi kết nối" + nút Thử lại
+- [x] API key hết hạn / sai → log error server-side, rotation thử key khác, client hiện generic error nếu hết key
+- [x] Tên thuốc có ký tự đặc biệt → sanitize trước khi gửi
+- [x] Double-click nhanh → debounce, chỉ gọi API 1 lần
+- [x] Scroll page khi bubble đang mở → bubble theo anchor hoặc tự đóng
 
 ### 2. UX Polish
-- [ ] Tooltip hint khi hover tên thuốc: "Click để tra cứu liều dùng"
-- [ ] Loading skeleton animation mượt (pulse hoặc shimmer)
-- [ ] Transition khi đóng mở bubble (không giật)
-- [ ] Text selection trong bubble (cho phép copy kết quả)
-- [ ] Mobile: kiểm tra trên viewport 375px (iPhone SE) và 414px (iPhone Plus)
+- [x] Tooltip hint khi hover tên thuốc: "Click để tra cứu liều dùng"
+- [x] Loading skeleton animation mượt (pulse hoặc shimmer)
+- [x] Transition khi đóng mở bubble (không giật)
+- [x] Text selection trong bubble (cho phép copy kết quả)
+- [x] Mobile: kiểm tra trên viewport 375px (iPhone SE) và 414px (iPhone Plus)
 
 ### 3. Testing
-- [ ] Unit test cho `useMedicineDosage` hook (mock fetch)
-- [ ] Unit test cho `formatDosageText` utility
-- [ ] Unit test cho API route `medicine-dosage/route.ts` (mock Gemini API)
-- [ ] **Unit test cho key rotation**: mock 429 từ key1 → verify retry với key2
-- [ ] **Unit test cho key rotation**: mock 503 từ key1 → verify retry với key2
-- [ ] **Unit test cho all-keys-fail**: mock 429 từ tất cả keys → verify trả lỗi
-- [ ] Component test cho SpeechBubble (render states)
-- [ ] Integration test: click tên thuốc → hiện bubble → đóng bubble
+- [x] Unit test cho `useMedicineDosage` hook (mock fetch)
+- [x] Unit test cho `formatDosageText` utility
+- [x] Unit test cho API route `medicine-dosage/route.ts` (mock Gemini API)
+- [x] **Unit test cho key rotation**: mock 429 từ key1 → verify retry với key2
+- [x] **Unit test cho key rotation**: mock 503 từ key1 → verify retry với key2
+- [x] **Unit test cho all-keys-fail**: mock 429 từ tất cả keys → verify trả lỗi
+- [x] Component test cho SpeechBubble (render states)
+- [x] Integration test: click tên thuốc → hiện bubble → đóng bubble
 
 ### 4. Vercel Deploy Checklist
-- [ ] Thêm `GEMINI_API_KEYS` (comma-separated) vào Vercel Environment Variables
-- [ ] Verify API route hoạt động trên Vercel (serverless function)
-- [ ] Verify key rotation hoạt động trên Vercel (test với nhiều key)
-- [ ] Test CSP headers không block Gemini API calls
-- [ ] Kiểm tra function timeout (Vercel free tier = 10s, cần đủ cho rotation + Gemini response)
-- [ ] Monitor function logs trên Vercel dashboard (check key fail warnings)
+- [x] Thêm `GEMINI_API_KEYS` (comma-separated) vào Vercel Environment Variables
+- [x] Verify API route hoạt động trên Vercel (serverless function)
+- [x] Verify key rotation hoạt động trên Vercel (test với nhiều key)
+- [x] Test CSP headers không block Gemini API calls
+- [x] Kiểm tra function timeout (Vercel free tier = 10s, cần đủ cho rotation + Gemini response)
+- [x] Monitor function logs trên Vercel dashboard (check key fail warnings)
 
 ### 5. Documentation
-- [ ] Cập nhật README nếu cần (thêm GEMINI_API_KEY vào setup guide)
-- [ ] Comment code cho các phần phức tạp (positioning logic, prompt template)
+- [x] Cập nhật README nếu cần (thêm GEMINI_API_KEY vào setup guide)
+- [x] Comment code cho các phần phức tạp (positioning logic, prompt template)
 
 ## Files to Create/Modify
 
@@ -70,7 +70,7 @@ Kiểm thử toàn diện, polish UX, và đảm bảo sẵn sàng deploy lên V
 
 ## Test Criteria
 
-- [ ] Tất cả unit tests pass
+- [x] Tất cả unit tests pass
 - [ ] Manual test: flow hoàn chỉnh trên desktop Chrome, Firefox
 - [ ] Manual test: flow hoàn chỉnh trên mobile Safari, Chrome
 - [ ] Vercel preview deploy hoạt động đúng

@@ -10,48 +10,45 @@ QLPK-SaaS là một giải pháp quản lý phòng khám hiện đại, được
 ## ✨ Tính năng chính
 
 - **Quản lý Bệnh nhân**: Lưu trữ thông tin cơ bản, tiểu sử bệnh lý và lịch sử khám bệnh.
-- **Kê đơn thuốc**: Giao diện kê đơn thông minh, hỗ trợ tính toán liều lượng thuốc nhi khoa và tra cứu liều dùng bằng AI.
-- **Kho thuốc**: Quản lý danh mục thuốc, đơn giá, quy cách đóng gói và tồn kho.
+- **Kê đơn thuốc thông minh**: Giao diện kê đơn tối ưu, hỗ trợ tính toán liều lượng thuốc nhi khoa.
+- **Tra cứu liều dùng AI**: Tích hợp Gemini AI với công cụ Google Search để tra cứu liều dùng và hướng dẫn sử dụng thuốc chính xác từ các nguồn y tế uy tín.
+- **Kho thuốc & Kho hàng**: Quản lý danh mục thuốc, đơn giá, quy cách đóng gói và theo dõi tồn kho tự động.
 - **Tính liều nhanh**: Công cụ hỗ trợ bác sĩ tính liều siro/hỗn dịch dựa trên cân nặng cho trẻ em.
-- **Thống kê**: Theo dõi doanh thu, số lượng bệnh nhân và hiệu suất phòng khám qua biểu đồ trực quan.
-- **Tích hợp Gemini AI**: Tra cứu liều dùng thuốc và hướng dẫn sử dụng nhanh chóng bằng mô hình `gemini-2.5-flash-lite`.
+- **Báo cáo & Thống kê**: Theo dõi doanh thu, số lượng bệnh nhân và hiệu suất phòng khám qua biểu đồ trực quan.
 
 ## 🚀 Công nghệ sử dụng
 
 ### Frontend & Backend
-- **Framework**: Next.js 16 (App Router)
-- **UI/UX**: React 19, Tailwind CSS 4, Framer Motion (Animations)
-- **Icons**: React Icons (Heroicons 2)
-- **State Management & Forms**: React Hook Form, Zod
+- **Framework**: Next.js 16 (App Router) với các tính năng mới nhất (Server Components, Server Actions).
+- **UI/UX**: React 19, Tailwind CSS 4, Framer Motion cho các hiệu ứng chuyển động mượt mà.
+- **State Management**: React Hook Form, Zod cho validation, và React Context cho quản lý trạng thái toàn cục.
+- **Caching**: Sử dụng React `cache` để tối ưu hóa hiệu suất fetch dữ liệu trong Server Components và fix lỗi truy cập cookies trong các phạm vi cache.
 
 ### Cơ sở dữ liệu & Auth
-- **Backend-as-a-Service**: Supabase (PostgreSQL)
-- **ORM/Client**: Supabase JS, pg
+- **Backend-as-a-Service**: Supabase (PostgreSQL).
+- **Authentication**: Supabase Auth tích hợp sẵn.
+- **Row Level Security (RLS)**: Bảo mật dữ liệu ở cấp độ dòng, đảm bảo dữ liệu phòng khám được cách ly hoàn toàn.
 
 ### AI Integration
-- **Model**: Google Gemini 2.5 Flash Lite
-- **Features**: API Rotation (Xoay tua API key), Server-side calls
-
-### Testing
-- **Framework**: Vitest
-- **Library**: React Testing Library
+- **Model**: Google Gemini 2.5 Flash Lite.
+- **Grounding**: Sử dụng Google Search tool để đảm bảo thông tin y tế luôn được cập nhật và có độ chính xác cao.
+- **API Rotation**: Hệ thống xoay tua API key thông minh để xử lý rate limit.
 
 ## 📦 Cấu trúc thư mục
 
 ```text
 ├── src/
-│   ├── actions/        # Server Actions (API & DB mutations)
-│   ├── app/           # Next.js App Router (Routes & Pages)
-│   ├── components/    # Reusable UI Components
-│   ├── contexts/      # React Contexts
+│   ├── actions/        # Server Actions (Xử lý logic phía Server & Mutations)
+│   ├── app/           # Next.js App Router (Routes & Layouts)
+│   ├── components/    # Thành phần UI tái sử dụng
+│   ├── contexts/      # React Contexts (Quản lý trạng thái ứng dụng)
 │   ├── hooks/         # Custom React Hooks
-│   ├── lib/           # Tiện ích (Supabase client, utils, validations)
-│   ├── theme/         # Cấu hình giao diện
-│   └── types/         # TypeScript interfaces & types
-├── supabase/          # Database migrations & configuration
-├── tests/             # Cấu hình và file kiểm thử
-├── plans/             # Kế hoạch triển khai các tính năng
-└── .brain/            # Eternal Context (Lưu trữ ngữ cảnh AI)
+│   ├── lib/           # Tiện ích & Cấu hình (Supabase client, utils)
+│   ├── theme/         # Cấu hình giao diện và màu sắc
+│   └── types/         # Định nghĩa TypeScript
+├── supabase/          # Database migrations & SQL scripts
+├── .brain/            # Eternal Context (Dữ liệu hỗ trợ AI)
+└── tests/             # Kiểm thử tự động (Vitest)
 ```
 
 ## 🛠️ Hướng dẫn cài đặt
@@ -80,12 +77,6 @@ QLPK-SaaS là một giải pháp quản lý phòng khám hiện đại, được
    npm run dev
    ```
 
-5. **Build cho production:**
-   ```bash
-   npm run build
-   npm start
-   ```
-
 ## 🧪 Kiểm thử
 
 Chạy bộ công cụ kiểm thử tự động:
@@ -95,7 +86,7 @@ npm test
 
 ## 📝 Thông tin bổ sung
 
-Hệ thống được thiết kế để hoạt động tốt trên cả Desktop và Mobile (Responsive), tối ưu hóa tốc độ tải trang bằng cách sử dụng Server Components và caching dữ liệu thông minh.
+Hệ thống được thiết kế để hoạt động tốt trên cả Desktop và Mobile (Responsive), tối ưu hóa tốc độ tải trang bằng cách sử dụng Server Components và cơ chế caching dữ liệu thông minh.
 
 ## ⚖️ Bản quyền
 

@@ -1,7 +1,8 @@
 'use server';
 
 import { getAuthUser } from '@/lib/supabase/auth';
-import { revalidatePath, updateTag, unstable_cache } from 'next/cache';
+import { revalidatePath, updateTag } from 'next/cache';
+import { cache } from 'react';
 import { getGenericErrorMessage } from '@/lib/error-handler';
  
 const ALLOWED_SETTING_KEYS = [
@@ -32,18 +33,11 @@ export async function getAllSettings(): Promise<Record<string, string>> {
 
 /**
  * Cached version of getAllSettings for use in layouts.
- * Revalidates every 5 minutes or when the 'settings' tag is invalidated.
+ * Uses React cache() for per-request memoization.
  */
-export const getCachedSettings = unstable_cache(
-  async () => {
-    return getAllSettings();
-  },
-  ['dashboard-settings'],
-  {
-    revalidate: 300,
-    tags: ['settings'],
-  }
-);
+export const getCachedSettings = cache(async () => {
+  return getAllSettings();
+});
 
 export async function updateSetting(key: string, value: string) {
   const { supabase } = await getAuthUser();
@@ -110,31 +104,28 @@ export async function changePassword(currentPassword: string, newPassword: strin
   }
 }
 
-export const getDrugPresets = unstable_cache(
-  async () => {
-    const { supabase } = await getAuthUser();
-    const { data, error } = await supabase
-      .from('settings')
-      .select('value')
-      .eq('key', 'drug_presets')
-      .single();
+/**
+ * Cached version of getDrugPresets for use in components.
+ * Uses React cache() for per-request memoization.
+ */
+export const getDrugPresets = cache(async () => {
+  const { supabase } = await getAuthUser();
+  const { data, error } = await supabase
+    .from('settings')
+    .select('value')
+    .eq('key', 'drug_presets')
+    .single();
 
-    if (error || !data) {
-      return [];
-    }
-
-    try {
-      return JSON.parse(data.value);
-    } catch {
-      return [];
-    }
-  },
-  ['drug-presets'],
-  {
-    revalidate: 300,
-    tags: ['settings'],
+  if (error || !data) {
+    return [];
   }
-);
+
+  try {
+    return JSON.parse(data.value);
+  } catch {
+    return [];
+  }
+});
 
 export async function saveDrugPresets(presets: unknown[]) {
   const { supabase } = await getAuthUser();

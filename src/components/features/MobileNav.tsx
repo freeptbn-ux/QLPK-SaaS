@@ -19,6 +19,11 @@ import {
 export default function MobileNav() {
   const pathname = usePathname()
 
+  // Ẩn MobileNav trên trang kê đơn (cần toàn bộ màn hình)
+  if (pathname.includes('/prescribe')) {
+    return null;
+  }
+
   const navItems = [
     { 
       text: 'Bệnh nhân', 

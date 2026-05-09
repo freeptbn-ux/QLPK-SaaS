@@ -1,6 +1,6 @@
 # Phase 05: Mobile UX Fixes
 
-Status: ⬜ Pending
+Status: ✅ Completed
 Dependencies: Không (có thể làm độc lập, song song với các phase khác)
 
 ## Objective
@@ -12,13 +12,13 @@ Sửa 2 vấn đề UX trên mobile:
 ## Requirements
 
 ### Fix 1: Ẩn Mobile Bottom Nav trên trang Prescribe
-- [ ] Trên trang `/patients/[id]/prescribe`, ẩn hoàn toàn thanh MobileNav (bottom tab bar)
-- [ ] Các trang khác vẫn hiện bình thường
-- [ ] Không ảnh hưởng desktop sidebar
+- [x] Trên trang `/patients/[id]/prescribe`, ẩn hoàn toàn thanh MobileNav (bottom tab bar)
+- [x] Các trang khác vẫn hiện bình thường
+- [x] Không ảnh hưởng desktop sidebar
 
 ### Fix 2: Căn giữa Loading Text  
-- [ ] Text trong `BallLoader` (VD: "Đang tải danh sách bệnh nhân...") phải căn giữa
-- [ ] Áp dụng cho tất cả các trang dùng `BallLoader` / `LoadingReporter`
+- [x] Text trong `BallLoader` (VD: "Đang tải danh sách bệnh nhân...") phải căn giữa
+- [x] Áp dụng cho tất cả các trang dùng `BallLoader` / `LoadingReporter`
 
 ## Implementation Steps
 
@@ -45,8 +45,8 @@ if (pathname.includes('/prescribe')) {
 - User có thể quay lại bằng nút "Quay lại" trong form
 - Giống UX của các app y tế chuyên nghiệp (form mode = fullscreen)
 
-- [ ] Task: Thêm condition `pathname.includes('/prescribe')` → return null
-- [ ] Task: Verify các trang khác không bị ảnh hưởng
+- [x] Task: Thêm condition `pathname.includes('/prescribe')` → return null
+- [x] Task: Verify các trang khác không bị ảnh hưởng
 
 ### 2. Căn giữa Loading Text
 
@@ -70,8 +70,8 @@ if (pathname.includes('/prescribe')) {
 - Nhưng nếu text dài và wrap xuống dòng, nội dung text bên trong vẫn align left
 - Thêm `text-align: center` đảm bảo text nhiều dòng cũng căn giữa
 
-- [ ] Task: Thêm `text-align: center` vào `.text` trong `BallLoader.module.css`
-- [ ] Task: Verify text căn giữa trên mobile (375px viewport)
+- [x] Task: Thêm `text-align: center` vào `.text` trong `BallLoader.module.css`
+- [x] Task: Verify text căn giữa trên mobile (375px viewport)
 
 ## Files to Modify
 
@@ -82,13 +82,13 @@ if (pathname.includes('/prescribe')) {
 
 ## Test Criteria
 
-- [ ] Mobile `/patients/[id]/prescribe` → KHÔNG hiện bottom nav
-- [ ] Mobile `/patients` → VẪN hiện bottom nav
-- [ ] Mobile `/medicines` → VẪN hiện bottom nav  
-- [ ] Desktop → Sidebar không bị ảnh hưởng
-- [ ] Loading text "Đang tải danh sách bệnh nhân..." → căn giữa trên mọi viewport
-- [ ] Loading text ngắn ("Đang tải...") → vẫn căn giữa
-- [ ] Dark mode loading text → vẫn căn giữa
+- [x] Mobile `/patients/[id]/prescribe` → KHÔNG hiện bottom nav
+- [x] Mobile `/patients` → VẪN hiện bottom nav
+- [x] Mobile `/medicines` → VẪN hiện bottom nav  
+- [x] Desktop → Sidebar không bị ảnh hưởng
+- [x] Loading text "Đang tải danh sách bệnh nhân..." → căn giữa trên mọi viewport
+- [x] Loading text ngắn ("Đang tải...") → vẫn căn giữa
+- [x] Dark mode loading text → vẫn căn giữa
 
 ## Notes
 
