@@ -5,50 +5,49 @@
 ![Supabase](https://img.shields.io/badge/Supabase-DB-green?style=for-the-badge&logo=supabase)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4.2-38B2AC?style=for-the-badge&logo=tailwind-css)
 
-QLPK-SaaS là một giải pháp quản lý phòng khám hiện đại, được xây dựng trên nền tảng Web với kiến trúc SaaS, giúp tối ưu hóa quy trình khám chữa bệnh, kê đơn thuốc và quản lý hồ sơ bệnh nhân.
+QLPK-SaaS là một giải pháp quản lý phòng khám hiện đại, được xây dựng trên nền tảng Web với kiến trúc SaaS, giúp tối ưu hóa quy trình khám chữa bệnh, kê đơn thuốc và quản lý hồ sơ bệnh nhân một cách chuyên nghiệp và bảo mật.
 
 ## ✨ Tính năng chính
 
-- **Quản lý Bệnh nhân**: Lưu trữ thông tin cơ bản, tiểu sử bệnh lý và lịch sử khám bệnh.
-- **Kê đơn thuốc thông minh**: Giao diện kê đơn tối ưu, hỗ trợ tính toán liều lượng thuốc nhi khoa.
-- **Tra cứu liều dùng AI**: Tích hợp Gemini AI với công cụ Google Search để tra cứu liều dùng và hướng dẫn sử dụng thuốc chính xác từ các nguồn y tế uy tín.
-- **Kho thuốc & Kho hàng**: Quản lý danh mục thuốc, đơn giá, quy cách đóng gói và theo dõi tồn kho tự động.
-- **Tính liều nhanh**: Công cụ hỗ trợ bác sĩ tính liều siro/hỗn dịch dựa trên cân nặng cho trẻ em.
-- **Báo cáo & Thống kê**: Theo dõi doanh thu, số lượng bệnh nhân và hiệu suất phòng khám qua biểu đồ trực quan.
+- **Quản lý Bệnh nhân**: Lưu trữ thông tin cá nhân, tiền sử bệnh lý và theo dõi lịch sử khám bệnh chi tiết.
+- **Kê đơn thuốc thông minh**: Giao diện kê đơn tối ưu, tích hợp công cụ tra cứu và tính liều lượng thuốc.
+- **Tra cứu liều dùng AI**: Tích hợp Google Gemini AI với khả năng tra cứu Google Search thời gian thực để cung cấp thông tin liều dùng chính xác từ các nguồn y khoa uy tín.
+- **Quản lý Kho thuốc**: Theo dõi danh mục thuốc, đơn giá, quy cách đóng gói và cảnh báo tồn kho tự động.
+- **Dashboard trực quan**: Hệ thống báo cáo thống kê doanh thu, số lượng bệnh nhân theo thời gian thực.
+- **Tối ưu hóa hiệu năng**: Áp dụng cơ chế Server-side Pagination và Caching dữ liệu giúp hệ thống hoạt động mượt mà ngay cả với dữ liệu lớn.
 
 ## 🚀 Công nghệ sử dụng
 
 ### Frontend & Backend
-- **Framework**: Next.js 16 (App Router) với các tính năng mới nhất (Server Components, Server Actions).
-- **UI/UX**: React 19, Tailwind CSS 4, Framer Motion cho các hiệu ứng chuyển động mượt mà.
-- **State Management**: React Hook Form, Zod cho validation, và React Context cho quản lý trạng thái toàn cục.
-- **Caching**: Sử dụng React `cache` để tối ưu hóa hiệu suất fetch dữ liệu trong Server Components và fix lỗi truy cập cookies trong các phạm vi cache.
+- **Framework**: Next.js 16 (App Router) - Tận dụng tối đa Server Components và Server Actions.
+- **Giao diện**: React 19, Tailwind CSS 4, Framer Motion (hiệu ứng mượt mà).
+- **Trạng thái & Validation**: React Hook Form kết hợp Zod cho kiểm soát dữ liệu chặt chẽ.
+- **Hiệu năng**: Cơ chế `react cache` và Server Actions giúp giảm thiểu payload và tăng tốc độ phản hồi.
 
-### Cơ sở dữ liệu & Auth
-- **Backend-as-a-Service**: Supabase (PostgreSQL).
-- **Authentication**: Supabase Auth tích hợp sẵn.
-- **Row Level Security (RLS)**: Bảo mật dữ liệu ở cấp độ dòng, đảm bảo dữ liệu phòng khám được cách ly hoàn toàn.
+### Cơ sở dữ liệu & Bảo mật
+- **Database**: PostgreSQL (qua nền tảng Supabase).
+- **Xác thực**: Supabase Auth (JWT based).
+- **Bảo mật dữ liệu**: Hệ thống chính sách **Row Level Security (RLS)** đảm bảo cách ly hoàn toàn dữ liệu giữa các phòng khám (Multi-tenancy).
 
-### AI Integration
+### Trí tuệ nhân tạo (AI)
 - **Model**: Google Gemini 2.5 Flash Lite.
-- **Grounding**: Sử dụng Google Search tool để đảm bảo thông tin y tế luôn được cập nhật và có độ chính xác cao.
-- **API Rotation**: Hệ thống xoay tua API key thông minh để xử lý rate limit.
+- **Tính năng**: Sử dụng Grounding với Google Search để đảm bảo thông tin y tế luôn cập nhật.
 
 ## 📦 Cấu trúc thư mục
 
 ```text
 ├── src/
-│   ├── actions/        # Server Actions (Xử lý logic phía Server & Mutations)
-│   ├── app/           # Next.js App Router (Routes & Layouts)
-│   ├── components/    # Thành phần UI tái sử dụng
-│   ├── contexts/      # React Contexts (Quản lý trạng thái ứng dụng)
-│   ├── hooks/         # Custom React Hooks
-│   ├── lib/           # Tiện ích & Cấu hình (Supabase client, utils)
-│   ├── theme/         # Cấu hình giao diện và màu sắc
-│   └── types/         # Định nghĩa TypeScript
-├── supabase/          # Database migrations & SQL scripts
-├── .brain/            # Eternal Context (Dữ liệu hỗ trợ AI)
-└── tests/             # Kiểm thử tự động (Vitest)
+│   ├── actions/        # Server Actions (Xử lý nghiệp vụ phía Server)
+│   ├── app/           # Next.js App Router (Giao diện & Tuyến đường)
+│   ├── components/    # UI Components (Feature-based & Shared UI)
+│   ├── contexts/      # React Contexts (Quản lý trạng thái client)
+│   ├── hooks/         # Custom Hooks
+│   ├── lib/           # Cấu hình Supabase, utils & helpers
+│   ├── types/         # Định nghĩa kiểu dữ liệu TypeScript
+├── supabase/          # Database migrations & SQL schema
+├── .brain/            # Eternal Context (Lưu trữ tri thức hỗ trợ AI)
+├── docs/              # Tài liệu hướng dẫn & Báo cáo Audit
+└── tests/             # Hệ thống kiểm thử tự động (Vitest)
 ```
 
 ## 🛠️ Hướng dẫn cài đặt
@@ -65,39 +64,27 @@ QLPK-SaaS là một giải pháp quản lý phòng khám hiện đại, được
    ```
 
 3. **Cấu hình biến môi trường:**
-   Tạo file `.env.local` dựa trên mẫu `.env.example`:
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   GEMINI_API_KEYS=key1,key2,key3
-   ```
+   Tạo file `.env.local` dựa trên mẫu `.env.example` và điền các thông tin cần thiết:
+   - Supabase URL & Anon Key
+   - Gemini API Keys (Hỗ trợ nhiều key cách nhau bằng dấu phẩy)
 
-4. **Chạy dự án ở chế độ phát triển:**
+4. **Chạy dự án:**
    ```bash
    npm run dev
    ```
 
 ## 🛠️ Hướng dẫn sử dụng
 
-1. **Đăng nhập**: Sử dụng tài khoản đã được cấp để truy cập hệ thống.
-2. **Quản lý bệnh nhân**: Thêm mới bệnh nhân hoặc tìm kiếm bệnh nhân cũ theo tên/mã ID.
-3. **Kê đơn**: 
-   - Trong trang chi tiết bệnh nhân, chọn "Tạo đơn thuốc".
-   - Nhập chẩn đoán và chọn thuốc từ danh mục.
-   - Click vào tên thuốc để **tra cứu liều dùng AI** nếu cần.
-   - Sử dụng bộ tính liều nhanh để tính liều siro cho trẻ em.
-4. **Thống kê**: Xem báo cáo doanh thu và lượt khám tại trang chủ dashboard.
+1. **Đăng nhập**: Truy cập `/login` để vào hệ thống.
+2. **Quản lý**: Sử dụng thanh điều hướng để quản lý Bệnh nhân hoặc Kho thuốc.
+3. **Kê đơn**: Tại trang chi tiết bệnh nhân, sử dụng công cụ tạo đơn thuốc với sự hỗ trợ của AI để tra cứu liều dùng nhanh chóng.
 
 ## 🧪 Kiểm thử
 
-Chạy bộ công cụ kiểm thử tự động:
+Để đảm bảo hệ thống hoạt động ổn định, hãy chạy bộ kiểm thử:
 ```bash
 npm test
 ```
-
-## 📝 Thông tin bổ sung
-
-Hệ thống được thiết kế để hoạt động tốt trên cả Desktop và Mobile (Responsive), tối ưu hóa tốc độ tải trang bằng cách sử dụng Server Components và cơ chế caching dữ liệu thông minh.
 
 ## ⚖️ Bản quyền
 

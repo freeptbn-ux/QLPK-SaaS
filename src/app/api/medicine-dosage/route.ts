@@ -1,7 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getAuthUser } from '@/lib/supabase/auth';
 
 export async function POST(req: NextRequest) {
   try {
+    // Check authentication
+    try {
+      await getAuthUser();
+    } catch (authError) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const { medicineName } = await req.json();
 
     if (!medicineName || typeof medicineName !== 'string') {

@@ -4,7 +4,7 @@ import React, { Suspense } from 'react';
 import PageHeader from '@/components/ui/PageHeader';
 import MedicineList from '@/components/features/medicines/MedicineList';
 import { getAllMedicines } from '@/actions/medicines';
-import { LoadingReporter } from '@/components/Loading';
+import MedicineTableSkeleton from '@/components/medicines/MedicineTableSkeleton';
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getAllSettings().catch(() => ({} as Record<string, string>));
@@ -15,12 +15,14 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-async function MedicineListWrapper() {
-  const medicines = await getAllMedicines();
-  return <MedicineList initialData={medicines} />;
-}
+export default function MedicinesPage({
+  searchParams,
+}: {
+  searchParams: { page?: string; search?: string };
+}) {
+  const page = Number(searchParams.page) || 1;
+  const search = searchParams.search || '';
 
-export default function MedicinesPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
@@ -29,11 +31,23 @@ export default function MedicinesPage() {
       />
       
       <div className="">
-        <Suspense fallback={<LoadingReporter text="Đang tải danh mục thuốc..." />}>
-          <MedicineListWrapper />
+        <Suspense fallback={<MedicineTableSkeleton />}>
+          <MedicineListWrapper page={page} search={search} />
         </Suspense>
       </div>
     </div>
+  );
+}
+
+async function MedicineListWrapper({ page, search }: { page: number; search: string }) {
+  const { data, count, limit } = await getAllMedicines({ page, search });
+  return (
+    <MedicineList 
+      initialData={data} 
+      totalCount={count} 
+      currentPage={page} 
+      limit={limit} 
+    />
   );
 }
 

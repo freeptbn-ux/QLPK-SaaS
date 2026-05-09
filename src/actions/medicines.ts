@@ -4,23 +4,41 @@ import { getAuthUser } from '@/lib/supabase/auth';
 import { Medicine } from '@/types/database';
 import { medicineFormSchema, stockAdjustmentSchema } from '@/lib/validations/medicine';
 import { formatZodError } from '@/lib/validations/helpers';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, cache } from 'next/cache';
+import { cache as reactCache } from 'react';
 import { getGenericErrorMessage } from '@/lib/error-handler';
 
-export async function getAllMedicines() {
+export const getAllMedicines = reactCache(async (params?: { page?: number; limit?: number; search?: string }) => {
   const { supabase } = await getAuthUser();
+  const page = params?.page || 1;
+  const limit = params?.limit || 20;
+  const search = params?.search || '';
 
-  const { data, error } = await supabase
+  let query = supabase
     .from('medicines')
-    .select('*')
+    .select('id, name, packing_spec, price, stock_quantity, min_stock_level', { count: 'exact' })
     .order('name', { ascending: true });
+
+  if (search) {
+    query = query.ilike('name', `%${search}%`);
+  }
+
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  const { data, error, count } = await query.range(from, to);
 
   if (error) {
     throw new Error(getGenericErrorMessage(error));
   }
 
-  return data as Medicine[];
-}
+  return {
+    data: data as Medicine[],
+    count: count || 0,
+    page,
+    limit
+  };
+});
 
 export async function addMedicine(rawData: unknown) {
   const { supabase } = await getAuthUser();
@@ -116,7 +134,7 @@ export async function updateMedicineStock(id: number, adjustment: number, reason
   return data;
 }
 
-export async function getLowStockMedicines() {
+export const getLowStockMedicines = reactCache(async () => {
   const { supabase } = await getAuthUser();
 
   // medicines where stock_quantity <= min_stock_level
@@ -131,7 +149,7 @@ export async function getLowStockMedicines() {
      // Fallback to JS filtering if RPC fails or is not defined
      const { data: allMedicines, error: fetchError } = await supabase
         .from('medicines')
-        .select('*');
+        .select('id, name, packing_spec, price, stock_quantity, min_stock_level');
         
      if (fetchError) throw fetchError;
      
@@ -139,7 +157,7 @@ export async function getLowStockMedicines() {
   }
 
   return data as Medicine[];
-}
+});
 
 export async function isMedicineInUse(id: number): Promise<boolean> {
   const { supabase } = await getAuthUser();
@@ -161,7 +179,7 @@ export async function getMedicines(query: string) {
 
   let q = supabase
     .from('medicines')
-    .select('*')
+    .select('id, name, packing_spec, price, stock_quantity, min_stock_level')
     .order('name', { ascending: true });
 
   if (query) {

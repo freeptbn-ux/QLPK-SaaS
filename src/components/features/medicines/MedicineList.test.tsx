@@ -1,11 +1,13 @@
 import { render, screen } from '@testing-library/react'
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import MedicineList from './MedicineList'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 
 // Mock the dependencies
 vi.mock('next/navigation', () => ({
   useRouter: vi.fn(),
+  useSearchParams: vi.fn(),
+  usePathname: vi.fn(),
 }))
 
 vi.mock('@/actions/medicines', () => ({
@@ -27,10 +29,14 @@ const mockData = [
 ]
 
 describe('MedicineList', () => {
+  beforeEach(() => {
+    vi.mocked(useRouter).mockReturnValue({ refresh: vi.fn(), push: vi.fn() } as any)
+    vi.mocked(useSearchParams).mockReturnValue(new URLSearchParams() as any)
+    vi.mocked(usePathname as any).mockReturnValue('/medicines')
+  })
+
   it('renders table with high contrast borders in dark mode', () => {
-    vi.mocked(useRouter).mockReturnValue({ refresh: vi.fn() } as any)
-    
-    render(<MedicineList initialData={mockData} />)
+    render(<MedicineList initialData={mockData} totalCount={1} currentPage={1} limit={10} />)
     
     // Check thead border class
     const thead = document.querySelector('thead')
@@ -44,8 +50,7 @@ describe('MedicineList', () => {
   })
 
   it('has responsive classes for search and filters', () => {
-    vi.mocked(useRouter).mockReturnValue({ refresh: vi.fn() } as any)
-    render(<MedicineList initialData={mockData} />)
+    render(<MedicineList initialData={mockData} totalCount={1} currentPage={1} limit={10} />)
     
     const container = document.querySelector('.flex.flex-col.md\\:flex-row')
     expect(container).toBeTruthy()

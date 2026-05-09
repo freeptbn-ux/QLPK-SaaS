@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useMemo, useOptimistic, useTransition } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { 
-  HiOutlineMagnifyingGlass, 
   HiOutlinePencil, 
   HiOutlineTrash, 
   HiOutlinePlus, 
@@ -17,21 +16,45 @@ import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { deleteMedicine } from '@/actions/medicines';
 import EmptyState from '@/components/ui/EmptyState';
 import { cn } from '@/lib/utils/cn';
+import MedicineSearch from './MedicineSearch';
+import Pagination from '@/components/ui/Pagination';
 
 interface MedicineListProps {
   initialData: Medicine[];
+  totalCount: number;
+  currentPage: number;
+  limit: number;
 }
 
-export default function MedicineList({ initialData }: MedicineListProps) {
+export default function MedicineList({ 
+  initialData, 
+  totalCount, 
+  currentPage, 
+  limit 
+}: MedicineListProps) {
   const router = useRouter();
-  const [data, setData] = useState<Medicine[]>(initialData);
-
-  useEffect(() => {
-    setData(initialData);
-  }, [initialData]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const searchParams = useSearchParams();
+  const searchTerm = searchParams.get('search') || '';
   const [showLowStockOnly, setShowLowStockOnly] = useState(false);
+  const [isPending, startTransition] = useTransition();
   
+  // Optimistic state for data
+  const [optimisticData, addOptimisticAction] = useOptimistic(
+    initialData,
+    (state, action: { type: 'delete' | 'update' | 'add', payload: number | Medicine | Partial<Medicine> }) => {
+      switch (action.type) {
+        case 'delete':
+          return state.filter(m => m.id !== action.payload);
+        case 'update':
+          return state.map(m => m.id === action.payload.id ? { ...m, ...action.payload } : m);
+        case 'add':
+          return [action.payload, ...state];
+        default:
+          return state;
+      }
+    }
+  );
+
   // Dialog states
   const [formOpen, setFormOpen] = useState(false);
   const [stockOpen, setStockOpen] = useState(false);
@@ -40,18 +63,16 @@ export default function MedicineList({ initialData }: MedicineListProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const filteredData = useMemo(() => {
-    return data
-      .filter((m) => {
-        const matchesSearch = m.name.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesLowStock = showLowStockOnly ? m.stock_quantity <= m.min_stock_level : true;
-        return matchesSearch && matchesLowStock;
-      })
-      .sort((a, b) => a.name.localeCompare(b.name, 'vi', { sensitivity: 'base' }));
-  }, [data, searchTerm, showLowStockOnly]);
+    let result = optimisticData;
+    if (showLowStockOnly) {
+      result = result.filter(m => m.stock_quantity <= m.min_stock_level);
+    }
+    return result;
+  }, [optimisticData, showLowStockOnly]);
 
   const lowStockCount = useMemo(() => {
-    return data.filter(m => m.stock_quantity <= m.min_stock_level).length;
-  }, [data]);
+    return initialData.filter(m => m.stock_quantity <= m.min_stock_level).length;
+  }, [initialData]);
 
   const handleAdd = () => {
     setSelectedMedicine(null);
@@ -76,16 +97,22 @@ export default function MedicineList({ initialData }: MedicineListProps) {
   const handleConfirmDelete = async () => {
     if (!selectedMedicine) return;
     setIsDeleting(true);
-    try {
-      await deleteMedicine(selectedMedicine.id);
-      setData(data.filter((m) => m.id !== selectedMedicine.id));
-      setConfirmOpen(false);
-    } catch (error: unknown) {
-      const err = error as Error;
-      alert(err.message || 'Không thể xóa thuốc');
-    } finally {
-      setIsDeleting(false);
-    }
+    
+    const medicineId = selectedMedicine.id;
+    
+    startTransition(async () => {
+      addOptimisticAction({ type: 'delete', payload: medicineId });
+      try {
+        await deleteMedicine(medicineId);
+        setConfirmOpen(false);
+        router.refresh();
+      } catch (error: unknown) {
+        const err = error as Error;
+        alert(err.message || 'Không thể xóa thuốc');
+      } finally {
+        setIsDeleting(false);
+      }
+    });
   };
 
   const refreshData = async () => {
@@ -102,18 +129,7 @@ export default function MedicineList({ initialData }: MedicineListProps) {
       />
 
       <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
-        <div className="flex-grow max-w-lg relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <HiOutlineMagnifyingGlass className="h-5 w-5 text-slate-400" />
-          </div>
-          <input
-            type="text"
-            placeholder="Tìm kiếm thuốc..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="input-field pl-10 bg-white dark:bg-slate-900 shadow-sm"
-          />
-        </div>
+        <MedicineSearch />
         
         <div className="flex gap-2">
           <button
@@ -232,6 +248,12 @@ export default function MedicineList({ initialData }: MedicineListProps) {
             </table>
           </div>
         )}
+        
+        <Pagination 
+          currentPage={currentPage}
+          totalCount={totalCount}
+          limit={limit}
+        />
       </div>
 
       <MedicineFormDialog
@@ -254,7 +276,7 @@ export default function MedicineList({ initialData }: MedicineListProps) {
         onConfirm={handleConfirmDelete}
         title="Xác nhận xóa thuốc"
         message={`Bạn có chắc chắn muốn xóa thuốc "${selectedMedicine?.name}"? Hành động này không thể hoàn tác.`}
-        loading={isDeleting}
+        loading={isDeleting || isPending}
       />
     </div>
   );

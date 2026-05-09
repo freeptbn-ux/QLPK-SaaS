@@ -1,6 +1,12 @@
 import { POST } from '../route';
 import { NextRequest } from 'next/server';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { getAuthUser } from '@/lib/supabase/auth';
+
+// Mock getAuthUser
+vi.mock('@/lib/supabase/auth', () => ({
+  getAuthUser: vi.fn(),
+}));
 
 describe('POST /api/medicine-dosage', () => {
   const originalEnv = process.env;
@@ -11,6 +17,8 @@ describe('POST /api/medicine-dosage', () => {
     vi.stubGlobal('fetch', vi.fn());
     // Mock Math.random to always start with index 0 for predictable testing
     vi.spyOn(Math, 'random').mockReturnValue(0);
+    // Default mock for getAuthUser: authorized
+    (getAuthUser as any).mockResolvedValue({ user: { id: 'test-user' }, supabase: {} });
   });
 
   afterEach(() => {
@@ -92,5 +100,21 @@ describe('POST /api/medicine-dosage', () => {
 
     const response = await POST(req);
     expect(response.status).toBe(400);
+  });
+
+  it('should return 401 if unauthorized', async () => {
+    // Mock getAuthUser to throw (simulating unauthorized)
+    (getAuthUser as any).mockRejectedValue(new Error('Unauthorized'));
+
+    const req = new NextRequest('http://localhost/api/medicine-dosage', {
+      method: 'POST',
+      body: JSON.stringify({ medicineName: 'Paracetamol' }),
+    });
+
+    const response = await POST(req);
+    const data = await response.json();
+
+    expect(response.status).toBe(401);
+    expect(data.error).toBe('Unauthorized');
   });
 });

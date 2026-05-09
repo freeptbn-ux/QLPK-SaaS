@@ -14,7 +14,7 @@ const ALLOWED_SETTING_KEYS = [
   'doctor_name'
 ];
 
-export async function getAllSettings(): Promise<Record<string, string>> {
+export const getAllSettings = cache(async (): Promise<Record<string, string>> => {
   const { supabase } = await getAuthUser();
   const { data, error } = await supabase
     .from('settings')
@@ -29,7 +29,7 @@ export async function getAllSettings(): Promise<Record<string, string>> {
     acc[key] = value;
     return acc;
   }, {} as Record<string, string>);
-}
+});
 
 /**
  * Cached version of getAllSettings for use in layouts.
