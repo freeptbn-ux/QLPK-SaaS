@@ -380,7 +380,7 @@ export default function PrescriptionForm({ patient, consultationFee, presets }: 
           isOpen={!!activeDosageLookup}
           onClose={handleCloseDosage}
           title={`Liều dùng: ${activeDosageLookup.medicineName}`}
-          isLoading={isDosageLoading}
+          loading={isDosageLoading}
           error={!!dosageError}
           onRetry={() => handleMedicineClick(activeDosageLookup.medicineName, activeDosageLookup.anchorEl)}
         >

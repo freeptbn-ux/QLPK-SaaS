@@ -85,14 +85,14 @@ describe('PrescriptionForm', () => {
 
     test('shows empty input when patient has no weight', () => {
       const patientNoWeight = { ...mockPatient, weight: null };
-      render(<PrescriptionForm patient={patientNoWeight} consultationFee={50000} />);
+      render(<PrescriptionForm patient={patientNoWeight} consultationFee={50000} presets={[]} />);
       const input = screen.getByLabelText(/Cân nặng \(kg\)/) as HTMLInputElement;
       expect(input.value).toBe('');
     });
 
     test('shows error when submitting without weight', async () => {
       const patientNoWeight = { ...mockPatient, weight: null };
-      render(<PrescriptionForm patient={patientNoWeight} consultationFee={50000} />);
+      render(<PrescriptionForm patient={patientNoWeight} consultationFee={50000} presets={[]} />);
       
       // Fill diagnosis
       fireEvent.change(screen.getByPlaceholderText(/Ví dụ: Viêm họng cấp/i), { target: { value: 'Sốt' } });

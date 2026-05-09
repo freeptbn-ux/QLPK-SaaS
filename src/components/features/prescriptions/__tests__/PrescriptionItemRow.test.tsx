@@ -5,7 +5,7 @@ import { PrescriptionItem } from '@/types/forms';
 
 describe('PrescriptionItemRow Component', () => {
   const mockItem: PrescriptionItem = {
-    medicine_id: '1',
+    medicine_id: 1,
     medicine_name: 'Paracetamol',
     packing_spec: 'Vỉ 10 viên',
     quantity: 2,
@@ -14,6 +14,7 @@ describe('PrescriptionItemRow Component', () => {
 
   const mockOnUpdate = vi.fn();
   const mockOnRemove = vi.fn();
+  const mockOnMedicineClick = vi.fn();
 
   const renderRow = (item = mockItem) => {
     return render(
@@ -24,6 +25,7 @@ describe('PrescriptionItemRow Component', () => {
             index={0}
             onUpdate={mockOnUpdate}
             onRemove={mockOnRemove}
+            onMedicineClick={mockOnMedicineClick}
           />
         </tbody>
       </table>

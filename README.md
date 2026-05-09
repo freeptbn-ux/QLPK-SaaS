@@ -77,6 +77,17 @@ QLPK-SaaS là một giải pháp quản lý phòng khám hiện đại, được
    npm run dev
    ```
 
+## 🛠️ Hướng dẫn sử dụng
+
+1. **Đăng nhập**: Sử dụng tài khoản đã được cấp để truy cập hệ thống.
+2. **Quản lý bệnh nhân**: Thêm mới bệnh nhân hoặc tìm kiếm bệnh nhân cũ theo tên/mã ID.
+3. **Kê đơn**: 
+   - Trong trang chi tiết bệnh nhân, chọn "Tạo đơn thuốc".
+   - Nhập chẩn đoán và chọn thuốc từ danh mục.
+   - Click vào tên thuốc để **tra cứu liều dùng AI** nếu cần.
+   - Sử dụng bộ tính liều nhanh để tính liều siro cho trẻ em.
+4. **Thống kê**: Xem báo cáo doanh thu và lượt khám tại trang chủ dashboard.
+
 ## 🧪 Kiểm thử
 
 Chạy bộ công cụ kiểm thử tự động:
@@ -90,4 +101,4 @@ Hệ thống được thiết kế để hoạt động tốt trên cả Desktop
 
 ## ⚖️ Bản quyền
 
-Copyright 2026 Nguyễn Duy Trường. All rights reserved.
+Copyright 2026 Nguyễn Duy Trường
