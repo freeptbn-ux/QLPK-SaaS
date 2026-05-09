@@ -41,7 +41,7 @@ export default function MedicineList({
   // Optimistic state for data
   const [optimisticData, addOptimisticAction] = useOptimistic(
     initialData,
-    (state, action: { type: 'delete' | 'update' | 'add', payload: number | Medicine | Partial<Medicine> }) => {
+    (state, action: { type: 'delete' | 'update' | 'add', payload: any }) => {
       switch (action.type) {
         case 'delete':
           return state.filter(m => m.id !== action.payload);
