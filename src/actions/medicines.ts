@@ -4,11 +4,11 @@ import { getAuthUser } from '@/lib/supabase/auth';
 import { Medicine } from '@/types/database';
 import { medicineFormSchema, stockAdjustmentSchema } from '@/lib/validations/medicine';
 import { formatZodError } from '@/lib/validations/helpers';
-import { revalidatePath, cache } from 'next/cache';
-import { cache as reactCache } from 'react';
+import { revalidatePath } from 'next/cache';
+import { cache } from 'react';
 import { getGenericErrorMessage } from '@/lib/error-handler';
 
-export const getAllMedicines = reactCache(async (params?: { page?: number; limit?: number; search?: string }) => {
+export const getAllMedicines = cache(async (params?: { page?: number; limit?: number; search?: string }) => {
   const { supabase } = await getAuthUser();
   const page = params?.page || 1;
   const limit = params?.limit || 20;
@@ -134,7 +134,7 @@ export async function updateMedicineStock(id: number, adjustment: number, reason
   return data;
 }
 
-export const getLowStockMedicines = reactCache(async () => {
+export const getLowStockMedicines = cache(async () => {
   const { supabase } = await getAuthUser();
 
   // medicines where stock_quantity <= min_stock_level
