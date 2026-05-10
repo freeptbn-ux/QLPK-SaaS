@@ -1,0 +1,122 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  z-index: 9999;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+:global(.dark) .overlay {
+  background-color: rgba(15, 23, 42, 0.7);
+}
+
+.ballWrapper {
+  position: relative;
+  animation: rotate 1.5s cubic-bezier(0.5, 0.1, 0.4, 0.9) infinite;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.ball {
+  position: absolute;
+  border-radius: 50%;
+  width: var(--ball-size);
+  height: var(--ball-size);
+}
+
+/* Colors - Using standard vibrant colors but kept flat as per requirement */
+.blue { 
+  background-color: #3b82f6; 
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.red { 
+  background-color: #ef4444; 
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+}
+.yellow { 
+  background-color: #f59e0b; 
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.green { 
+  background-color: #10b981; 
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+/* Sizes */
+.sm {
+  --container-size: 24px;
+  --ball-size: 6px;
+}
+
+.md {
+  --container-size: 40px;
+  --ball-size: 10px;
+}
+
+.lg {
+  --container-size: 64px;
+  --ball-size: 16px;
+}
+
+.ballWrapper {
+  width: var(--container-size);
+  height: var(--container-size);
+}
+
+.text {
+  color: #1e293b; /* slate-800 */
+  font-weight: 600;
+  font-size: 0.9375rem;
+  letter-spacing: 0.025em;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+  text-align: center;
+}
+
+:global(.dark) .text {
+  color: #f1f5f9; /* slate-100 */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .lg {
+    --container-size: 48px;
+    --ball-size: 12px;
+  }
+  
+  .md {
+    --container-size: 32px;
+    --ball-size: 8px;
+  }
+}

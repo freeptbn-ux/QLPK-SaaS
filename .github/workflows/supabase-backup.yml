@@ -1,0 +1,55 @@
+name: Supabase Database Backup
+
+on:
+  schedule:
+    - cron: '0 2 */2 * *' # Chạy vào 02:00 UTC (9:00 sáng VN), cách 2 ngày một lần
+  workflow_dispatch:      # Cho phép chạy thủ công từ tab Actions
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Quyền ghi vào repo để push branch mới
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Create Backup
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          # Tạo thư mục tạm để chứa bản backup hôm nay
+          DATE=$(date +%Y-%m-%d_%H-%M)
+          mkdir -p "backups/$DATE"
+          
+          echo "Starting database dump..."
+          
+          # Dump roles, schema và data
+          supabase db dump --db-url "$SUPABASE_DB_URL" -f "backups/$DATE/roles.sql" --role-only
+          supabase db dump --db-url "$SUPABASE_DB_URL" -f "backups/$DATE/schema.sql"
+          supabase db dump --db-url "$SUPABASE_DB_URL" -f "backups/$DATE/data.sql" --data-only --use-copy
+          
+          # Nén lại cho nhẹ
+          tar -czf "backups/$DATE/database_backup.tar.gz" -C "backups/$DATE" roles.sql schema.sql data.sql
+          
+          # Xóa các file .sql thô sau khi đã nén
+          rm "backups/$DATE/roles.sql" "backups/$DATE/schema.sql" "backups/$DATE/data.sql"
+          
+          echo "Backup completed for $DATE"
+
+      - name: Deploy to db-backups branch
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: backups     # Thư mục chứa các bản backup
+          branch: db-backups  # Branch đích
+          target-folder: .    # Giữ nguyên cấu trúc thư mục trong branch đích
+          clean: false        # QUAN TRỌNG: Đặt là false để KHÔNG xóa các bản backup cũ
+          git-config-name: github-actions[bot]
+          git-config-email: github-actions[bot]@users.noreply.github.com
+          commit-message: "chore: db backup ${{ github.event.repository.updated_at }}"
