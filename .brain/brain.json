@@ -1,31 +1,31 @@
 {
-  "meta": { "schema_version": "1.1.0", "awf_version": "3.3.0" },
+  "meta": {
+    "schema_version": "1.1.0",
+    "awf_version": "3.3.0",
+    "last_saved": "2026-05-11T09:18:00Z"
+  },
   "project": {
     "name": "QLPK-SaaS",
-    "type": "Healthcare Management SaaS",
-    "status": "In Development / Security Hardening"
+    "type": "Medical Management SaaS",
+    "status": "Security Hardening & Infrastructure Setup"
   },
   "tech_stack": {
-    "frontend": "Next.js 16.2.4 (Turbopack), React 19, Tailwind CSS 4, Framer Motion, Recharts",
-    "backend": "Next.js Server Actions, Supabase SSR",
-    "database": "Supabase (PostgreSQL)"
+    "frontend": "Next.js 16 (App Router), React 19, Tailwind CSS 4",
+    "backend": "Next.js Server Actions, Supabase",
+    "database": "PostgreSQL (Supabase)",
+    "ai": "Google Gemini 2.5 Flash-Lite",
+    "infrastructure": "GitHub Actions, Rclone, Google Drive (Backup)"
   },
-  "features": [
-    "Quản lý bệnh nhân (CRUD, Search)",
-    "Quản lý đơn thuốc (Tạo, In, Lịch sử)",
-    "Thống kê doanh thu và lượt khám",
-    "Cài đặt hệ thống và cấu hình danh mục thuốc"
-  ],
-  "knowledge_items": {
-    "patterns": [
-      "Server Actions for all DB operations",
-      "Supabase RLS for data protection",
-      "Turbopack for fast local development"
-    ],
-    "gotchas": [
-      "Hydration errors on toLocaleString() - must use explicit 'vi-VN' locale",
-      "RPC execution grants were too broad (anon access) - needs remediation",
-      "RLS was set to USING (true) - needs redesign"
-    ]
+  "security_status": {
+    "rls": "Enabled on all major tables, including clinics",
+    "anon_access": "REVOKED on public schema (Default Deny)",
+    "performance": "Indexes added on clinic_id for RLS optimization",
+    "secrets": "Hardcoded passwords removed, using .env and GitHub Secrets"
+  },
+  "backup_system": {
+    "method": "Rclone to Google Drive",
+    "trigger": "GitHub Actions (Daily @ 02:00 UTC)",
+    "remote_name": "gdrive",
+    "destination": "Backups/Supabase/"
   }
 }

@@ -15,9 +15,9 @@ Thiết lập hệ thống backup an toàn lên Google Drive và các công cụ
 
 | Phase | Tên Giai Đoạn | Trạng thái | Tiến độ |
 |-------|--------------|------------|----------|
-| 04 | [Google Drive Backup Workflow](phase-04-gdrive-backup.md) | 🟡 In Progress | 50% |
-| 05 | [Maintenance Scripts Audit](phase-05-maintenance-audit.md) | ⬜ Pending | 0% |
+| 04 | [Google Drive Backup Workflow](phase-04-gdrive-backup.md) | ✅ Completed | 100% |
+| 05 | [Maintenance Scripts Audit](phase-05-maintenance-audit.md) | 🟡 In Progress | 20% |
 
 ## Next Steps
-1. User cập nhật GitHub Secrets (`RCLONE_CONFIG`, `SUPABASE_DB_URL`).
-2. Chạy thử workflow để kiểm tra.
+- [x] Cấu hình Secrets trên GitHub Repo.
+- [x] Test chạy thử workflow thành công.
