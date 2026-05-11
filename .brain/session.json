@@ -1,11 +1,12 @@
 {
   "updated_at": "2026-05-11T11:15:00Z",
   "working_on": {
-    "feature": "Pediatric Dosage Refactor (UX & Clinical Accuracy)",
-    "phase": "Completed",
-    "task": "Implementation & Verification Done",
-    "status": "Done",
-    "notes": "Enhanced medicine dosage UI for pediatric focus. Implemented 2-step prompt refactoring for better data structure."
+    "feature": "Out-of-Stock Highlight (Prescription Form)",
+    "phase": "Planning",
+    "task": "Creating plan and running project",
+    "status": "running",
+    "notes": "Highlighting medicines with stock=0 in red and disabling selection in Autocomplete.",
+    "last_run_url": "http://localhost:3000"
   },
   "pending_tasks": [
     { "task": "Frontend integration for AI search results (Complete)", "priority": "done" },

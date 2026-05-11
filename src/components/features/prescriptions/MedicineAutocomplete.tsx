@@ -7,6 +7,7 @@ import { Medicine } from '@/types/database';
 import debounce from 'lodash/debounce';
 import { cn } from '@/lib/utils/cn';
 import { BallLoader } from '@/components/Loading';
+import { useToast } from '@/hooks/useToast';
 
 interface MedicineAutocompleteProps {
   onSelect: (medicine: Medicine | null) => void;
@@ -21,6 +22,7 @@ const MedicineAutocomplete = React.memo(function MedicineAutocomplete({ onSelect
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { showToast } = useToast();
 
   // Memoize excludeIds to avoid unnecessary reference changes
   const memoizedExcludeIds = React.useMemo(() => excludeIds, [JSON.stringify(excludeIds)]);
@@ -80,6 +82,10 @@ const MedicineAutocomplete = React.memo(function MedicineAutocomplete({ onSelect
   }, []);
 
   const handleSelect = (medicine: Medicine) => {
+    if (medicine.stock_quantity === 0) {
+      showToast('Thuốc này hiện đã hết hàng trong kho.', 'error');
+      return;
+    }
     onSelect(medicine);
     setInputValue('');
     setOpen(false);
@@ -153,39 +159,60 @@ const MedicineAutocomplete = React.memo(function MedicineAutocomplete({ onSelect
             </div>
           ) : options.length > 0 ? (
             <ul className="divide-y divide-gray-50 dark:divide-gray-800/50">
-              {options.map((option, index) => (
-                <li key={option.id}>
-                  <button
-                    type="button"
-                    onClick={() => handleSelect(option)}
-                    onMouseEnter={() => setSelectedIndex(index)}
-                    className={cn(
-                      "w-full px-4 py-3 text-left transition-colors flex flex-col gap-0.5 outline-none",
-                      selectedIndex === index ? "bg-primary-50 dark:bg-primary-900/20" : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
-                    )}
-                  >
-                    <span className={cn(
-                      "text-sm font-bold",
-                      selectedIndex === index ? "text-primary-700 dark:text-primary-300" : "text-gray-900 dark:text-gray-100"
-                    )}>
-                      {option.name}
-                    </span>
-                    <span className="text-[11px] font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
-                      <span>{option.packing_spec}</span>
-                      <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-700" />
-                      <span className="text-primary-600 dark:text-primary-400">
-                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(option.price)}
+              {options.map((option, index) => {
+                const isOutOfStock = option.stock_quantity === 0;
+                return (
+                  <li key={option.id}>
+                    <button
+                      type="button"
+                      onClick={() => handleSelect(option)}
+                      onMouseEnter={() => setSelectedIndex(index)}
+                      className={cn(
+                        "w-full px-4 py-3 text-left transition-colors flex flex-col gap-0.5 outline-none",
+                        selectedIndex === index 
+                          ? (isOutOfStock ? "bg-red-50/50 dark:bg-red-900/10" : "bg-primary-50 dark:bg-primary-900/20") 
+                          : "hover:bg-gray-50 dark:hover:bg-gray-800/50",
+                        isOutOfStock && "cursor-not-allowed"
+                      )}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className={cn(
+                          "text-sm font-bold",
+                          isOutOfStock 
+                            ? "text-red-600 dark:text-red-400" 
+                            : selectedIndex === index 
+                              ? "text-primary-700 dark:text-primary-300" 
+                              : "text-gray-900 dark:text-gray-100"
+                        )}>
+                          {option.name}
+                        </span>
+                        {isOutOfStock && (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 font-medium border border-red-100 dark:border-red-800/50">
+                            Hết hàng
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[11px] font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+                        <span>{option.packing_spec}</span>
+                        <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-700" />
+                        <span className="text-primary-600 dark:text-primary-400">
+                          {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(option.price)}
+                        </span>
+                        <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-700" />
+                        <span className={cn(
+                          isOutOfStock 
+                            ? "text-red-600 dark:text-red-400 font-bold" 
+                            : option.stock_quantity <= option.min_stock_level 
+                              ? "text-red-500 dark:text-orange-400" 
+                              : "text-gray-500 dark:text-gray-400"
+                        )}>
+                          Tồn: {option.stock_quantity}
+                        </span>
                       </span>
-                      <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-700" />
-                      <span className={cn(
-                        option.stock_quantity <= option.min_stock_level ? "text-red-500" : "text-gray-500"
-                      )}>
-                        Tồn: {option.stock_quantity}
-                      </span>
-                    </span>
-                  </button>
-                </li>
-              ))}
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           ) : (
             <div className="p-4 text-center text-sm text-gray-500 dark:text-gray-400">
