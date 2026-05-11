@@ -2,6 +2,15 @@
 
 import { getAuthUser } from '@/lib/supabase/auth';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import isoWeek from 'dayjs/plugin/isoWeek';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(isoWeek);
+
+const VN_TIMEZONE = 'Asia/Ho_Chi_Minh';
 
 export async function getDistinctMonthsYears() {
   const { supabase } = await getAuthUser();
@@ -20,8 +29,8 @@ export async function getDistinctMonthsYears() {
 export async function getStatsByDayForMonth(yearMonth: string) {
   const { supabase, clinicId } = await getAuthUser();
   
-  const startDate = dayjs(yearMonth).startOf('month').format('YYYY-MM-DD');
-  const endDate = dayjs(yearMonth).endOf('month').format('YYYY-MM-DD');
+  const startDate = dayjs(yearMonth).tz(VN_TIMEZONE).startOf('month').format('YYYY-MM-DD');
+  const endDate = dayjs(yearMonth).tz(VN_TIMEZONE).endOf('month').format('YYYY-MM-DD');
 
   const { data, error } = await supabase
     .from('clinic_daily_stats')
@@ -147,15 +156,17 @@ export async function getRevenueStats(timeRange: string = 'month', selectedMonth
     .select('date, total_revenue')
     .eq('clinic_id', clinicId);
 
+  const now = dayjs().tz(VN_TIMEZONE);
+
   if (timeRange === 'day' && selectedMonth) {
-    const startDate = dayjs(selectedMonth).startOf('month').format('YYYY-MM-DD');
-    const endDate = dayjs(selectedMonth).endOf('month').format('YYYY-MM-DD');
+    const startDate = dayjs(selectedMonth).tz(VN_TIMEZONE).startOf('month').format('YYYY-MM-DD');
+    const endDate = dayjs(selectedMonth).tz(VN_TIMEZONE).endOf('month').format('YYYY-MM-DD');
     query = query.gte('date', startDate).lte('date', endDate);
   } else if (timeRange === 'week') {
-    const eightWeeksAgo = dayjs().subtract(8, 'week').format('YYYY-MM-DD');
+    const eightWeeksAgo = now.subtract(8, 'week').startOf('week').format('YYYY-MM-DD');
     query = query.gte('date', eightWeeksAgo);
   } else if (timeRange === 'month') {
-    const twelveMonthsAgo = dayjs().subtract(12, 'month').startOf('month').format('YYYY-MM-DD');
+    const twelveMonthsAgo = now.subtract(12, 'month').startOf('month').format('YYYY-MM-DD');
     query = query.gte('date', twelveMonthsAgo);
   }
 
@@ -166,45 +177,73 @@ export async function getRevenueStats(timeRange: string = 'month', selectedMonth
     throw new Error(error.message);
   }
 
-  // Aggregate by week/month/year if needed, but for 'day' it's simple
+  const rawData = data || [];
+
   if (timeRange === 'day') {
-    return (data || []).map(item => ({
+    return rawData.map(item => ({
       name: dayjs(item.date).format('DD/MM'),
       revenue: Number(item.total_revenue || 0)
     }));
   }
 
-  // For week/month/year, we might need more complex aggregation or just return raw if the chart handles it
-  // Given the previous RPC 'get_revenue_stats_v2' did the aggregation, we should probably do it here too
-  // But let's start with 'day' as it's the primary one used on the initial load.
-  
-  return (data || []).map(item => ({
+  if (timeRange === 'week') {
+    // Group by ISO Week
+    const weeklyData: Record<string, number> = {};
+    rawData.forEach(item => {
+      const d = dayjs(item.date).tz(VN_TIMEZONE);
+      const weekKey = `${d.isoWeekYear()}-W${String(d.isoWeek()).padStart(2, '0')}`;
+      weeklyData[weekKey] = (weeklyData[weekKey] || 0) + Number(item.total_revenue || 0);
+    });
+    return Object.entries(weeklyData).map(([name, revenue]) => ({ name, revenue }));
+  }
+
+  if (timeRange === 'month') {
+    // Group by Month
+    const monthlyData: Record<string, number> = {};
+    rawData.forEach(item => {
+      const monthKey = dayjs(item.date).format('MM/YYYY');
+      monthlyData[monthKey] = (monthlyData[monthKey] || 0) + Number(item.total_revenue || 0);
+    });
+    return Object.entries(monthlyData).map(([name, revenue]) => ({ name, revenue }));
+  }
+
+  return rawData.map(item => ({
     name: dayjs(item.date).format('DD/MM'),
     revenue: Number(item.total_revenue || 0)
   }));
 }
 
 export async function getOverviewStats() {
-  const { supabase } = await getAuthUser();
+  const { supabase, clinicId } = await getAuthUser();
   
-  const now = new Date();
-  // Use YYYY-MM-DD format to avoid timezone offset issues when comparing in Postgres
-  const startOfMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+  const now = dayjs().tz(VN_TIMEZONE);
+  const startOfMonth = now.startOf('month').format('YYYY-MM-DD');
   
-  const [patientsCount, dailyStatsResult, lowStock] = await Promise.all([
-    supabase.from('patients').select('*', { count: 'exact', head: true }),
+  const [patientsCount, monthlyStatsResult, lowStock] = await Promise.all([
+    supabase.from('patients')
+      .select('*', { count: 'exact', head: true })
+      .eq('clinic_id', clinicId),
     supabase.from('clinic_daily_stats')
       .select('visit_count, total_revenue')
+      .eq('clinic_id', clinicId)
       .gte('date', startOfMonth),
     supabase.rpc('get_low_stock_count')
   ]);
 
-  // Check for errors
-  if (patientsCount.error) throw new Error(patientsCount.error.message);
-  if (dailyStatsResult.error) throw new Error(dailyStatsResult.error.message);
-  if (lowStock.error) throw new Error(lowStock.error.message);
+  if (patientsCount.error) {
+    console.error('Error fetching patients count:', patientsCount.error);
+    throw new Error(patientsCount.error.message);
+  }
+  if (monthlyStatsResult.error) {
+    console.error('Error fetching monthly stats:', monthlyStatsResult.error);
+    throw new Error(monthlyStatsResult.error.message);
+  }
+  if (lowStock.error) {
+    console.error('Error fetching low stock count:', lowStock.error);
+    throw new Error(lowStock.error.message);
+  }
 
-  const dailyStats = dailyStatsResult.data || [];
+  const dailyStats = monthlyStatsResult.data || [];
   const monthlyVisits = dailyStats.reduce((acc, curr) => acc + (curr.visit_count || 0), 0);
   const monthlyRevenue = dailyStats.reduce((acc, curr) => acc + Number(curr.total_revenue || 0), 0);
 

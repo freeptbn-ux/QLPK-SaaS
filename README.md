@@ -6,39 +6,37 @@ QLPK-SaaS là một giải pháp phần mềm quản lý phòng khám (Clinic Ma
 
 Dự án sử dụng các công nghệ tiên tiến nhất để đảm bảo hiệu năng và khả năng mở rộng:
 
-- **Framework**: [Next.js 16](https://nextjs.org/) (App Router, Server Actions)
-- **Ngôn ngữ**: TypeScript
-- **Cơ sở dữ liệu & Xác thực**: [Supabase](https://supabase.com/) (PostgreSQL)
+- **Frontend Framework**: [Next.js 16](https://nextjs.org/) (App Router, Server Actions)
+- **UI Library**: [React 19](https://react.dev/)
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
-- **Quản lý trạng thái**: React Hooks & Server Actions (Zero-JS client logic where possible)
-- **Kiểm thử**: Vitest (Unit/Integration) & Playwright (E2E)
-- **Hiệu năng**: Tối ưu hóa truy vấn với Rollup tables và Database Functions (RPC)
+- **Cơ sở dữ liệu & Xác thực**: [Supabase](https://supabase.com/) (PostgreSQL)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **Kiểm thử**: [Vitest](https://vitest.dev/)
+- **Performance**: Tối ưu hóa với Rollup tables (`clinic_daily_stats`) và Postgres Triggers.
 
 ## ✨ Tính năng Chính
 
 1.  **Quản lý Bệnh nhân**:
-    - Lưu trữ hồ sơ bệnh nhân chi tiết.
-    - Truy xuất lịch sử khám bệnh và kê đơn nhanh chóng.
+    - Lưu trữ hồ sơ bệnh nhân chi tiết (họ tên, ngày sinh, địa chỉ, lịch sử khám).
+    - Tìm kiếm bệnh nhân thông minh theo nhiều tiêu chí.
 2.  **Kê đơn & Quản lý Thuốc**:
-    - Quy trình kê đơn thuốc thông minh.
-    - Tự động trừ tồn kho khi xuất đơn.
-    - Cảnh báo thuốc sắp hết hạn hoặc dưới mức tối thiểu.
-3.  **Thống kê & Báo cáo**:
-    - Biểu đồ doanh thu và lượt khám theo ngày/tuần/tháng/năm.
-    - Tối ưu hóa tốc độ tải với bảng thống kê cộng dồn (`clinic_daily_stats`).
-4.  **Công cụ Hỗ trợ**:
-    - Máy tính liều lượng thuốc (Dose Calculator).
-    - Tìm kiếm bệnh nhân theo tên, số điện thoại hoặc CCCD.
-5.  **Cấu hình Hệ thống**:
-    - Quản lý thông tin phòng khám, biểu mẫu in ấn.
+    - Quy trình kê đơn thuốc nhanh chóng, trực quan.
+    - Tự động trừ tồn kho và cảnh báo khi thuốc sắp hết.
+3.  **Thống kê & Báo cáo (Dashboard)**:
+    - Thống kê doanh thu, lượt khám theo ngày/tuần/tháng.
+    - Biểu đồ trực quan giúp theo dõi tình hình kinh doanh của phòng khám.
+4.  **Bảo mật Đa người dùng (SaaS)**:
+    - Cơ chế RLS (Row Level Security) đảm bảo mỗi phòng khám chỉ thấy dữ liệu của chính mình.
+    - Phân quyền người dùng chặt chẽ qua Supabase Auth.
 
 ## 🛠 Hướng dẫn Cài đặt
 
 ### Yêu cầu hệ thống
-- Node.js 18.x trở lên
-- Tài khoản Supabase
+- **Node.js**: 18.x hoặc mới hơn
+- **npm**: 9.x hoặc mới hơn
 
-### Các bước cài đặt
+### Các bước thực hiện
 
 1.  **Clone dự án**:
     ```bash
@@ -46,42 +44,48 @@ Dự án sử dụng các công nghệ tiên tiến nhất để đảm bảo hi
     cd QLPK-SaaS
     ```
 
-2.  **Cài đặt dependencies**:
+2.  **Cài đặt thư viện**:
     ```bash
     npm install
     ```
 
-3.  **Cấu hình biến môi trường**:
-    Tạo file `.env` từ `.env.example` và điền thông tin Supabase của bạn:
-    ```env
-    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-    SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+3.  **Cấu hình môi trường**:
+    Sao chép file `.env.example` thành `.env`:
+    ```bash
+    cp .env.example .env
     ```
+    Điền các thông tin `NEXT_PUBLIC_SUPABASE_URL` và `NEXT_PUBLIC_SUPABASE_ANON_KEY` từ dự án Supabase của bạn.
 
 4.  **Khởi tạo Database**:
-    Sử dụng các file trong thư mục `supabase/migrations` để thiết lập bảng và functions trong Supabase SQL Editor.
+    Chạy các file migration trong thư mục `supabase/migrations` vào SQL Editor của Supabase.
 
-5.  **Chạy dự án ở chế độ phát triển**:
+5.  **Chạy dự án**:
     ```bash
     npm run dev
     ```
+    Truy cập tại: [http://localhost:3000](http://localhost:3000)
+
+## 📖 Cách sử dụng
+
+1.  **Đăng nhập/Đăng ký**: Người dùng đăng ký tài khoản cho phòng khám của mình.
+2.  **Quản lý Thuốc**: Vào mục "Thuốc" để nhập danh mục thuốc và số lượng tồn kho ban đầu.
+3.  **Tiếp nhận Bệnh nhân**: Tại mục "Bệnh nhân", thêm mới hoặc tìm kiếm bệnh nhân cũ.
+4.  **Kê đơn**: Chọn bệnh nhân, nhấn "Kê đơn", chọn thuốc và liều dùng. Hệ thống sẽ tự động tính tiền và trừ kho.
+5.  **Theo dõi Thống kê**: Quay lại "Dashboard" để xem biểu đồ tăng trưởng của phòng khám.
 
 ## 📁 Cấu trúc Thư mục
 
-- `src/app`: Chứa các route, layouts và pages (Next.js App Router).
-- `src/actions`: Các Server Actions để tương tác với Supabase.
-- `src/components`: Các component UI dùng chung và component theo tính năng.
-- `src/lib`: Cấu hình Supabase client, utils và các thư viện bổ trợ.
-- `src/types`: Định nghĩa các interface và type cho TypeScript.
-- `supabase`: Chứa mã nguồn SQL cho database, chính sách RLS và functions.
+- `src/app`: Routes, layouts và pages (App Router).
+- `src/actions`: Các Server Actions thực hiện logic nghiệp vụ phía server.
+- `src/components`: UI components (Shared, Layout, Feature-based).
+- `src/lib`: Supabase client, helpers và utilities.
+- `src/test`: Các file kiểm thử logic và API.
+- `supabase`: Schema, migrations, triggers và functions.
 
 ## 📝 Thông tin Bổ sung
 
-Dự án này được thiết kế với tư duy **Performance First**:
-- Sử dụng `React.cache()` để tránh duplicate queries.
-- Triển khai RLS (Row Level Security) chặt chẽ để bảo mật dữ liệu giữa các phòng khám.
-- Tận dụng Postgres Triggers để tự động cập nhật thống kê.
+- Dự án tuân thủ nghiêm ngặt các quy tắc về bảo mật dữ liệu y tế.
+- Hệ thống hỗ trợ in đơn thuốc ra file PDF hoặc máy in nhiệt.
 
 ---
 
