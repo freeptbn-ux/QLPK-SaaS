@@ -23,8 +23,16 @@
   - Added comprehensive Adversarial Testing suite.
 
 ### Added
+- **Optimized Statistics Engine**: Introduced `clinic_daily_stats` rollup table for near-instant dashboard loading.
+- **Data Integrity Tests**: New `src/test/stats_integrity.test.ts` to verify reconciliation and security isolation.
 - Vietnamese `README.md` with project overview and tech stack.
 - New adversarial and unit test files for AI safety verification.
+
+### Fixed
+- **Critical Security**: Patched data leak in `getOverviewStats` and `getRevenueStats` by enforcing `clinic_id` filtering.
+- **Reporting Accuracy**: Fixed 7-hour timezone delay in monthly reports using `dayjs.tz`.
+- **Chart Logic**: Implemented proper weekly and monthly grouping for revenue statistics.
+- **Runtime Error**: Resolved `ReferenceError: useMedicineDosage is not defined` in `PrescriptionForm.tsx`.
 
 ### Changed
 - **Gemini Architecture**: Refactored `medicine-dosage` API to use a **Two-Step Architecture**.
@@ -43,7 +51,4 @@
 ### Changed
 - **Dosage Layout**: Reordered sections to prioritize "Children" dosage over "Adults" and "Usage".
 - **AI Prompts**: Refined formatting instructions to enforce hierarchical age-based structure.
-
-### Fixed
-- **Runtime Error**: Resolved `ReferenceError: useMedicineDosage is not defined` in `PrescriptionForm.tsx` caused by accidental import deletion.
 
