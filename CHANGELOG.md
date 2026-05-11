@@ -16,3 +16,13 @@
 - **Revoked Anon Access**: Removed all permissions for the `anon` role on the `public` schema.
 - **Enforced RLS**: Enabled Row Level Security on the `clinics` table and added multi-tenancy policies.
 - **Lockdown Complete**: Successfully finished all phases of Security Hardening Group 1.
+- **AI Hardening**: Implemented 4-phase security hardening for `medicine-dosage` API.
+  - Zod-based input validation (Length, Regex, Keyword Blacklist).
+  - Prompt Injection mitigation via Delimiters and System Instructions.
+  - Enforced Structured Output using Gemini JSON Schema.
+  - Added comprehensive Adversarial Testing suite.
+
+### Added
+- Vietnamese `README.md` with project overview and tech stack.
+- New adversarial and unit test files for AI safety verification.
+

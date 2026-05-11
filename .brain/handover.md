@@ -1,36 +1,37 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📋 HANDOVER DOCUMENT - SECURITY HARDENING GROUP 1 COMPLETE
+📋 HANDOVER DOCUMENT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📍 Đang làm: Security Hardening Review & Future Planning
-🔢 Đến bước: Đã hoàn thành Nhóm 1, sẵn sàng cho các nhiệm vụ tiếp theo.
+📍 Đang làm: AI Security Hardening & Repository Update
+🔢 Đến bước: Hoàn thành Phase 04 & Sync GitHub
 
 ✅ ĐÃ XONG:
-   - Phase 01: Emergency Lockdown (Passwords, Env Vars) ✓
-   - Phase 02: SQL Access Control (Anon Revoke, RLS Clinics) ✓
-   - Phase 03: Infrastructure Cleanup (Delete unsafe workflows) ✓
-   - Phase 04: Google Drive Backup (Verified & Stable) ✓
-   - Security: Đã vô hiệu hóa Migration Runner backdoor trong `src/actions/system.ts`.
+   - Phase 01: Zod Validation Layer ✓
+   - Phase 02: Prompt Restructuring ✓
+   - Phase 03: Structured Output Schema ✓
+   - Phase 04: Adversarial Testing & Verification ✓
+   - README.md (Tiếng Việt) & Git Sync ✓
 
 ⏳ CÒN LẠI:
-   - Audit tổng thể hệ thống (Khuyên dùng).
-   - Redesign RLS cho các bảng Inventory (Chưa làm chi tiết).
-   - Review các script bảo trì (Phase 05 dự kiến).
+   - Phase 05: Kiểm tra các script bảo trì (Maintenance Scripts)
+   - Thiết kế lại RLS cho các bảng Inventory
+   - Đánh bóng giao diện (UI/UX Polish)
 
 🔧 QUYẾT ĐỊNH QUAN TRỌNG:
-   - Toàn bộ kết nối database từ CI/CD phải dùng Supavisor Pooler (IPv4).
-   - Token Rclone phải được mã hóa Base64 không xuống dòng (-w 0).
-   - Vô hiệu hóa code migration runner để bảo vệ database khỏi các cuộc tấn công client-side.
+   - Sử dụng Gemini JSON Schema thay vì regex thủ công (tăng độ tin cậy).
+   - Chặn ký tự đặc biệt ở tầng Zod regex để triệt tiêu injection từ đầu.
+   - Luôn sử dụng `skul9x` / `freeptbn@gmail.com` cho Git config.
 
 ⚠️ LƯU Ý CHO SESSION SAU:
-   - Hệ thống hiện tại đang ở trạng thái "Default Deny" cho anon role.
-   - Khi tạo API mới, CẦN chú ý check RLS policies.
-   - Kiểm tra định kỳ log backup trên GitHub Actions.
+   - Server đang chạy tại http://localhost:3000.
+   - Các file test mới nằm trong `src/app/api/medicine-dosage/__tests__/`.
+   - Cần kiểm tra lại các script trong thư mục `scripts/` để đảm bảo không còn credential nào khác.
 
 📁 FILES QUAN TRỌNG:
-   - `plans/260511-0850-security-hardening-group-1/` (Toàn bộ kế hoạch đã Done)
+   - `src/app/api/medicine-dosage/route.ts` (Core logic AI)
+   - `src/lib/validations/medicine.ts` (Zod schemas)
+   - `README.md` (Tài liệu dự án)
    - `.brain/brain.json` (Kiến thức dự án)
-   - `.github/workflows/google-drive-backup.yml` (Workflow backup mới)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📍 Đã lưu! Để tiếp tục: Gõ /recap

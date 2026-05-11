@@ -2,42 +2,43 @@
   "meta": {
     "schema_version": "1.1.0",
     "awf_version": "3.3.0",
-    "last_saved": "2026-05-11T09:54:00Z"
+    "last_saved": "2026-05-11T10:17:00Z"
   },
   "project": {
     "name": "QLPK-SaaS",
     "type": "Medical Management SaaS",
-    "status": "Production Ready Hardened Infrastructure"
+    "status": "Production Ready Hardened Infrastructure with AI Safety"
   },
   "tech_stack": {
     "frontend": "Next.js 16 (App Router), React 19, Tailwind CSS 4",
     "backend": "Next.js Server Actions, Supabase",
     "database": "PostgreSQL (Supabase)",
-    "ai": "Google Gemini 2.5 Flash-Lite",
+    "ai": "Google Gemini 2.5 Flash-Lite (with JSON Schema Enforcement)",
     "infrastructure": "GitHub Actions, Rclone, Google Drive (Backup)"
   },
   "security_status": {
     "rls": "Enabled on all major tables, including clinics",
     "anon_access": "REVOKED on public schema (Default Deny)",
-    "performance": "Indexes added on clinic_id for RLS optimization",
     "secrets": "Hardcoded passwords removed, using .env and GitHub Secrets",
-    "backdoor_protection": "Migration runner disabled in production code"
+    "ai_safety": "Multi-layer protection: Zod Validation + Prompt Delimiters + JSON Schema + Output Validation"
   },
-  "backup_system": {
-    "method": "Rclone to Google Drive",
-    "trigger": "GitHub Actions (Daily @ 02:00 UTC)",
-    "remote_name": "gdrive",
-    "destination": "Backups/Supabase/"
-  },
+  "api_endpoints": [
+    {
+      "path": "/api/medicine-dosage",
+      "method": "POST",
+      "description": "Tra cứu liều dùng thuốc bằng AI với bảo mật chống Prompt Injection.",
+      "security": "Zod Validation, Gemini JSON Schema, Auth Required"
+    }
+  ],
   "knowledge_items": {
     "gotchas": [
       {
-        "issue": "GitHub Actions Network Unreachable (Supabase)",
-        "solution": "Supabase direct hosts resolve to IPv6. Use Connection Pooler (Supavisor) host for IPv4 compatibility on GitHub runners."
+        "issue": "AI Prompt Injection via User Input",
+        "solution": "Use Zod regex to restrict characters, wrap input in '---' delimiters, and reinforce system instructions in the prompt."
       },
       {
-        "issue": "Rclone Setup Base64 Error",
-        "solution": "Use 'base64 -w 0' when encoding rclone.conf to avoid line breaks that break GitHub Secrets decoding."
+        "issue": "AI Response Unreliability",
+        "solution": "Enable 'response_mime_type: application/json' and provide 'response_schema' in Gemini config to guarantee structured output."
       }
     ]
   }

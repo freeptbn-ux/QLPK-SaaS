@@ -1,11 +1,11 @@
 {
-  "updated_at": "2026-05-11T09:54:30Z",
+  "updated_at": "2026-05-11T10:17:15Z",
   "working_on": {
-    "feature": "Security Hardening Group 1",
+    "feature": "AI Security Hardening",
     "phase": "Completed",
-    "task": "Final Validation & Brain Save",
+    "task": "Knowledge Sync & Session Save",
     "status": "Done",
-    "notes": "All phases of initial hardening are complete. System is stable and backed up."
+    "notes": "Completed 4 phases of AI security hardening for medicine-dosage API. Added Vietnamese README and pushed to GitHub."
   },
   "pending_tasks": [
     { "task": "Phase 05: Maintenance Scripts Audit", "priority": "medium" },
@@ -13,11 +13,12 @@
     { "task": "Frontend UI/UX Polish", "priority": "low" }
   ],
   "recent_changes": [
-    { "description": "Disabled Backdoor Migration Runner in src/actions/system.ts", "files": ["src/actions/system.ts"] },
-    { "description": "Verified and Marked Phase 04 as Done", "files": ["plans/260511-0850-security-hardening-group-1/phase-04-gdrive-backup.md"] },
-    { "description": "Updated CHANGELOG.md and brain.json", "files": ["CHANGELOG.md", ".brain/brain.json"] }
+    { "description": "Implemented AI Security Hardening (Zod, Prompt Restructuring, Output Schema)", "files": ["src/app/api/medicine-dosage/route.ts", "src/lib/validations/medicine.ts"] },
+    { "description": "Added comprehensive test suite for AI security", "files": ["src/app/api/medicine-dosage/__tests__/adversarial.test.ts"] },
+    { "description": "Updated Vietnamese README.md and pushed to GitHub", "files": ["README.md"] }
   ],
   "decisions_made": [
-    { "decision": "Group all security lockdown tasks into Group 1", "reason": "Ensure infrastructure stability before continuing feature development." }
+    { "decision": "Enforce strict JSON schema at Gemini level", "reason": "Reduces parsing errors and ensures UI stability." },
+    { "decision": "Use Zod regex to block special characters in medicine name", "reason": "Primary defense against common injection payloads." }
   ]
 }
