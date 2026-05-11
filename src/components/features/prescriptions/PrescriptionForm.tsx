@@ -14,7 +14,7 @@ import CountUp from '@/components/ui/CountUp';
 import { cn } from '@/lib/utils/cn';
 import { BallLoader } from '@/components/Loading';
 import SpeechBubble from '@/components/ui/SpeechBubble';
-import { useMedicineDosage } from '@/hooks/useMedicineDosage';
+import { useMedicineDosage, MedicineDosageData } from '@/hooks/useMedicineDosage';
 import { formatDosageText } from '@/lib/utils/formatDosageText';
 
 interface PrescriptionFormProps {
@@ -38,7 +38,7 @@ export default function PrescriptionForm({ patient, consultationFee, presets }: 
     anchorEl: HTMLElement;
   } | null>(null);
 
-  const dosageCacheRef = useRef<Map<string, string>>(new Map());
+  const dosageCacheRef = useRef<Map<string, MedicineDosageData>>(new Map());
 
   const { data: dosageData, isLoading: isDosageLoading, error: dosageError } = useMedicineDosage({
     medicineName: activeDosageLookup?.medicineName || null,
@@ -384,7 +384,40 @@ export default function PrescriptionForm({ patient, consultationFee, presets }: 
           error={!!dosageError}
           onRetry={() => handleMedicineClick(activeDosageLookup.medicineName, activeDosageLookup.anchorEl)}
         >
-          {formatDosageText(dosageData || '')}
+          {dosageData ? (
+            <div className="space-y-4">
+              <div className="bg-primary-50/50 dark:bg-primary-900/10 p-3 rounded-xl border border-primary-100/50 dark:border-primary-900/20">
+                <p className="text-xs font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider mb-1">Mô tả & Thành phần</p>
+                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{dosageData.description}</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Người lớn</p>
+                  <div className="text-sm text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800">
+                    {dosageData.adult_dosage}
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Trẻ em</p>
+                  <div className="text-sm text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800">
+                    {dosageData.children_dosage}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Hướng dẫn sử dụng</p>
+                <div className="text-sm text-slate-700 dark:text-slate-200 bg-blue-50/50 dark:bg-blue-900/10 p-3 rounded-xl border border-blue-100/50 dark:border-blue-900/20">
+                  {dosageData.usage_instructions}
+                </div>
+              </div>
+              
+              <p className="text-[10px] text-gray-400 italic text-right mt-2">
+                * Thông tin tra cứu tự động từ AI, chỉ mang tính chất tham khảo
+              </p>
+            </div>
+          ) : null}
         </SpeechBubble>
       )}
     </div>

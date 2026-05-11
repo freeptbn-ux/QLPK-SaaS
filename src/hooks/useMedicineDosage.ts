@@ -2,16 +2,25 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 
+export interface MedicineDosageData {
+  medicine_name: string;
+  adult_dosage: string;
+  children_dosage: string;
+  usage_instructions: string;
+  description: string;
+}
+
 interface UseMedicineDosageProps {
   medicineName: string | null;
-  cache: React.MutableRefObject<Map<string, string>>;
+  cache: React.MutableRefObject<Map<string, MedicineDosageData>>;
 }
 
 export function useMedicineDosage({ medicineName, cache }: UseMedicineDosageProps) {
-  const [data, setData] = useState<string | null>(null);
+  const [data, setData] = useState<MedicineDosageData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const lastFetchedName = useRef<string | null>(null);
+
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const sanitizeName = (name: string) => {
@@ -64,14 +73,14 @@ export function useMedicineDosage({ medicineName, cache }: UseMedicineDosageProp
         throw new Error(result.error || 'Có lỗi xảy ra khi tra cứu');
       }
 
-      const dosageText = result.data?.dosageInfo;
-      if (!dosageText) {
+      const dosageData = result.data;
+      if (!dosageData || !dosageData.medicine_name) {
         throw new Error('Không tìm thấy thông tin liều dùng cho thuốc này');
       }
 
       // 5. Lưu vào cache
-      cache.current.set(cleanName, dosageText);
-      setData(dosageText);
+      cache.current.set(cleanName, dosageData);
+      setData(dosageData);
     } catch (err: any) {
       if (err.name === 'AbortError') return;
       

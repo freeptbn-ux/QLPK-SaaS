@@ -11,6 +11,14 @@ vi.mock('@/lib/supabase/auth', () => ({
 describe('POST /api/medicine-dosage', () => {
   const originalEnv = process.env;
 
+  const validJsonResponse = JSON.stringify({
+    medicine_name: 'Paracetamol',
+    adult_dosage: 'Dosage from key 2',
+    children_dosage: 'Dosage from key 2',
+    usage_instructions: 'Dosage from key 2',
+    description: 'Dosage from key 2'
+  });
+
   beforeEach(() => {
     vi.resetModules();
     process.env = { ...originalEnv, GEMINI_API_KEYS: 'key1,key2' };
@@ -36,7 +44,7 @@ describe('POST /api/medicine-dosage', () => {
       .mockResolvedValueOnce({
         status: 200,
         json: async () => ({
-          candidates: [{ content: { parts: [{ text: 'Dosage from key 2' }] } }]
+          candidates: [{ content: { parts: [{ text: validJsonResponse }] } }]
         })
       });
 
@@ -49,7 +57,7 @@ describe('POST /api/medicine-dosage', () => {
     const data = await response.json();
 
     expect(response.status).toBe(200);
-    expect(data.data.dosageInfo).toBe('Dosage from key 2');
+    expect(data.data.adult_dosage).toBe('Dosage from key 2');
     expect(global.fetch).toHaveBeenCalledTimes(2);
     
     // Verify first key was used
@@ -64,7 +72,7 @@ describe('POST /api/medicine-dosage', () => {
       .mockResolvedValueOnce({
         status: 200,
         json: async () => ({
-          candidates: [{ content: { parts: [{ text: 'Dosage from key 2' }] } }]
+          candidates: [{ content: { parts: [{ text: validJsonResponse }] } }]
         })
       });
 

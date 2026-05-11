@@ -16,3 +16,23 @@ export const stockAdjustmentSchema = z.object({
 });
 
 export type ValidatedMedicineData = z.infer<typeof medicineFormSchema>;
+
+export const medicineDosageSchema = z.object({
+  medicineName: z.string()
+    .min(2, 'Tên thuốc phải có ít nhất 2 ký tự')
+    .max(50, 'Tên thuốc không được vượt quá 50 ký tự')
+    .regex(/^[a-zA-Z0-9\sÀ-ỹ-]+$/, 'Tên thuốc chỉ được chứa chữ cái, số, khoảng trắng và dấu gạch ngang')
+    .refine(val => {
+      const blacklist = ['ignore', 'system', 'instruction'];
+      return !blacklist.some(word => val.toLowerCase().includes(word));
+    }, 'Tên thuốc chứa từ khóa không hợp lệ')
+});
+
+export const medicineDosageOutputSchema = z.object({
+  medicine_name: z.string(),
+  adult_dosage: z.string(),
+  children_dosage: z.string(),
+  usage_instructions: z.string(),
+  description: z.string(),
+});
+

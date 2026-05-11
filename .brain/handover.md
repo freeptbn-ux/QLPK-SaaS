@@ -1,32 +1,36 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📋 HANDOVER DOCUMENT - SECURITY REMEDIATION
+📋 HANDOVER DOCUMENT - SECURITY HARDENING GROUP 1 COMPLETE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📍 Đang làm: Kế hoạch vá lỗ hổng bảo mật (Security Remediation)
-🔢 Đến bước: Đã tạo Plan, chờ Review
+📍 Đang làm: Security Hardening Review & Future Planning
+🔢 Đến bước: Đã hoàn thành Nhóm 1, sẵn sàng cho các nhiệm vụ tiếp theo.
 
 ✅ ĐÃ XONG:
-   - Audit & Verification: Đã xác nhận các lỗi RPC, RLS, Migration Runner, Backdoor là thật.
-   - Planning: Đã tạo thư mục `plans/260426-1956-security-remediation/` với 4 phases chi tiết.
+   - Phase 01: Emergency Lockdown (Passwords, Env Vars) ✓
+   - Phase 02: SQL Access Control (Anon Revoke, RLS Clinics) ✓
+   - Phase 03: Infrastructure Cleanup (Delete unsafe workflows) ✓
+   - Phase 04: Google Drive Backup (Verified & Stable) ✓
+   - Security: Đã vô hiệu hóa Migration Runner backdoor trong `src/actions/system.ts`.
 
 ⏳ CÒN LẠI:
-   - Phase 01: Vá lỗi RPC (anon), Vô hiệu hóa Migration Runner, Xóa PII dump.
-   - Phase 02: Thiết kế lại RLS (thay thế USING true).
-   - Phase 03: Tích hợp auth check vào Server Actions, sửa lỗi đổi mật khẩu.
-   - Phase 04: Cấu hình Security Headers, CSP và ẩn lỗi SQL.
+   - Audit tổng thể hệ thống (Khuyên dùng).
+   - Redesign RLS cho các bảng Inventory (Chưa làm chi tiết).
+   - Review các script bảo trì (Phase 05 dự kiến).
 
 🔧 QUYẾT ĐỊNH QUAN TRỌNG:
-   - Phân rã công việc thành 4 giai đoạn dựa trên mức độ ưu tiên (Critical -> High -> Medium).
-   - Fix tầng Database (Migration/RLS) trước khi sửa tầng App (Server Actions).
+   - Toàn bộ kết nối database từ CI/CD phải dùng Supavisor Pooler (IPv4).
+   - Token Rclone phải được mã hóa Base64 không xuống dòng (-w 0).
+   - Vô hiệu hóa code migration runner để bảo vệ database khỏi các cuộc tấn công client-side.
 
 ⚠️ LƯU Ý CHO SESSION SAU:
-   - Cần backup database trước khi chạy các migration vá lỗi trong Phase 01.
-   - File `src/actions/system.ts` là mục tiêu đầu tiên cần vô hiệu hóa.
+   - Hệ thống hiện tại đang ở trạng thái "Default Deny" cho anon role.
+   - Khi tạo API mới, CẦN chú ý check RLS policies.
+   - Kiểm tra định kỳ log backup trên GitHub Actions.
 
 📁 FILES QUAN TRỌNG:
-   - `plans/260426-1956-security-remediation/plan.md` (Tiến độ tổng quát)
+   - `plans/260511-0850-security-hardening-group-1/` (Toàn bộ kế hoạch đã Done)
    - `.brain/brain.json` (Kiến thức dự án)
-   - `.brain/session.json` (Trạng thái hiện tại)
+   - `.github/workflows/google-drive-backup.yml` (Workflow backup mới)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📍 Đã lưu! Để tiếp tục: Gõ /recap

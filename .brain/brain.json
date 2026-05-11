@@ -2,12 +2,12 @@
   "meta": {
     "schema_version": "1.1.0",
     "awf_version": "3.3.0",
-    "last_saved": "2026-05-11T09:18:00Z"
+    "last_saved": "2026-05-11T09:54:00Z"
   },
   "project": {
     "name": "QLPK-SaaS",
     "type": "Medical Management SaaS",
-    "status": "Security Hardening & Infrastructure Setup"
+    "status": "Production Ready Hardened Infrastructure"
   },
   "tech_stack": {
     "frontend": "Next.js 16 (App Router), React 19, Tailwind CSS 4",
@@ -20,12 +20,25 @@
     "rls": "Enabled on all major tables, including clinics",
     "anon_access": "REVOKED on public schema (Default Deny)",
     "performance": "Indexes added on clinic_id for RLS optimization",
-    "secrets": "Hardcoded passwords removed, using .env and GitHub Secrets"
+    "secrets": "Hardcoded passwords removed, using .env and GitHub Secrets",
+    "backdoor_protection": "Migration runner disabled in production code"
   },
   "backup_system": {
     "method": "Rclone to Google Drive",
     "trigger": "GitHub Actions (Daily @ 02:00 UTC)",
     "remote_name": "gdrive",
     "destination": "Backups/Supabase/"
+  },
+  "knowledge_items": {
+    "gotchas": [
+      {
+        "issue": "GitHub Actions Network Unreachable (Supabase)",
+        "solution": "Supabase direct hosts resolve to IPv6. Use Connection Pooler (Supavisor) host for IPv4 compatibility on GitHub runners."
+      },
+      {
+        "issue": "Rclone Setup Base64 Error",
+        "solution": "Use 'base64 -w 0' when encoding rclone.conf to avoid line breaks that break GitHub Secrets decoding."
+      }
+    ]
   }
 }
