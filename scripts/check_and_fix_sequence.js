@@ -1,7 +1,4 @@
-/**
- * Script to diagnose and fix "duplicate key" error on prescriptions_header.
- * Checks if the BIGSERIAL sequence is out of sync with existing max ID.
- */
+require('dotenv').config();
 const { Client } = require('pg');
 
 async function main() {
@@ -10,7 +7,7 @@ async function main() {
     port: 5432,
     database: 'postgres',
     user: 'postgres',
-    password: '@Colenao123@',
+    password: process.env.DB_PASSWORD,
     ssl: { rejectUnauthorized: false }
   });
 

@@ -21,9 +21,9 @@ QLPK-SaaS là một giải pháp quản lý phòng khám hiện đại, được
 - **Frontend**: Next.js 16 (App Router), React 19, Tailwind CSS 4, Framer Motion.
 - **Backend**: Next.js Server Actions, Supabase (PostgreSQL).
 - **Xác thực**: Supabase Auth (JWT).
-- **AI Integration**: Google Gemini SDK.
+- **AI Integration**: Google Gemini SDK (Gemini 2.5 Flash-Lite).
 - **Testing**: Vitest, Playwright.
-- **Khác**: Zod, React Hook Form, Recharts, Lucide Icons.
+- **Khác**: Zod, React Hook Form, Recharts, React Icons.
 
 ## 📦 Cấu trúc thư mục chính
 
@@ -37,9 +37,10 @@ QLPK-SaaS là một giải pháp quản lý phòng khám hiện đại, được
 │   ├── lib/           # Cấu hình thư viện (Supabase client, utils...)
 │   └── types/         # Định nghĩa kiểu dữ liệu TypeScript
 ├── supabase/          # Database Schema, Migrations & Seed data
-├── .brain/            # Eternal Context (Tri thức hỗ trợ AI agent)
-├── plans/             # Kế hoạch phát triển và sửa lỗi
-└── tests/             # Các kịch bản kiểm thử tự động
+├── .brain/            # Eternal Context (Tri thức hỗ trợ AI agent - Antigravity)
+├── plans/             # Kế hoạch phát triển và gia cố bảo mật
+├── tests/             # Các kịch bản kiểm thử tự động
+└── scripts/           # Các script hỗ trợ vận hành và bảo trì
 ```
 
 ## 🛠️ Hướng dẫn cài đặt
@@ -56,11 +57,15 @@ QLPK-SaaS là một giải pháp quản lý phòng khám hiện đại, được
    ```
 
 3. **Cấu hình môi trường**:
-   Tạo file `.env.local` từ mẫu `.env.example`:
+   Tạo file `.env` từ mẫu `.env.example`:
    ```bash
-   cp .env.example .env.local
+   cp .env.example .env
    ```
-   Điền thông tin Supabase (URL, Anon Key) và Gemini API Key.
+   Điền đầy đủ thông tin:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `DB_PASSWORD` (Cho việc chạy migration/scripts)
+   - `GEMINI_API_KEY` (Cho tính năng tra cứu AI)
 
 4. **Khởi chạy dự án**:
    ```bash
@@ -70,9 +75,9 @@ QLPK-SaaS là một giải pháp quản lý phòng khám hiện đại, được
 ## 🛡️ Bảo mật
 
 Hệ thống áp dụng các tiêu chuẩn bảo mật nghiêm ngặt:
-- **Tenant Isolation**: Sử dụng RLS của PostgreSQL để đảm bảo phòng khám A không bao giờ thấy dữ liệu của phòng khám B.
-- **Environment Safety**: Không lưu trữ API Key trong mã nguồn công khai.
-- **Data Integrity**: Sử dụng Atomic Transactions và Numeric types cho các phép tính tài chính để tránh sai số.
+- **Tenant Isolation**: Sử dụng RLS (Row Level Security) của PostgreSQL để đảm bảo cách ly dữ liệu tuyệt đối giữa các phòng khám.
+- **Environment Safety**: Tuyệt đối không lưu trữ API Key trong mã nguồn. Sử dụng biến môi trường được quản lý chặt chẽ.
+- **Default Deny Policy**: Áp dụng cơ chế "Từ chối mặc định" đối với các role chưa được xác thực.
 
 ## ⚖️ Bản quyền
 
