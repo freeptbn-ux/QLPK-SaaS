@@ -1,6 +1,7 @@
 'use server';
 
 import { getAuthUser } from '@/lib/supabase/auth';
+import dayjs from 'dayjs';
 
 export async function getDistinctMonthsYears() {
   const { supabase } = await getAuthUser();
@@ -17,17 +18,28 @@ export async function getDistinctMonthsYears() {
 }
 
 export async function getStatsByDayForMonth(yearMonth: string) {
-  const { supabase } = await getAuthUser();
-  const { data, error } = await supabase.rpc('get_stats_by_day_for_month', {
-    p_year_month: yearMonth,
-  });
+  const { supabase, clinicId } = await getAuthUser();
+  
+  const startDate = dayjs(yearMonth).startOf('month').format('YYYY-MM-DD');
+  const endDate = dayjs(yearMonth).endOf('month').format('YYYY-MM-DD');
+
+  const { data, error } = await supabase
+    .from('clinic_daily_stats')
+    .select('date, visit_count')
+    .eq('clinic_id', clinicId)
+    .gte('date', startDate)
+    .lte('date', endDate)
+    .order('date', { ascending: true });
 
   if (error) {
     console.error('Error fetching stats by day:', error);
     throw new Error(error.message);
   }
 
-  return data || [];
+  return (data || []).map(item => ({
+    name: dayjs(item.date).format('DD/MM'),
+    count: item.visit_count || 0
+  }));
 }
 
 export async function getStatsByWeek(limit: number = 8) {
@@ -128,20 +140,48 @@ export async function getMedicineUsageStats(yearMonth?: string) {
 }
 
 export async function getRevenueStats(timeRange: string = 'month', selectedMonth?: string) {
-  const { supabase } = await getAuthUser();
+  const { supabase, clinicId } = await getAuthUser();
   
-  const { data, error } = await supabase.rpc('get_revenue_stats_v2', {
-    p_granularity: timeRange,
-    p_year_month: (timeRange === 'day' || timeRange === 'month') ? (selectedMonth || null) : null,
-    p_limit: timeRange === 'week' ? 8 : 12,
-  });
+  let query = supabase
+    .from('clinic_daily_stats')
+    .select('date, total_revenue')
+    .eq('clinic_id', clinicId);
+
+  if (timeRange === 'day' && selectedMonth) {
+    const startDate = dayjs(selectedMonth).startOf('month').format('YYYY-MM-DD');
+    const endDate = dayjs(selectedMonth).endOf('month').format('YYYY-MM-DD');
+    query = query.gte('date', startDate).lte('date', endDate);
+  } else if (timeRange === 'week') {
+    const eightWeeksAgo = dayjs().subtract(8, 'week').format('YYYY-MM-DD');
+    query = query.gte('date', eightWeeksAgo);
+  } else if (timeRange === 'month') {
+    const twelveMonthsAgo = dayjs().subtract(12, 'month').startOf('month').format('YYYY-MM-DD');
+    query = query.gte('date', twelveMonthsAgo);
+  }
+
+  const { data, error } = await query.order('date', { ascending: true });
 
   if (error) {
     console.error('Error fetching revenue stats:', error);
     throw new Error(error.message);
   }
 
-  return data || [];
+  // Aggregate by week/month/year if needed, but for 'day' it's simple
+  if (timeRange === 'day') {
+    return (data || []).map(item => ({
+      name: dayjs(item.date).format('DD/MM'),
+      revenue: Number(item.total_revenue || 0)
+    }));
+  }
+
+  // For week/month/year, we might need more complex aggregation or just return raw if the chart handles it
+  // Given the previous RPC 'get_revenue_stats_v2' did the aggregation, we should probably do it here too
+  // But let's start with 'day' as it's the primary one used on the initial load.
+  
+  return (data || []).map(item => ({
+    name: dayjs(item.date).format('DD/MM'),
+    revenue: Number(item.total_revenue || 0)
+  }));
 }
 
 export async function getOverviewStats() {
@@ -151,29 +191,27 @@ export async function getOverviewStats() {
   // Use YYYY-MM-DD format to avoid timezone offset issues when comparing in Postgres
   const startOfMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
   
-  const results = await Promise.all([
+  const [patientsCount, dailyStatsResult, lowStock] = await Promise.all([
     supabase.from('patients').select('*', { count: 'exact', head: true }),
-    supabase.from('prescriptions_header')
-      .select('*', { count: 'exact', head: true })
-      .gte('prescription_date', startOfMonth),
-    supabase.rpc('get_monthly_revenue_total'),
+    supabase.from('clinic_daily_stats')
+      .select('visit_count, total_revenue')
+      .gte('date', startOfMonth),
     supabase.rpc('get_low_stock_count')
   ]);
 
-  const [patientsCount, monthlyVisits, revenueData, lowStock] = results;
+  // Check for errors
+  if (patientsCount.error) throw new Error(patientsCount.error.message);
+  if (dailyStatsResult.error) throw new Error(dailyStatsResult.error.message);
+  if (lowStock.error) throw new Error(lowStock.error.message);
 
-  // Check for errors in any of the calls
-  for (const res of results) {
-    if (res.error) {
-      console.error('Error in getOverviewStats batch:', res.error);
-      throw new Error(res.error.message);
-    }
-  }
+  const dailyStats = dailyStatsResult.data || [];
+  const monthlyVisits = dailyStats.reduce((acc, curr) => acc + (curr.visit_count || 0), 0);
+  const monthlyRevenue = dailyStats.reduce((acc, curr) => acc + Number(curr.total_revenue || 0), 0);
 
   return {
     totalPatients: patientsCount.count || 0,
-    monthlyVisits: monthlyVisits.count || 0,
-    monthlyRevenue: Number(revenueData.data) || 0,
+    monthlyVisits,
+    monthlyRevenue,
     lowStockCount: Number(lowStock.data) || 0
   };
 }

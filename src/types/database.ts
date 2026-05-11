@@ -69,3 +69,11 @@ export interface InventoryTransactionLog {
   reason: string | null;
   created_at: string;
 }
+
+export interface ClinicDailyStats {
+  clinic_id: number;
+  date: string;
+  total_revenue: number;
+  visit_count: number;
+  medicine_count: number;
+}
