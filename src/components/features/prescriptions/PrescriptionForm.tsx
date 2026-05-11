@@ -17,6 +17,24 @@ import SpeechBubble from '@/components/ui/SpeechBubble';
 import { useMedicineDosage, MedicineDosageData } from '@/hooks/useMedicineDosage';
 import { formatDosageText } from '@/lib/utils/formatDosageText';
 
+// Helper to highlight age group headings (e.g., "- Trẻ em dưới 3 tuổi:", "- Người lớn:")
+const formatHighlightedDosage = (text: string) => {
+  if (!text) return '';
+  // Escape HTML entities to avoid XSS
+  const escaped = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+  
+  // Highlight lines starting with "-" and ending with ":"
+  // Use multiline flag (m) to ensure ^ matches the start of each line
+  const highlighted = escaped.replace(/^(\s*-\s*[^:\n]*:)/gm, '<span class="font-bold text-slate-900 dark:text-white">$1</span>');
+  return highlighted;
+};
+
+
 interface PrescriptionFormProps {
   patient: Patient;
   consultationFee: number;
@@ -385,35 +403,39 @@ export default function PrescriptionForm({ patient, consultationFee, presets }: 
           onRetry={() => handleMedicineClick(activeDosageLookup.medicineName, activeDosageLookup.anchorEl)}
         >
           {dosageData ? (
-            <div className="space-y-4">
-              <div className="bg-primary-50/50 dark:bg-primary-900/10 p-3 rounded-xl border border-primary-100/50 dark:border-primary-900/20">
-                <p className="text-xs font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider mb-1">Mô tả & Thành phần</p>
-                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{dosageData.description}</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Người lớn</p>
-                  <div className="text-sm text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800">
-                    {dosageData.adult_dosage}
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Trẻ em</p>
-                  <div className="text-sm text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800">
-                    {dosageData.children_dosage}
-                  </div>
-                </div>
-              </div>
-
+            <div className="max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar space-y-4">
+              {/* 1. Trẻ em - Ưu tiên hàng đầu */}
               <div className="space-y-1.5">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Hướng dẫn sử dụng</p>
-                <div className="text-sm text-slate-700 dark:text-slate-200 bg-blue-50/50 dark:bg-blue-900/10 p-3 rounded-xl border border-blue-100/50 dark:border-blue-900/20">
+                <p className="text-xs font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary-500" />
+                  Trẻ em
+                </p>
+                  <div className="text-sm text-slate-700 dark:text-slate-200 bg-primary-50/30 dark:bg-primary-900/10 p-3 rounded-xl border border-primary-100/50 dark:border-primary-900/20 whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: formatHighlightedDosage(dosageData.children_dosage) }} />
+              </div>
+
+              {/* 2. Người lớn */}
+              <div className="space-y-1.5">
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5 pl-1.5">
+                  Người lớn
+                </p>
+                <div className="text-sm text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800 whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: formatHighlightedDosage(dosageData.adult_dosage) }} />
+              </div>
+
+              {/* 3. Hướng dẫn sử dụng */}
+              <div className="space-y-1.5">
+                <p className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider pl-1.5">Hướng dẫn sử dụng</p>
+                <div className="text-sm text-slate-700 dark:text-slate-200 bg-blue-50/30 dark:bg-blue-900/10 p-3 rounded-xl border border-blue-100/50 dark:border-blue-900/20 whitespace-pre-wrap">
                   {dosageData.usage_instructions}
                 </div>
               </div>
+
+              {/* 4. Mô tả & Thành phần - Xuống cuối */}
+              <div className="bg-gray-50/50 dark:bg-slate-800/30 p-3 rounded-xl border border-gray-100 dark:border-gray-800">
+                <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Mô tả & Thành phần</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed italic">{dosageData.description}</p>
+              </div>
               
-              <p className="text-[10px] text-gray-400 italic text-right mt-2">
+              <p className="text-[10px] text-gray-400 italic text-right mt-2 pb-2">
                 * Thông tin tra cứu tự động từ AI, chỉ mang tính chất tham khảo
               </p>
             </div>

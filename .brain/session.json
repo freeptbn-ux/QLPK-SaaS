@@ -1,24 +1,26 @@
 {
-  "updated_at": "2026-05-11T10:17:15Z",
+  "updated_at": "2026-05-11T11:15:00Z",
   "working_on": {
-    "feature": "AI Security Hardening",
+    "feature": "Pediatric Dosage Refactor (UX & Clinical Accuracy)",
     "phase": "Completed",
-    "task": "Knowledge Sync & Session Save",
+    "task": "Implementation & Verification Done",
     "status": "Done",
-    "notes": "Completed 4 phases of AI security hardening for medicine-dosage API. Added Vietnamese README and pushed to GitHub."
+    "notes": "Enhanced medicine dosage UI for pediatric focus. Implemented 2-step prompt refactoring for better data structure."
   },
   "pending_tasks": [
+    { "task": "Frontend integration for AI search results (Complete)", "priority": "done" },
     { "task": "Phase 05: Maintenance Scripts Audit", "priority": "medium" },
-    { "task": "RLS redesign for Inventory tables", "priority": "medium" },
-    { "task": "Frontend UI/UX Polish", "priority": "low" }
+    { "task": "RLS redesign for Inventory tables", "priority": "medium" }
   ],
   "recent_changes": [
-    { "description": "Implemented AI Security Hardening (Zod, Prompt Restructuring, Output Schema)", "files": ["src/app/api/medicine-dosage/route.ts", "src/lib/validations/medicine.ts"] },
-    { "description": "Added comprehensive test suite for AI security", "files": ["src/app/api/medicine-dosage/__tests__/adversarial.test.ts"] },
-    { "description": "Updated Vietnamese README.md and pushed to GitHub", "files": ["README.md"] }
+    { "description": "Refactored dosage modal UI (Children priority, single column, scrollable)", "files": ["src/components/features/prescriptions/PrescriptionForm.tsx"] },
+    { "description": "Implemented HTML-based highlighting for dosage age group headings", "files": ["src/components/features/prescriptions/PrescriptionForm.tsx"] },
+    { "description": "Updated Gemini prompts for hierarchical pediatric data (-, + markers)", "files": ["src/app/api/medicine-dosage/route.ts"] },
+    { "description": "Added UX and Live verification tests (ATERsin, Ibuprofen)", "files": ["src/app/api/medicine-dosage/__tests__/pediatric-ux.test.ts", "src/app/api/medicine-dosage/__tests__/live-atersin.test.ts"] }
   ],
   "decisions_made": [
-    { "decision": "Enforce strict JSON schema at Gemini level", "reason": "Reduces parsing errors and ensures UI stability." },
-    { "decision": "Use Zod regex to block special characters in medicine name", "reason": "Primary defense against common injection payloads." }
+    { "decision": "Prioritize Pediatric Dosage in UI", "reason": "User requested focus on pediatric doctor experience." },
+    { "decision": "Use dangerouslySetInnerHTML for highlighting", "reason": "Allows complex string-based bolding for AI-generated text without breaking performance." },
+    { "decision": "Use whitespace-pre-wrap for AI text", "reason": "Ensures newlines from Gemini are correctly rendered on screen." }
   ]
 }

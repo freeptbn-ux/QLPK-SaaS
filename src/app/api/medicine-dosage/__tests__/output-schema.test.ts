@@ -28,7 +28,9 @@ describe('POST /api/medicine-dosage - Output Schema', () => {
       adult_dosage: "500mg-1000mg mỗi 4-6 giờ",
       children_dosage: "10-15mg/kg mỗi 4-6 giờ",
       usage_instructions: "Uống sau khi ăn",
-      description: "Thuốc giảm đau, hạ sốt phổ biến"
+      description: "Thuốc giảm đau, hạ sốt phổ biến",
+      contraindications: "Mẫn cảm với thành phần thuốc",
+      side_effects: "Ít gặp phát ban, buồn nôn"
     };
 
     (global.fetch as any).mockResolvedValue({

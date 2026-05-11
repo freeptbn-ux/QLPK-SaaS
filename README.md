@@ -6,18 +6,19 @@ QLPK-SaaS là giải pháp phần mềm quản lý phòng khám (SaaS) hiện đ
 
 - **Quản lý Bệnh nhân**: Lưu trữ hồ sơ bệnh án, lịch sử khám bệnh và thông tin liên lạc.
 - **Quản lý Kho thuốc**: Theo dõi số lượng tồn kho, giá nhập/bán, hạn sử dụng và lịch sử nhập xuất.
-- **Tra cứu Liều dùng AI**: Tích hợp Google Gemini AI để hỗ trợ tra cứu liều dùng thuốc chuẩn xác từ các nguồn uy tín.
+- **Tra cứu Liều dùng AI**: Tích hợp Google Gemini AI hỗ trợ tra cứu liều lượng thuốc chuyên sâu, đặc biệt tối ưu cho nhi khoa với khả năng phân cấp nhóm tuổi và bôi đậm tiêu đề thông minh.
+- **Tính Liều Nhanh**: Công cụ tính toán liều lượng dựa trên cân nặng và hàm lượng thuốc thực tế.
 - **Thống kê & Báo cáo**: Biểu đồ trực quan về doanh thu, số lượng bệnh nhân và tình hình kho dược.
-- **Bảo mật Đa lớp**: Áp dụng Row Level Security (RLS) của Supabase và các lớp validation đầu vào nghiêm ngặt.
+- **Bảo mật Đa lớp**: Áp dụng Row Level Security (RLS) của Supabase, cơ chế AI Safety (2-Step Flow) và validation nghiêm ngặt.
 
 ## 🚀 Công Nghệ Sử Dụng
 
-- **Frontend**: [Next.js 16](https://nextjs.org/) (App Router), [React 19](https://react.dev/), [Tailwind CSS](https://tailwindcss.com/)
+- **Core**: [Next.js 16](https://nextjs.org/) (App Router), [React 19](https://react.dev/), [Tailwind CSS 4](https://tailwindcss.com/)
 - **Backend-as-a-Service**: [Supabase](https://supabase.com/) (Auth, PostgreSQL, Realtime)
-- **AI Integration**: [Google Gemini AI](https://ai.google.dev/) (mô hình `gemini-2.5-flash-lite`)
+- **AI Integration**: [Google Gemini AI](https://ai.google.dev/) (mô hình `gemini-2.5-flash-lite`) với kiến trúc Search + Format.
 - **State Management & Validation**: [Zod](https://zod.dev/) (Schema validation), [React Hook Form](https://react-hook-form.com/)
 - **UI/UX**: [Framer Motion](https://www.framer.com/motion/) (Animations), [Lucide React](https://lucide.dev/) (Icons)
-- **Testing**: [Vitest](https://vitest.dev/) (Unit/Integration Testing)
+- **Testing**: [Vitest](https://vitest.dev/) (Unit/Integration Testing/Adversarial Testing)
 
 ## 🛠️ Hướng Dẫn Cài Đặt
 
@@ -38,7 +39,7 @@ npm install
 ```
 
 ### 4. Cấu hình biến môi trường
-Tạo file `.env.local` dựa trên mẫu `.env.example`:
+Tạo file `.env` dựa trên mẫu `.env.example`:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
@@ -53,19 +54,19 @@ Truy cập `http://localhost:3000` để xem kết quả.
 
 ## 📂 Cấu Trúc Thư Mục
 
-- `src/app`: Chứa các route, layout và page của Next.js (App Router).
-- `src/components`: Các component UI dùng chung.
-- `src/lib`: Chứa các thư viện cấu hình (Supabase, AI, Utils).
-- `src/validations`: Định nghĩa các schema Zod để kiểm tra dữ liệu.
+- `src/app`: Chứa các route (Auth, Dashboard), API endpoints và layouts.
+- `src/components`: Các component UI, features (Prescriptions, Medicines, Patients).
+- `src/lib`: Thư viện cấu hình (Supabase, Gemini), utility functions và validation schemas.
+- `src/hooks`: Các custom hooks xử lý logic (ví dụ: `useMedicineDosage`).
 - `supabase`: Chứa các file migration và cấu hình database.
-- `plans`: Tài liệu kế hoạch phát triển và nâng cấp hệ thống.
-- `.brain`: Eternal Context - Lưu trữ kiến thức và ngữ cảnh phát triển dự án.
+- `.brain`: Eternal Context - Lưu trữ kiến thức, phiên làm việc và lịch sử phát triển dự án.
+- `plans`: Các kế hoạch phát triển chi tiết cho từng giai đoạn.
 
 ## 🔒 Bảo Mật & Lưu Ý
 
-- **Tuyệt đối không** commit các file `.env`, `.env.local` chứa API Key lên GitHub.
-- Các API Key của Gemini được quản lý thông qua biến môi trường và có cơ chế Load Balancing/Failover giữa nhiều key.
-- Hệ thống áp dụng cơ chế chặn Prompt Injection ở cả tầng Validation (Zod) và tầng Prompt Engineering.
+- **Tuyệt đối không** commit các file `.env` chứa API Key lên GitHub.
+- Các API Key của Gemini được quản lý thông qua biến môi trường với cơ chế Load Balancing.
+- Hệ thống áp dụng kiến trúc 2 bước (Search -> Format) để tránh xung đột giữa công cụ tìm kiếm và định dạng JSON, đồng thời tăng độ chính xác của dữ liệu y tế.
 
 ## 📝 Bản Quyền
 

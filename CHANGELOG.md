@@ -26,3 +26,24 @@
 - Vietnamese `README.md` with project overview and tech stack.
 - New adversarial and unit test files for AI safety verification.
 
+### Changed
+- **Gemini Architecture**: Refactored `medicine-dosage` API to use a **Two-Step Architecture**.
+  - **Step 1 (Grounding)**: Uses Google Search to fetch real-world medicine data.
+  - **Step 2 (Structuring)**: Formats the fetched data into a strict JSON schema.
+  - This solves the conflict where Gemini cannot use Search and JSON mode in a single call.
+- **AI Model**: Switched to `gemini-2.5-flash-lite` for improved cost-performance and stability.
+- **Security**: Removed expired/leaked API keys and transitioned to environment-based key management in tests.
+
+### Added
+- **Pediatric Dosage Refactor**: Enhanced AI prompts and UI for better clinical accuracy.
+- **UX Highlighting**: Implemented automatic bolding for age group headings in dosage results.
+- **Scrollable Modal**: Added scroll support and single-column layout for medicine dosage lookup.
+- **UX Tests**: New test suite for verifying formatting markers (`-`, `+`) and real-world medicine accuracy.
+
+### Changed
+- **Dosage Layout**: Reordered sections to prioritize "Children" dosage over "Adults" and "Usage".
+- **AI Prompts**: Refined formatting instructions to enforce hierarchical age-based structure.
+
+### Fixed
+- **Runtime Error**: Resolved `ReferenceError: useMedicineDosage is not defined` in `PrescriptionForm.tsx` caused by accidental import deletion.
+

@@ -2,7 +2,7 @@
   "meta": {
     "schema_version": "1.1.0",
     "awf_version": "3.3.0",
-    "last_saved": "2026-05-11T10:17:00Z"
+    "last_saved": "2026-05-11T11:15:00Z"
   },
   "project": {
     "name": "QLPK-SaaS",
@@ -13,21 +13,24 @@
     "frontend": "Next.js 16 (App Router), React 19, Tailwind CSS 4",
     "backend": "Next.js Server Actions, Supabase",
     "database": "PostgreSQL (Supabase)",
-    "ai": "Google Gemini 2.5 Flash-Lite (with JSON Schema Enforcement)",
+    "ai": "Google Gemini 2.5 Flash-Lite (Two-Step Architecture: Search + Format)",
     "infrastructure": "GitHub Actions, Rclone, Google Drive (Backup)"
   },
   "security_status": {
     "rls": "Enabled on all major tables, including clinics",
     "anon_access": "REVOKED on public schema (Default Deny)",
     "secrets": "Hardcoded passwords removed, using .env and GitHub Secrets",
-    "ai_safety": "Multi-layer protection: Zod Validation + Prompt Delimiters + JSON Schema + Output Validation"
+    "ai_safety": "Multi-layer protection: Zod Validation + Prompt Delimiters + 2-Step Process + JSON Schema + Output Validation"
+  },
+  "ux_features": {
+    "pediatric_focus": "Hierarchical age-based dosage (-, + markers), Bold headings (Trẻ em...), Scrollable modals, Priority rendering for children."
   },
   "api_endpoints": [
     {
       "path": "/api/medicine-dosage",
       "method": "POST",
-      "description": "Tra cứu liều dùng thuốc bằng AI với bảo mật chống Prompt Injection.",
-      "security": "Zod Validation, Gemini JSON Schema, Auth Required"
+      "description": "Tra cứu liều dùng thuốc bằng AI với bảo mật chống Prompt Injection và tra cứu Google Search.",
+      "security": "2-Step Flow (Search then Format), Zod Validation, Gemini JSON Schema, Auth Required"
     }
   ],
   "knowledge_items": {
@@ -37,8 +40,12 @@
         "solution": "Use Zod regex to restrict characters, wrap input in '---' delimiters, and reinforce system instructions in the prompt."
       },
       {
-        "issue": "AI Response Unreliability",
-        "solution": "Enable 'response_mime_type: application/json' and provide 'response_schema' in Gemini config to guarantee structured output."
+        "issue": "Google Search vs JSON Mode Conflict",
+        "solution": "Gemini cannot use tools (Search) and JSON mode simultaneously. Fixed by splitting into Step 1 (Search to text) and Step 2 (Text to JSON)."
+      },
+      {
+        "issue": "Accidental Import Deletion during UI Refactor",
+        "solution": "Ensure major refactors preserve existing imports. Always check for ReferenceErrors after bulk code replacements."
       }
     ]
   }
