@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { HiOutlineMagnifyingGlass } from 'react-icons/hi2';
+import { useDebounce } from '@/hooks/useDebounce';
 
 export default function MedicineSearch() {
   const router = useRouter();
@@ -10,25 +11,31 @@ export default function MedicineSearch() {
   const searchParams = useSearchParams();
   
   const [text, setText] = useState(searchParams.get('search') || '');
+  const debouncedText = useDebounce(text, 300);
+
+  // Sync state with URL if it changes from outside (e.g. back button)
+  useEffect(() => {
+    setText(searchParams.get('search') || '');
+  }, [searchParams]);
 
   useEffect(() => {
-    const handler = setTimeout(() => {
-      const params = new URLSearchParams(searchParams);
-      if (text) {
-        params.set('search', text);
-      } else {
-        params.delete('search');
-      }
-      // Reset to page 1 when searching
-      params.delete('page');
-      
-      if (pathname === '/medicines') {
-        router.push(`${pathname}?${params.toString()}`);
-      }
-    }, 300);
+    const currentSearch = searchParams.get('search') || '';
+    
+    // Only update URL if debounced text differs from current URL search
+    if (debouncedText === currentSearch) return;
 
-    return () => clearTimeout(handler);
-  }, [text, pathname, router, searchParams]);
+    const params = new URLSearchParams(searchParams);
+    if (debouncedText) {
+      params.set('search', debouncedText);
+    } else {
+      params.delete('search');
+    }
+    
+    // Reset to page 1 when search term changes
+    params.delete('page');
+    
+    router.replace(`${pathname}?${params.toString()}`);
+  }, [debouncedText, pathname, router, searchParams]);
 
   return (
     <div className="flex-grow max-w-lg relative">

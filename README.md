@@ -19,7 +19,7 @@ Dự án sử dụng các công nghệ tiên tiến nhất để đảm bảo hi
 
 1.  **Quản lý Bệnh nhân**:
     - Lưu trữ hồ sơ bệnh nhân chi tiết (họ tên, ngày sinh, địa chỉ, lịch sử khám).
-    - Tìm kiếm bệnh nhân thông minh theo nhiều tiêu chí.
+    - Tìm kiếm bệnh nhân thông minh theo tên hoặc số điện thoại.
 2.  **Kê đơn & Quản lý Thuốc**:
     - Quy trình kê đơn thuốc nhanh chóng, trực quan.
     - Tự động trừ tồn kho và cảnh báo khi thuốc sắp hết.
@@ -65,22 +65,16 @@ Dự án sử dụng các công nghệ tiên tiến nhất để đảm bảo hi
     ```
     Truy cập tại: [http://localhost:3000](http://localhost:3000)
 
-## 📖 Cách sử dụng
-
-1.  **Đăng nhập/Đăng ký**: Người dùng đăng ký tài khoản cho phòng khám của mình.
-2.  **Quản lý Thuốc**: Vào mục "Thuốc" để nhập danh mục thuốc và số lượng tồn kho ban đầu.
-3.  **Tiếp nhận Bệnh nhân**: Tại mục "Bệnh nhân", thêm mới hoặc tìm kiếm bệnh nhân cũ.
-4.  **Kê đơn**: Chọn bệnh nhân, nhấn "Kê đơn", chọn thuốc và liều dùng. Hệ thống sẽ tự động tính tiền và trừ kho.
-5.  **Theo dõi Thống kê**: Quay lại "Dashboard" để xem biểu đồ tăng trưởng của phòng khám.
-
 ## 📁 Cấu trúc Thư mục
 
 - `src/app`: Routes, layouts và pages (App Router).
 - `src/actions`: Các Server Actions thực hiện logic nghiệp vụ phía server.
 - `src/components`: UI components (Shared, Layout, Feature-based).
 - `src/lib`: Supabase client, helpers và utilities.
-- `src/test`: Các file kiểm thử logic và API.
+- `src/hooks`: Custom React hooks (useDebounce, useMediaQuery, ...).
+- `src/types`: Định nghĩa các kiểu dữ liệu TypeScript.
 - `supabase`: Schema, migrations, triggers và functions.
+- `public`: Tài nguyên tĩnh (images, icons).
 
 ## 📝 Thông tin Bổ sung
 
