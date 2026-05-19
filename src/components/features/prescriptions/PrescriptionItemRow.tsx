@@ -62,6 +62,7 @@ const PrescriptionItemRow = React.memo(function PrescriptionItemRow({ item, inde
           onClick={() => onRemove(index)}
           className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors active:scale-90"
           title="Xóa thuốc"
+          aria-label="remove-item"
         >
           <HiOutlineTrash className="w-5 h-5" />
         </button>

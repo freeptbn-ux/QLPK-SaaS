@@ -178,7 +178,9 @@ export const getLowStockMedicines = cache(async () => {
     return [];
   }
 
-  const { data, error } = await supabase.rpc('get_low_stock_medicines'); 
+  const { data, error } = await supabase.rpc('get_low_stock_medicines', {
+    p_clinic_id: clinicId,
+  }); 
   
   if (error) {
     throw new Error(getGenericErrorMessage(error));

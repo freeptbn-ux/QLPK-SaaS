@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useCallback, useRef } from 'react';
-import { HiOutlineCheck, HiOutlineArrowLeft, HiOutlineCalculator } from 'react-icons/hi2';
+import { HiOutlineCheck, HiOutlineArrowLeft, HiOutlineCalculator, HiOutlineClipboardDocumentList } from 'react-icons/hi2';
 import { useRouter } from 'next/navigation';
 import MedicineAutocomplete from './MedicineAutocomplete';
 import DoseCalculator from '../dose-calculator/DoseCalculator';
@@ -35,6 +35,43 @@ const formatHighlightedDosage = (text: string) => {
 };
 
 
+const PROMPT_TEMPLATE = {
+  role: "Chuyên gia tra cứu dược lâm sàng và hướng dẫn sử dụng thuốc",
+  objective: "Tra cứu liều dùng, cách dùng và thời điểm sử dụng của một hoặc nhiều thuốc trong cùng một lần yêu cầu.",
+  input_format: {
+    description: "Danh sách thuốc phải được truyền trong field 'name'. AI chỉ tra cứu đúng các thuốc nằm trong field này.",
+    name: {} as Record<string, string>
+  },
+  rules: [
+    "Chỉ tra cứu các thuốc xuất hiện trong field 'name'.",
+    "Nếu chỉ có 1 thuốc thì chỉ tra cứu 1 thuốc.",
+    "Nếu có nhiều thuốc thì tra cứu toàn bộ.",
+    "Không tự thêm thuốc ngoài danh sách người dùng cung cấp.",
+    "Nếu tên thuốc mơ hồ hoặc có nhiều hoạt chất/trade name khác nhau thì phải nêu rõ.",
+    "Ưu tiên nguồn chính thống như FDA, EMA, BNF, Micromedex, guideline hoặc tờ hướng dẫn sử dụng.",
+    "Nếu thuốc có nhiều chỉ định thì ghi liều dùng phổ biến nhất.",
+    "Luôn ghi rõ:",
+    "  - Uống trước ăn hay sau ăn",
+    "  - Uống lúc đói hay cùng thức ăn",
+    "  - Có cần uống sáng/tối/trước ngủ không",
+    "Nếu không tìm được dữ liệu đáng tin cậy thì phải ghi rõ là chưa đủ dữ liệu.",
+    "Không tự bịa thông tin."
+  ],
+  output_requirements: [
+    "Output phải trả về dưới dạng bảng text.",
+    "Không dùng markdown.",
+    "Canh cột rõ ràng.",
+    "Mỗi thuốc là một dòng riêng.",
+    "Format phải đồng nhất và dễ đọc."
+  ],
+  table_columns: [
+    "Tên thuốc",
+    "Liều dùng thường gặp",
+    "Cách uống",
+    "Thời điểm uống"
+  ]
+};
+
 interface PrescriptionFormProps {
   patient: Patient;
   consultationFee: number;
@@ -56,7 +93,36 @@ export default function PrescriptionForm({ patient, consultationFee, presets }: 
     anchorEl: HTMLElement;
   } | null>(null);
 
+  const [copied, setCopied] = useState(false);
+
   const dosageCacheRef = useRef<Map<string, MedicineDosageData>>(new Map());
+
+  const handleCopyPrompt = useCallback(async () => {
+    if (items.length === 0) return;
+
+    const names: Record<string, string> = {};
+    items.forEach((item, index) => {
+      names[`name ${index + 1}`] = item.medicine_name;
+    });
+
+    const promptObj = {
+      ...PROMPT_TEMPLATE,
+      input_format: {
+        ...PROMPT_TEMPLATE.input_format,
+        name: names
+      }
+    };
+
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(promptObj, null, 2));
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy prompt:', err);
+      setError('Không thể copy vào clipboard. Vui lòng thử lại.');
+      setTimeout(() => setError(null), 3000);
+    }
+  }, [items]);
 
   const { data: dosageData, isLoading: isDosageLoading, error: dosageError } = useMedicineDosage({
     medicineName: activeDosageLookup?.medicineName || null,
@@ -359,6 +425,32 @@ export default function PrescriptionForm({ patient, consultationFee, presets }: 
                 )}
 
                 <div className="space-y-3">
+                  <button
+                    type="button"
+                    onClick={handleCopyPrompt}
+                    disabled={items.length === 0}
+                    aria-label="Copy prompt"
+                    className={cn(
+                      "w-full py-3.5 rounded-xl font-bold text-white shadow-md transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2",
+                      copied
+                        ? "bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 shadow-emerald-500/20"
+                        : "bg-gradient-to-r from-slate-700 to-slate-600 hover:from-slate-800 hover:to-slate-700 dark:from-slate-800 dark:to-slate-700 dark:hover:from-slate-700 dark:hover:to-slate-600 shadow-slate-500/10",
+                      "disabled:opacity-50 disabled:pointer-events-none"
+                    )}
+                  >
+                    {copied ? (
+                      <>
+                        <HiOutlineCheck className="w-5 h-5" />
+                        <span>Đã copy!</span>
+                      </>
+                    ) : (
+                      <>
+                        <HiOutlineClipboardDocumentList className="w-5 h-5" />
+                        <span>Copy prompt</span>
+                      </>
+                    )}
+                  </button>
+
                   <button
                     onClick={handleSubmit}
                     disabled={loading}
