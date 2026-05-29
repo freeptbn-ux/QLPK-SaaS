@@ -1,0 +1,57 @@
+name: Supabase to Google Drive Backup
+
+on:
+  schedule:
+    - cron: '0 2 * * *' # Chạy vào 02:00 UTC (9:00 sáng VN) hàng ngày
+  workflow_dispatch:      # Cho phép chạy thủ công
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Create Backup
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          DATE=$(date +%Y-%m-%d_%H-%M)
+          mkdir -p "temp_backup"
+          
+          echo "Starting database dump for $DATE..."
+          
+          # Dump roles, schema và data
+          supabase db dump --db-url "$SUPABASE_DB_URL" -f "temp_backup/roles.sql" --role-only
+          supabase db dump --db-url "$SUPABASE_DB_URL" -f "temp_backup/schema.sql"
+          supabase db dump --db-url "$SUPABASE_DB_URL" -f "temp_backup/data.sql" --data-only --use-copy
+          
+          # Nén lại
+          tar -czf "supabase_backup_$DATE.tar.gz" -C "temp_backup" .
+          
+          echo "Backup created: supabase_backup_$DATE.tar.gz"
+
+      - name: Setup Rclone
+        uses: AnimMouse/setup-rclone@v1
+        with:
+          rclone_config: ${{ secrets.RCLONE_CONFIG }}
+
+      - name: Upload to Google Drive
+        run: |
+          # Đẩy file nén lên thư mục Backups/Supabase trên Google Drive
+          # 'gdrive' là tên remote bạn đã đặt khi config
+          rclone copy . "gdrive:Backups/Supabase/" --include "supabase_backup_*.tar.gz"
+          
+          echo "Upload to Google Drive completed!"
+
+      - name: Cleanup
+        if: always()
+        run: |
+          rm -rf temp_backup
+          rm -f supabase_backup_*.tar.gz

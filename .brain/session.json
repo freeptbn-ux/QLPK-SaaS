@@ -1,0 +1,29 @@
+{
+  "updated_at": "2026-05-11T16:37:00Z",
+  "working_on": {
+    "feature": "Statistics Optimization & Backend Hardening",
+    "phase": "Verification & Cleanup",
+    "task": "Final verification and project push",
+    "status": "completed",
+    "notes": "Fixed critical data leak and timezone issues in statistics. Verified with stats_integrity.test.ts.",
+    "last_run_url": "http://localhost:3000"
+  },
+  "pending_tasks": [
+    { "task": "Phase 04: Dashboard Chart UI Sync", "priority": "medium", "notes": "Verify charts render correctly with the new grouped revenue data." },
+    { "task": "Phase 05: Maintenance Scripts Audit", "priority": "medium" },
+    { "task": "RLS redesign for Inventory tables", "priority": "medium" }
+  ],
+  "recent_changes": [
+    { "description": "Implemented clinic_daily_stats rollup table and triggers for automatic revenue/visit tracking.", "files": ["supabase/migrations/20260511_setup_stats_rollup.sql"] },
+    { "description": "Fixed critical security leak in getOverviewStats (added clinic_id filtering).", "files": ["src/actions/statistics.ts"] },
+    { "description": "Implemented weekly/monthly grouping logic in getRevenueStats for accurate charts.", "files": ["src/actions/statistics.ts"] },
+    { "description": "Fixed timezone sensitivity for start-of-month calculations using dayjs.tz.", "files": ["src/actions/statistics.ts"] },
+    { "description": "Created comprehensive statistics integrity test suite.", "files": ["src/test/stats_integrity.test.ts"] },
+    { "description": "Updated README.md and pushed final changes to GitHub repository.", "files": ["README.md"] }
+  ],
+  "decisions_made": [
+    { "decision": "Use rollup table for dashboard", "reason": "Reduces dashboard load time from seconds to milliseconds by avoiding heavy raw joins on prescriptions." },
+    { "decision": "Enforce clinic_id filtering at server action level", "reason": "Provides defense-in-depth security regardless of DB RLS state." },
+    { "decision": "Standardize on Asia/Ho_Chi_Minh for all report dates", "reason": "Ensures consistency between user expectations and system data." }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "meta": {
+    "schema_version": "1.1.0",
+    "awf_version": "3.3.0",
+    "last_saved": "2026-05-11T16:36:00Z"
+  },
+  "project": {
+    "name": "QLPK-SaaS",
+    "type": "Medical Management SaaS",
+    "status": "Production Ready Hardened Infrastructure with Optimized Statistics"
+  },
+  "tech_stack": {
+    "frontend": "Next.js 16 (App Router), React 19, Tailwind CSS 4",
+    "backend": "Next.js Server Actions, Supabase",
+    "database": "PostgreSQL (Supabase) with Daily Rollup Tables",
+    "ai": "Google Gemini 2.5 Flash-Lite (Two-Step Architecture: Search + Format)",
+    "infrastructure": "GitHub Actions, Rclone, Google Drive (Backup)"
+  },
+  "security_status": {
+    "rls": "Enabled on all major tables, including clinics and stats",
+    "anon_access": "REVOKED on public schema (Default Deny)",
+    "secrets": "Hardcoded passwords removed, using .env and GitHub Secrets",
+    "multi_tenancy": "Strict clinic_id filtering enforced in all statistics server actions"
+  },
+  "ux_features": {
+    "pediatric_focus": "Hierarchical age-based dosage, Priority rendering for children.",
+    "dashboard_performance": "Sub-100ms dashboard stats loading via clinic_daily_stats rollup."
+  },
+  "api_endpoints": [
+    {
+      "path": "/src/actions/statistics.ts",
+      "method": "Server Action",
+      "description": "Thống kê tổng quan và doanh thu phòng khám.",
+      "security": "Clinic-level isolation via clinic_id filter and RLS."
+    },
+    {
+      "path": "/api/medicine-dosage",
+      "method": "POST",
+      "description": "Tra cứu liều dùng thuốc bằng AI với bảo mật chống Prompt Injection.",
+      "security": "2-Step Flow, Zod Validation, Auth Required"
+    }
+  ],
+  "knowledge_items": {
+    "gotchas": [
+      {
+        "issue": "Multi-tenancy Data Leak in Aggregate Queries",
+        "solution": "Always include .eq('clinic_id', clinicId) even if RLS is enabled, to ensure query plan optimization and defense-in-depth."
+      },
+      {
+        "issue": "Timezone Sensitivity in Date Queries",
+        "solution": "Use dayjs.tz with 'Asia/Ho_Chi_Minh' for start-of-month calculations to avoid 7-hour delay in reports."
+      },
+      {
+        "issue": "PostgREST String Return for Numeric Aggregates",
+        "solution": "Wrap sum/revenue results in Number() to avoid hydration errors or chart crashes in Next.js."
+      }
+    ]
+  }
+}
