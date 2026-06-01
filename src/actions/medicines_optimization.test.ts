@@ -11,6 +11,7 @@ describe('Medicines Performance Optimization Tests', () => {
   const mockSupabase = {
     from: vi.fn().mockReturnThis(),
     select: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockReturnThis(),
     order: vi.fn().mockReturnThis(),
     ilike: vi.fn().mockReturnThis(),
     range: vi.fn().mockReturnThis(),
@@ -21,6 +22,7 @@ describe('Medicines Performance Optimization Tests', () => {
     vi.clearAllMocks();
     (getAuthUser as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({ 
       user: { id: 'test-user' }, 
+      clinicId: 'clinic-123',
       supabase: mockSupabase 
     });
   });
@@ -32,7 +34,10 @@ describe('Medicines Performance Optimization Tests', () => {
       const result = await getAllMedicines({ page: 2, limit: 15 });
 
       expect(mockSupabase.from).toHaveBeenCalledWith('medicines');
-      expect(mockSupabase.select).toHaveBeenCalledWith('*', { count: 'exact' });
+      expect(mockSupabase.select).toHaveBeenCalledWith(
+        'id, name, packing_spec, price, stock_quantity, min_stock_level',
+        { count: 'exact' }
+      );
       expect(mockSupabase.range).toHaveBeenCalledWith(15, 29); // (2-1)*15 = 15, 15+15-1 = 29
       expect(result).toEqual({
         data: [],

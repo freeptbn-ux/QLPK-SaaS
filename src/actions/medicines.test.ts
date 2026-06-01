@@ -19,6 +19,7 @@ describe('medicines actions', () => {
   const mockSupabase = {
     from: vi.fn().mockReturnThis(),
     select: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockReturnThis(),
     order: vi.fn().mockReturnThis(),
     range: vi.fn().mockResolvedValue({ data: [], error: null, count: 0 }),
     ilike: vi.fn().mockReturnThis(),
@@ -28,6 +29,7 @@ describe('medicines actions', () => {
     vi.clearAllMocks();
     (getAuthUser as any).mockResolvedValue({
       user: { id: 'user-id' },
+      clinicId: 'clinic-123',
       supabase: mockSupabase,
     });
   });

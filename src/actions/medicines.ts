@@ -250,3 +250,26 @@ export async function getMedicineStockByIds(ids: number[]) {
   }
   return data;
 }
+
+export const getMedicinesForSearch = cache(async () => {
+  const { user, supabase, clinicId } = await getAuthUser();
+
+  if (!clinicId) {
+    throw new Error('Không tìm thấy thông tin phòng khám. Vui lòng đăng nhập lại.');
+  }
+
+  const { data, error } = await supabase
+    .from('medicines')
+    .select('id, name, packing_spec, price, stock_quantity, min_stock_level')
+    .eq('clinic_id', clinicId)
+    .eq('is_active', true)
+    .order('name', { ascending: true })
+    .limit(1000);
+
+  if (error) {
+    throw new Error(getGenericErrorMessage(error));
+  }
+
+  return data as Medicine[];
+});
+

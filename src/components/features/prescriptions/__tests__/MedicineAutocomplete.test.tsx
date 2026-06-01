@@ -1,10 +1,10 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import MedicineAutocomplete from '../MedicineAutocomplete';
-import { getMedicines } from '@/actions/medicines';
+import { getMedicinesForSearch } from '@/actions/medicines';
 
 vi.mock('@/actions/medicines', () => ({
-  getMedicines: vi.fn(),
+  getMedicinesForSearch: vi.fn(),
 }));
 
 const mockShowToast = vi.fn();
@@ -14,7 +14,7 @@ vi.mock('@/hooks/useToast', () => ({
   }),
 }));
 
-describe('MedicineAutocomplete UI Enhancement', () => {
+describe('MedicineAutocomplete Client-Side Search', () => {
   const mockOnSelect = vi.fn();
 
   const mockMedicines = [
@@ -34,11 +34,73 @@ describe('MedicineAutocomplete UI Enhancement', () => {
       stock_quantity: 0,
       min_stock_level: 5,
     },
+    {
+      id: 3,
+      name: 'Paracetamol Đỏ',
+      packing_spec: 'Box',
+      price: 15000,
+      stock_quantity: 50,
+      min_stock_level: 10,
+    },
   ];
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (getMedicines as any).mockResolvedValue(mockMedicines);
+    (getMedicinesForSearch as any).mockResolvedValue(mockMedicines);
+  });
+
+  it('loads medicines once on mount and filters instantly on input changes without extra network requests', async () => {
+    render(<MedicineAutocomplete onSelect={mockOnSelect} />);
+
+    // getMedicinesForSearch should be called exactly once
+    expect(getMedicinesForSearch).toHaveBeenCalledTimes(1);
+
+    const input = screen.getByPlaceholderText(/Nhập tên thuốc/i);
+    
+    // Type "In Stock"
+    fireEvent.change(input, { target: { value: 'In Stock' } });
+    fireEvent.focus(input);
+
+    await waitFor(() => {
+      expect(screen.getByText('In Stock Medicine')).toBeInTheDocument();
+    });
+    expect(screen.queryByText('Out of Stock Medicine')).not.toBeInTheDocument();
+
+    // Type "Out of Stock"
+    fireEvent.change(input, { target: { value: 'Out of Stock' } });
+    await waitFor(() => {
+      expect(screen.getByText('Out of Stock Medicine')).toBeInTheDocument();
+    });
+    expect(screen.queryByText('In Stock Medicine')).not.toBeInTheDocument();
+
+    // getMedicinesForSearch should still have been called exactly once
+    expect(getMedicinesForSearch).toHaveBeenCalledTimes(1);
+  });
+
+  it('supports Vietnamese diacritic-insensitive search', async () => {
+    render(<MedicineAutocomplete onSelect={mockOnSelect} />);
+
+    const input = screen.getByPlaceholderText(/Nhập tên thuốc/i);
+    
+    // Type "para"
+    fireEvent.change(input, { target: { value: 'para' } });
+    fireEvent.focus(input);
+
+    await waitFor(() => {
+      expect(screen.getByText('Paracetamol Đỏ')).toBeInTheDocument();
+    });
+
+    // Type "do" (no accent) - should match "Đỏ"
+    fireEvent.change(input, { target: { value: 'do' } });
+    await waitFor(() => {
+      expect(screen.getByText('Paracetamol Đỏ')).toBeInTheDocument();
+    });
+
+    // Type "đỏ" (with accents/capitalized or not)
+    fireEvent.change(input, { target: { value: 'đỏ' } });
+    await waitFor(() => {
+      expect(screen.getByText('Paracetamol Đỏ')).toBeInTheDocument();
+    });
   });
 
   it('highlights out of stock medicine in red and shows badge', async () => {
@@ -55,7 +117,7 @@ describe('MedicineAutocomplete UI Enhancement', () => {
     const outOfStockName = screen.getByText('Out of Stock Medicine');
     expect(outOfStockName).toBeInTheDocument();
     
-    // Check for red color class (Tailwind text-red-600)
+    // Check for red color class
     expect(outOfStockName.className).toContain('text-red-600');
 
     // Check for "Hết hàng" badge
@@ -105,7 +167,7 @@ describe('MedicineAutocomplete UI Enhancement', () => {
     });
 
     const outOfStockButton = screen.getByText('Out of Stock Medicine').closest('button')!;
-    expect(outOfStockButton).not.toBeDisabled(); // We removed disabled to show toast
+    expect(outOfStockButton).not.toBeDisabled();
     expect(outOfStockButton.className).toContain('cursor-not-allowed');
 
     fireEvent.click(outOfStockButton);
@@ -124,9 +186,6 @@ describe('MedicineAutocomplete UI Enhancement', () => {
       expect(screen.getByText('Out of Stock Medicine')).toBeInTheDocument();
     });
 
-    // "In Stock Medicine" is id 1, index 0. "Out of Stock Medicine" is id 2, index 1.
-    // Initial selectedIndex is 0 (In Stock).
-    
     // Move down to index 1 (Out of Stock)
     fireEvent.keyDown(input, { key: 'ArrowDown' });
     

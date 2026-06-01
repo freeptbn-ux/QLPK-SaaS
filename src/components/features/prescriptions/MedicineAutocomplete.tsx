@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { HiOutlineMagnifyingGlass } from 'react-icons/hi2';
-import { getMedicines } from '@/actions/medicines';
+import { getMedicinesForSearch } from '@/actions/medicines';
 import { Medicine } from '@/types/database';
-import debounce from 'lodash/debounce';
+import { removeDiacritics } from '@/lib/utils/normalize';
 import { cn } from '@/lib/utils/cn';
 import { BallLoader } from '@/components/Loading';
 import { useToast } from '@/hooks/useToast';
@@ -16,7 +16,7 @@ interface MedicineAutocompleteProps {
 
 const MedicineAutocomplete = React.memo(function MedicineAutocomplete({ onSelect, excludeIds = [] }: MedicineAutocompleteProps) {
   const [open, setOpen] = useState(false);
-  const [options, setOptions] = useState<Medicine[]>([]);
+  const [allMedicines, setAllMedicines] = useState<Medicine[]>([]);
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -24,52 +24,43 @@ const MedicineAutocomplete = React.memo(function MedicineAutocomplete({ onSelect
   const inputRef = useRef<HTMLInputElement>(null);
   const { showToast } = useToast();
 
-  // Memoize excludeIds to avoid unnecessary reference changes
-  const memoizedExcludeIds = React.useMemo(() => excludeIds, [JSON.stringify(excludeIds)]);
-  const excludeIdsRef = useRef(excludeIds);
-
   useEffect(() => {
-    excludeIdsRef.current = memoizedExcludeIds;
-  }, [memoizedExcludeIds]);
-
-  const debouncedFetch = React.useMemo(
-    () =>
-      debounce(async (query: string) => {
-        setLoading(true);
-        try {
-          const results = await getMedicines(query);
-          // Use the latest excludeIds from ref to keep this function stable
-          const filtered = results.filter((m: Medicine) => !excludeIdsRef.current.includes(m.id));
-          setOptions(filtered);
-          setSelectedIndex(filtered.length > 0 ? 0 : -1);
-        } catch (error) {
-          console.error('Error fetching medicines:', error);
-        } finally {
+    let isMounted = true;
+    const fetchAll = async () => {
+      setLoading(true);
+      try {
+        const data = await getMedicinesForSearch();
+        if (isMounted) {
+          setAllMedicines(data);
+        }
+      } catch (error) {
+        console.error('Error fetching medicines for search:', error);
+      } finally {
+        if (isMounted) {
           setLoading(false);
         }
-      }, 300),
-    [] // Stable: never recreated
-  );
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      debouncedFetch.cancel();
+      }
     };
-  }, [debouncedFetch]);
+    fetchAll();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
-  const fetchMedicines = useCallback(
-    (query: string) => {
-      debouncedFetch(query);
-    },
-    [debouncedFetch]
-  );
+  const options = React.useMemo(() => {
+    const query = removeDiacritics(inputValue).trim();
+    const filtered = allMedicines.filter((m) => {
+      if (excludeIds.includes(m.id)) return false;
+      if (!query) return true;
+      const normalizedName = removeDiacritics(m.name);
+      return normalizedName.includes(query);
+    });
+    return filtered.slice(0, 20);
+  }, [inputValue, allMedicines, JSON.stringify(excludeIds)]);
 
   useEffect(() => {
-    if (open) {
-      fetchMedicines(inputValue);
-    }
-  }, [inputValue, open, fetchMedicines]);
+    setSelectedIndex(options.length > 0 ? 0 : -1);
+  }, [options]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
