@@ -6,7 +6,6 @@ export const medicineFormSchema = z.object({
   price: z.number().nonnegative('Giá phải >= 0'),
   stock_quantity: z.number().int().optional(),
   min_stock_level: z.number().int().nonnegative().optional(),
-  usage_instructions: z.string().optional().default(''),
 });
 
 export const stockAdjustmentSchema = z.object({
