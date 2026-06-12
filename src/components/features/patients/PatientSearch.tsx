@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { HiOutlineMagnifyingGlass, HiOutlineXMark, HiOutlineArrowPath } from 'react-icons/hi2';
 import { useDebounce } from '@/hooks/useDebounce';
 import { cn } from '@/lib/utils/cn';
@@ -21,14 +21,29 @@ export default function PatientSearch({
   const [searchTerm, setSearchTerm] = useState(initialValue);
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
-  // Sync state with prop if initialValue changes (e.g. on back navigation)
+  // Ref 1: Track giá trị tìm kiếm đã gửi gần nhất
+  const lastSearchedTerm = useRef(initialValue);
+
+  // Ref 2: Ổn định hóa callback onSearch
+  const onSearchRef = useRef(onSearch);
   useEffect(() => {
-    setSearchTerm(initialValue);
+    onSearchRef.current = onSearch;
+  }, [onSearch]);
+
+  // Effect 1: Đồng bộ ngược từ URL (chỉ khi navigation ngoại cảnh)
+  useEffect(() => {
+    if (initialValue !== lastSearchedTerm.current) {
+      setSearchTerm(initialValue);
+      lastSearchedTerm.current = initialValue;
+    }
   }, [initialValue]);
 
+  // Effect 2: Kích hoạt tìm kiếm (chỉ khi user thay đổi input)
   useEffect(() => {
-    onSearch(debouncedSearchTerm);
-  }, [debouncedSearchTerm, onSearch]);
+    if (debouncedSearchTerm === lastSearchedTerm.current) return;
+    lastSearchedTerm.current = debouncedSearchTerm;
+    onSearchRef.current(debouncedSearchTerm);
+  }, [debouncedSearchTerm]);
 
   const handleClear = () => {
     setSearchTerm('');

@@ -21,6 +21,8 @@ import Link from 'next/link';
 import { formatAge } from '@/lib/utils/age';
 import { formatLastVisit, formatDob } from '@/lib/utils/date';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { cn } from '@/lib/utils/cn';
+
 
 interface PatientListClientProps {
   initialData: Patient[];
@@ -152,7 +154,13 @@ export default function PatientListClient({
       </div>
 
       {/* Table / Mobile Cards */}
-      <div className="card overflow-hidden">
+      <div 
+        className={cn(
+          "card overflow-hidden transition-opacity duration-200",
+          isPending && "opacity-55 pointer-events-none"
+        )}
+        aria-busy={isPending}
+      >
         {/* Desktop Table */}
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm text-left">
