@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -34,6 +35,7 @@ export default function PatientFormDialog({
 }: PatientFormDialogProps) {
   const isEdit = !!patient;
   const { showToast } = useToast();
+  const router = useRouter();
   const {
     control,
     handleSubmit,
@@ -87,6 +89,9 @@ export default function PatientFormDialog({
           showToast('Bệnh nhân đã tồn tại trong hệ thống, đã cập nhật thông tin.', 'info');
         } else {
           showToast('Thêm bệnh nhân thành công', 'success');
+        }
+        if (result.data?.id) {
+          router.push(`/patients/${result.data.id}`);
         }
       }
       onSuccess();

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { HiOutlineCheck, HiOutlineArrowLeft, HiOutlineCalculator, HiOutlineClipboardDocumentList } from 'react-icons/hi2';
 import { useRouter } from 'next/navigation';
 import MedicineAutocomplete from './MedicineAutocomplete';
@@ -97,6 +98,91 @@ export default function PrescriptionForm({ patient, consultationFee, presets }: 
 
   const dosageCacheRef = useRef<Map<string, MedicineDosageData>>(new Map());
 
+  // Navigation Guard States
+  const [confirmSaveOpen, setConfirmSaveOpen] = useState(false);
+  const [pendingNavigationUrl, setPendingNavigationUrl] = useState<string | null>(null);
+  const bypassGuardRef = useRef(false);
+
+  // Determine if the form is dirty
+  const isDirty = useMemo(() => {
+    return diagnosis.trim() !== '' || items.length > 0 || notes.trim() !== '';
+  }, [diagnosis, items, notes]);
+
+  // Escape key handler to close modal
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && confirmSaveOpen) {
+        setConfirmSaveOpen(false);
+        setPendingNavigationUrl(null);
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [confirmSaveOpen]);
+
+  // Unload guard (prompt on browser exit/refresh)
+  useEffect(() => {
+    if (!isDirty) return;
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (bypassGuardRef.current) return;
+      e.preventDefault();
+      e.returnValue = '';
+      return '';
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isDirty]);
+
+  // Intercept standard anchor tags for client-side transitions
+  useEffect(() => {
+    if (!isDirty) return;
+    const handleAnchorClick = (e: MouseEvent) => {
+      if (bypassGuardRef.current) return;
+
+      let target = e.target as HTMLElement | null;
+      while (target && target.tagName !== 'A') {
+        target = target.parentElement;
+      }
+
+      if (target && target instanceof HTMLAnchorElement) {
+        const href = target.getAttribute('href');
+        if (
+          href &&
+          !href.startsWith('#') &&
+          !href.startsWith('javascript:') &&
+          target.target !== '_blank'
+        ) {
+          e.preventDefault();
+          e.stopPropagation();
+          setPendingNavigationUrl(href);
+          setConfirmSaveOpen(true);
+        }
+      }
+    };
+
+    document.addEventListener('click', handleAnchorClick, true);
+    return () => document.removeEventListener('click', handleAnchorClick, true);
+  }, [isDirty]);
+
+  // Block browser back/forward buttons (popstate)
+  useEffect(() => {
+    if (!isDirty) return;
+
+    window.history.pushState(null, '', window.location.href);
+
+    const handlePopState = (e: PopStateEvent) => {
+      if (bypassGuardRef.current) return;
+      window.history.pushState(null, '', window.location.href);
+      setPendingNavigationUrl(`/patients/${patient.id}`);
+      setConfirmSaveOpen(true);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [isDirty, patient.id]);
+
   const handleCopyPrompt = useCallback(async () => {
     if (items.length === 0) return;
 
@@ -191,22 +277,21 @@ export default function PrescriptionForm({ patient, consultationFee, presets }: 
 
   const total = subtotal + consultationFee;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSaveAndSubmit = async (targetUrl?: string) => {
     if (!diagnosis) {
       setError('Vui lòng nhập chẩn đoán');
-      return;
+      return false;
     }
     if (items.length === 0) {
       setError('Vui lòng chọn ít nhất một loại thuốc');
-      return;
+      return false;
     }
 
     const wErr = validateWeight(weight);
     if (wErr) {
       setWeightError(wErr);
       setError('Vui lòng kiểm tra lại thông tin cân nặng');
-      return;
+      return false;
     }
 
     setLoading(true);
@@ -224,16 +309,49 @@ export default function PrescriptionForm({ patient, consultationFee, presets }: 
     try {
       const result = await createPrescription(data);
       if (result.success) {
-        router.push(`/patients/${patient.id}`);
+        bypassGuardRef.current = true;
+        router.push(targetUrl || `/patients/${patient.id}`);
         router.refresh();
+        return true;
       } else {
         setError(result.error || 'Có lỗi xảy ra khi lưu đơn thuốc');
+        return false;
       }
     } catch {
       setError('Lỗi kết nối máy chủ');
+      return false;
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await handleSaveAndSubmit();
+  };
+
+  const handleBack = () => {
+    if (isDirty) {
+      setPendingNavigationUrl(`/patients/${patient.id}`);
+      setConfirmSaveOpen(true);
+    } else {
+      router.back();
+    }
+  };
+
+  const handleDiscard = () => {
+    setConfirmSaveOpen(false);
+    bypassGuardRef.current = true;
+    if (pendingNavigationUrl) {
+      router.push(pendingNavigationUrl);
+    } else {
+      router.push(`/patients/${patient.id}`);
+    }
+  };
+
+  const handleConfirmSave = async () => {
+    setConfirmSaveOpen(false);
+    await handleSaveAndSubmit(pendingNavigationUrl || undefined);
   };
 
   return (
@@ -470,7 +588,7 @@ export default function PrescriptionForm({ patient, consultationFee, presets }: 
                   </button>
 
                   <button
-                    onClick={() => router.back()}
+                    onClick={handleBack}
                     disabled={loading}
                     className="w-full py-3.5 rounded-xl font-semibold text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                   >
@@ -534,6 +652,69 @@ export default function PrescriptionForm({ patient, consultationFee, presets }: 
           ) : null}
         </SpeechBubble>
       )}
+
+      {/* Confirmation Dialog */}
+      <AnimatePresence>
+        {confirmSaveOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => {
+                setConfirmSaveOpen(false);
+                setPendingNavigationUrl(null);
+              }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+            />
+            
+            {/* Dialog */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white p-6 shadow-xl dark:bg-slate-900 border border-slate-200 dark:border-slate-800"
+            >
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                Thay đổi chưa được lưu
+              </h3>
+              <div className="mt-3">
+                <p className="text-slate-600 dark:text-slate-400">
+                  Bạn có thay đổi chưa lưu trên đơn thuốc này. Bạn có muốn lưu lại trước khi rời đi không?
+                </p>
+              </div>
+
+              <div className="mt-8 flex flex-col sm:flex-row justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setConfirmSaveOpen(false);
+                    setPendingNavigationUrl(null);
+                  }}
+                  className="px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 border border-slate-200 hover:bg-slate-50 dark:border-slate-700 rounded-xl transition-all active:scale-[0.95]"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDiscard}
+                  className="px-4 py-2.5 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-xl transition-all active:scale-[0.95] shadow-md shadow-red-500/10"
+                >
+                  Không lưu đơn
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmSave}
+                  className="px-4 py-2.5 text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition-all active:scale-[0.95] shadow-md shadow-emerald-500/10"
+                >
+                  Lưu đơn
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
