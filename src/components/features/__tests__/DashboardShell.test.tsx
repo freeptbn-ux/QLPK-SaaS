@@ -20,10 +20,6 @@ vi.mock('@/components/features/TopBar', () => ({
   )
 }))
 
-vi.mock('@/components/features/MobileNav', () => ({
-  default: () => <div data-testid="mobilenav">MobileNav</div>
-}))
-
 describe('DashboardShell', () => {
   it('toggles mobile sidebar open and closed', () => {
     render(<DashboardShell>Content</DashboardShell>)
@@ -51,5 +47,19 @@ describe('DashboardShell', () => {
     )
     expect(screen.getByTestId('test-child')).toBeTruthy()
     expect(screen.getByText('Child Content')).toBeTruthy()
+  })
+
+  it('does not have bottom margin classes', () => {
+    const { container } = render(
+      <DashboardShell>
+        <div>Content</div>
+      </DashboardShell>
+    )
+    
+    // The main element should not have 'mb-16' class
+    const main = container.querySelector('main')
+    expect(main).toBeTruthy()
+    expect(main?.className).not.toContain('mb-16')
+    expect(main?.className).not.toContain('md:mb-0')
   })
 })

@@ -9,9 +9,6 @@ vi.mock('@/components/features/Sidebar', () => ({
 vi.mock('@/components/features/TopBar', () => ({
   default: () => <div data-testid="topbar">TopBar</div>
 }));
-vi.mock('@/components/features/MobileNav', () => ({
-  default: () => <div data-testid="mobilenav">MobileNav</div>
-}));
 
 describe('DashboardLayout', () => {
   it('renders with slate-50 background', () => {
