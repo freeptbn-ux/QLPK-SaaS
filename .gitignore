@@ -76,3 +76,7 @@ Thumbs.db
 !/.brain/
 !/.brain/**
 
+# Local Node.js tools
+/tools/
+/tools
+

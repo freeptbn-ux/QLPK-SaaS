@@ -5,8 +5,10 @@ import { medicineDosageSchema, medicineDosageOutputSchema } from '@/lib/validati
 export async function POST(req: NextRequest) {
   try {
     // Check authentication
+    let supabase;
     try {
-      await getAuthUser();
+      const authResult = await getAuthUser();
+      supabase = authResult.supabase;
     } catch (authError) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
@@ -28,6 +30,32 @@ export async function POST(req: NextRequest) {
     }
 
     const { medicineName } = validation.data;
+
+    const normalizedQuery = medicineName.trim().toLowerCase();
+
+    // 2. Query cache (TTL: 7 days)
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const { data: cached } = await supabase
+      .from('medicine_dosage_cache')
+      .select('*')
+      .eq('medicine_name_query', normalizedQuery)
+      .gt('created_at', sevenDaysAgo)
+      .single();
+
+    if (cached) {
+      return NextResponse.json({
+        success: true,
+        data: {
+          medicine_name: cached.medicine_name,
+          adult_dosage: cached.adult_dosage,
+          children_dosage: cached.children_dosage,
+          usage_instructions: cached.usage_instructions,
+          description: cached.description,
+          contraindications: cached.contraindications,
+          side_effects: cached.side_effects
+        }
+      });
+    }
 
     const apiKeysString = process.env.GEMINI_API_KEYS || '';
     const keys = apiKeysString
@@ -200,6 +228,21 @@ Yêu cầu JSON phải có đủ 7 trường sau:
     try {
       const parsedContent = JSON.parse(finalJson);
       const validatedContent = medicineDosageOutputSchema.parse(parsedContent);
+
+      // 3. Upsert into cache
+      await supabase
+        .from('medicine_dosage_cache')
+        .upsert({
+          medicine_name_query: normalizedQuery,
+          medicine_name: validatedContent.medicine_name,
+          adult_dosage: validatedContent.adult_dosage,
+          children_dosage: validatedContent.children_dosage,
+          usage_instructions: validatedContent.usage_instructions,
+          description: validatedContent.description,
+          contraindications: validatedContent.contraindications,
+          side_effects: validatedContent.side_effects,
+          created_at: new Date().toISOString()
+        }, { onConflict: 'medicine_name_query' });
 
       return NextResponse.json({
         success: true,

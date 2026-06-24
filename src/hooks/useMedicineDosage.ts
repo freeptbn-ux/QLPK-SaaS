@@ -20,6 +20,7 @@ export function useMedicineDosage({ medicineName, cache }: UseMedicineDosageProp
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const lastFetchedName = useRef<string | null>(null);
+  const isLoadingRef = useRef(false);
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -33,7 +34,7 @@ export function useMedicineDosage({ medicineName, cache }: UseMedicineDosageProp
     if (!cleanName) return;
 
     // Tránh gọi lại nếu đang load chính thuốc đó
-    if (isLoading && lastFetchedName.current === cleanName) return;
+    if (isLoadingRef.current && lastFetchedName.current === cleanName) return;
 
     // 1. Check cache
     if (cache.current.has(cleanName)) {
@@ -50,6 +51,7 @@ export function useMedicineDosage({ medicineName, cache }: UseMedicineDosageProp
     abortControllerRef.current = new AbortController();
 
     setIsLoading(true);
+    isLoadingRef.current = true;
     setError(null);
     lastFetchedName.current = cleanName;
 
@@ -92,8 +94,9 @@ export function useMedicineDosage({ medicineName, cache }: UseMedicineDosageProp
       }
     } finally {
       setIsLoading(false);
+      isLoadingRef.current = false;
     }
-  }, [cache, isLoading]);
+  }, [cache]);
 
   useEffect(() => {
     if (medicineName) {

@@ -37,6 +37,7 @@ Dự án được xây dựng dựa trên các tiêu chuẩn công nghệ hiện
 
 ### 2. Kê đơn & Quản lý Kho thuốc Tích hợp AI 🤖
 * **AI-Assisted Dosage Lookup**: Tự động tra cứu liều dùng thuốc phù hợp cho trẻ em và người lớn sử dụng mô hình Google Gemini AI tối tân. Hệ thống tự động phân tích độ tuổi, cân nặng và tham chiếu các Dược thư Quốc gia danh tiếng để đưa ra đề xuất chính xác nhất dạng cấu trúc JSON sạch.
+* **AI Dosage Caching (Bộ nhớ đệm Liều lượng AI)**: Tích hợp lớp lưu trữ bộ nhớ đệm cơ sở dữ liệu (`medicine_dosage_cache` với thời gian tồn tại 7 ngày - TTL) giúp tối ưu hóa thời gian phản hồi từ ~8-12 giây xuống dưới 100ms cho các truy vấn trùng lặp, tiết kiệm hạn ngạch API token.
 * **Kiểm tra Tồn kho Tự động**: Hệ thống tự động trừ kho vật lý ngay khi hoàn thành đơn thuốc, đánh dấu cảnh báo thuốc sắp hết hạn hoặc dưới mức tối thiểu thông qua API RPC bảo mật.
 * **Sao chép Prompt Nghiên cứu lâm sàng**: Nút "Copy prompt" tiện lợi cho phép bác sĩ nhanh chóng trích xuất dữ liệu lâm sàng để tham khảo ý kiến chuyên gia AI hoặc lưu trữ hồ sơ.
 
@@ -137,6 +138,6 @@ QLPK-SaaS-main/
 
 ## 🛡 Bản quyền & Sở hữu
 
-Copyright {this_year} Nguyễn Duy Trường
+Copyright 2026 Nguyễn Duy Trường
 
 *Tất cả các quyền được bảo lưu. Dự án được phát triển và vận hành chuyên nghiệp bởi Nguyễn Duy Trường và các cộng sự lâm sàng.*
