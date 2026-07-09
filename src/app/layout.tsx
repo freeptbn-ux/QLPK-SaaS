@@ -4,6 +4,7 @@ import "./globals.css";
 import ThemeRegistry from "@/components/ThemeRegistry";
 import { NavigationEvents, GlobalLoader } from "@/components/Loading";
 import { LoadingProvider } from "@/components/Loading/LoadingProvider";
+import { headers } from "next/headers";
 
 import { getAllSettings } from "@/actions/settings";
 
@@ -28,15 +29,17 @@ export const viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const nonce = (await headers()).get('x-nonce') ?? '';
+
   return (
     <html lang="vi" suppressHydrationWarning>
       <head>
-        <script src="/theme.js" />
+        <script src="/theme.js" nonce={nonce} suppressHydrationWarning />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         <ThemeRegistry>

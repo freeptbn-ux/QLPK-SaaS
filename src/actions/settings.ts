@@ -83,6 +83,14 @@ export async function updateMultipleSettings(settings: Record<string, string>) {
 }
 
 export async function changePassword(currentPassword: string, newPassword: string) {
+  // Server-side validation (client-side can be bypassed)
+  if (!newPassword || newPassword.trim().length < 8) {
+    throw new Error('Mật khẩu mới phải có ít nhất 8 ký tự');
+  }
+  if (newPassword === currentPassword) {
+    throw new Error('Mật khẩu mới phải khác mật khẩu hiện tại');
+  }
+
   const { user, supabase } = await getAuthUser();
 
   // Verify old password by re-signing in
