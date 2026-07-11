@@ -1,11 +1,11 @@
 {
-  "updated_at": "2026-05-11T16:37:00Z",
+  "updated_at": "2026-07-11T22:52:00Z",
   "working_on": {
-    "feature": "Statistics Optimization & Backend Hardening",
-    "phase": "Verification & Cleanup",
-    "task": "Final verification and project push",
+    "feature": "Debounced Prescription Search & UI Enhancements",
+    "phase": "Maintenance & Cleanup",
+    "task": "Save context & push updates",
     "status": "completed",
-    "notes": "Fixed critical data leak and timezone issues in statistics. Verified with stats_integrity.test.ts.",
+    "notes": "Implemented debouncing in prescription history search, hover row states, smart phone links, removed duplicate buttons/actions, and completed repository cleanup (removed plans, updated gitignore/README).",
     "last_run_url": "http://localhost:3000"
   },
   "pending_tasks": [
@@ -14,16 +14,15 @@
     { "task": "RLS redesign for Inventory tables", "priority": "medium" }
   ],
   "recent_changes": [
-    { "description": "Implemented clinic_daily_stats rollup table and triggers for automatic revenue/visit tracking.", "files": ["supabase/migrations/20260511_setup_stats_rollup.sql"] },
-    { "description": "Fixed critical security leak in getOverviewStats (added clinic_id filtering).", "files": ["src/actions/statistics.ts"] },
-    { "description": "Implemented weekly/monthly grouping logic in getRevenueStats for accurate charts.", "files": ["src/actions/statistics.ts"] },
-    { "description": "Fixed timezone sensitivity for start-of-month calculations using dayjs.tz.", "files": ["src/actions/statistics.ts"] },
-    { "description": "Created comprehensive statistics integrity test suite.", "files": ["src/test/stats_integrity.test.ts"] },
-    { "description": "Updated README.md and pushed final changes to GitHub repository.", "files": ["README.md"] }
+    { "description": "Implemented debounced prescription history search (300ms) with Framer Motion UI animations.", "files": ["src/components/features/patients/MedicineUsageDialog.tsx"] },
+    { "description": "Added smart phone calling links with stopPropagation logic to avoid row navigation leaks.", "files": ["src/components/features/patients/PatientListClient.tsx"] },
+    { "description": "Polish patient list UI with hover states and name tooltips.", "files": ["src/components/features/patients/PatientListClient.tsx", "src/components/features/patients/MedicineUsageDialog.tsx"] },
+    { "description": "Removed duplicate merge button and prescription print buttons to cleanup patient layout.", "files": ["src/components/features/patients/PatientListClient.tsx", "src/components/features/patients/PrescriptionHistory.tsx"] },
+    { "description": "Updated README.md and .gitignore (for .venv/) and removed empty plans directory.", "files": ["README.md", ".gitignore"] }
   ],
   "decisions_made": [
-    { "decision": "Use rollup table for dashboard", "reason": "Reduces dashboard load time from seconds to milliseconds by avoiding heavy raw joins on prescriptions." },
-    { "decision": "Enforce clinic_id filtering at server action level", "reason": "Provides defense-in-depth security regardless of DB RLS state." },
-    { "decision": "Standardize on Asia/Ho_Chi_Minh for all report dates", "reason": "Ensures consistency between user expectations and system data." }
+    { "decision": "Use debouncing for medicine history search to optimize client performance", "reason": "Avoids rendering and filtering lag during user typing inputs." },
+    { "decision": "Use stopPropagation on phone links in patient rows to prevent accidental navigation", "reason": "Improves mobile and desktop UX by isolating telephone action from row navigation." },
+    { "decision": "Remove printing and duplicate merge actions from client dashboards", "reason": "Streamlines layout options and reduces UI clutter." }
   ]
 }

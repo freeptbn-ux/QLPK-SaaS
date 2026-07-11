@@ -2,19 +2,20 @@
   "meta": {
     "schema_version": "1.1.0",
     "awf_version": "3.3.0",
-    "last_saved": "2026-05-11T16:36:00Z"
+    "last_saved": "2026-07-11T22:52:00Z"
   },
   "project": {
     "name": "QLPK-SaaS",
     "type": "Medical Management SaaS",
-    "status": "Production Ready Hardened Infrastructure with Optimized Statistics"
+    "status": "Production Ready Hardened Infrastructure with Debounced Prescription Search & UI Enhancements"
   },
   "tech_stack": {
-    "frontend": "Next.js 16 (App Router), React 19, Tailwind CSS 4",
+    "frontend": "Next.js 16 (App Router), React 19, Tailwind CSS 4, Framer Motion 12",
     "backend": "Next.js Server Actions, Supabase",
     "database": "PostgreSQL (Supabase) with Daily Rollup Tables",
     "ai": "Google Gemini 2.5 Flash-Lite (Two-Step Architecture: Search + Format)",
-    "infrastructure": "GitHub Actions, Rclone, Google Drive (Backup)"
+    "infrastructure": "GitHub Actions, Rclone, Google Drive (Backup)",
+    "testing": "Vitest, React Testing Library"
   },
   "security_status": {
     "rls": "Enabled on all major tables, including clinics and stats",
@@ -24,7 +25,8 @@
   },
   "ux_features": {
     "pediatric_focus": "Hierarchical age-based dosage, Priority rendering for children.",
-    "dashboard_performance": "Sub-100ms dashboard stats loading via clinic_daily_stats rollup."
+    "dashboard_performance": "Sub-100ms dashboard stats loading via clinic_daily_stats rollup.",
+    "patient_ui": "Debounced medication history search (300ms), tooltip patient names, hover row states, and smart click-propagation prevention for phone calling."
   },
   "api_endpoints": [
     {
@@ -53,6 +55,10 @@
       {
         "issue": "PostgREST String Return for Numeric Aggregates",
         "solution": "Wrap sum/revenue results in Number() to avoid hydration errors or chart crashes in Next.js."
+      },
+      {
+        "issue": "Click Event Bubbling on Table Rows with Links",
+        "solution": "Use e.stopPropagation() on links (like tel:) nested in clickable table rows to prevent triggering parent navigation events."
       }
     ]
   }

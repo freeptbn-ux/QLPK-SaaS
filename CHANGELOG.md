@@ -1,5 +1,20 @@
 # Changelog
 
+## [2026-07-11]
+### Added
+- **Tìm kiếm Debounce Lịch sử Kê đơn**: Thêm tính năng bộ lọc tìm kiếm theo tên thuốc & quy cách đóng gói có Debounce 300ms, kèm hoạt ảnh mượt mà của `Framer Motion` và tự động focus.
+- **Liên kết Số điện thoại Thông minh**: Tích hợp liên kết `tel:` cho số điện thoại bệnh nhân ở danh sách Desktop (bảng) và Mobile (cards) kèm `e.stopPropagation()` tránh chuyển trang nhầm lẫn.
+- **Hiệu ứng Hover Danh sách Bệnh nhân**: Thêm hover state trực quan trên desktop và mobile cho danh sách bệnh nhân.
+- **Unit Tests Mới**: Bổ sung bộ kiểm thử `MedicineUsageDialog.test.tsx`, `PatientClickableRowCard.test.tsx`, `PatientListOptimizations.test.tsx`.
+- **Cấu hình Bỏ qua .venv**: Cấu hình `.venv/` trong `.gitignore` để tránh đẩy môi trường ảo Python lên git repository.
+
+### Changed
+- **README.md Tiếng Việt**: Viết lại và nâng cấp tài liệu README tiếng Việt chi tiết với placeholder bản quyền tự động cập nhật theo năm build (`2026`).
+
+### Removed
+- **Dọn dẹp Repository**: Xóa bỏ thư mục `plans/` lỗi thời và dọn dẹp các tệp tin kế hoạch cũ trên GitHub.
+- **Lược bỏ nút dư thừa**: Xóa nút "In đơn thuốc" ở trang chi tiết bệnh nhân và nút "Dọn trùng" (Merge duplicates) ở danh sách bệnh nhân.
+
 ## [2026-05-11]
 ### Added
 - Automated Daily Backup to Google Drive via GitHub Actions.
