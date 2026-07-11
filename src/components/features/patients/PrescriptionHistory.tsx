@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { 
   HiOutlineChevronDown, 
   HiOutlinePlus, 
-  HiOutlinePrinter, 
   HiOutlineBuildingOffice2,
   HiOutlineQueueList,
   HiOutlineXMark,
@@ -464,10 +463,6 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
                           >
                             <HiOutlinePencilSquare className="w-4 h-4" />
                             Sửa đơn
-                          </button>
-                          <button className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl transition-all active:scale-95">
-                            <HiOutlinePrinter className="w-4 h-4" />
-                            In đơn thuốc
                           </button>
                           {isToday(p.prescription_date) && (
                             <button 

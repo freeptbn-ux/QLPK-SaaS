@@ -2,10 +2,18 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HiOutlineXMark, HiChevronUpDown, HiChevronUp, HiChevronDown } from 'react-icons/hi2';
+import { HiOutlineXMark, HiChevronUpDown, HiChevronUp, HiChevronDown, HiOutlineMagnifyingGlass } from 'react-icons/hi2';
 import { getMedicineUsageByPatient } from '@/actions/patients';
 import { cn } from '@/lib/utils/cn';
 import { BallLoader } from '@/components/Loading';
+
+function removeAccents(str: string): string {
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'd');
+}
 
 interface MedicineUsageDialogProps {
   open: boolean;
@@ -25,12 +33,27 @@ export default function MedicineUsageDialog({ open, onClose, patientId, patientN
   }[]>([]);
   const [loading, setLoading] = useState(false);
   const [sortConfig, setSortConfig] = useState<SortConfig>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   useEffect(() => {
     if (open) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoading(true);
       setSortConfig(null); // Reset sort when opening
+      setIsSearching(false);
+      setSearchQuery('');
+      setDebouncedQuery('');
       getMedicineUsageByPatient(patientId)
         .then(setData)
         .catch(err => {
@@ -58,10 +81,32 @@ export default function MedicineUsageDialog({ open, onClose, patientId, patientN
     });
   };
 
-  const sortedData = useMemo(() => {
-    if (!sortConfig) return data;
+  const filteredData = useMemo(() => {
+    // 1. Filter
+    let result = data;
+    if (debouncedQuery.trim()) {
+      const queryLower = debouncedQuery.toLowerCase().trim();
+      const queryClean = removeAccents(queryLower);
 
-    return [...data].sort((a, b) => {
+      result = data.filter(item => {
+        const nameLower = item.medicine_name.toLowerCase();
+        const nameClean = removeAccents(nameLower);
+
+        const specLower = (item.packing_spec || '').toLowerCase();
+        const specClean = removeAccents(specLower);
+
+        return (
+          nameLower.includes(queryLower) ||
+          nameClean.includes(queryClean) ||
+          (item.packing_spec && (specLower.includes(queryLower) || specClean.includes(queryClean)))
+        );
+      });
+    }
+
+    // 2. Sort
+    if (!sortConfig) return result;
+
+    return [...result].sort((a, b) => {
       const { key, direction } = sortConfig;
       const modifier = direction === 'asc' ? 1 : -1;
 
@@ -73,7 +118,7 @@ export default function MedicineUsageDialog({ open, onClose, patientId, patientN
       }
       return 0;
     });
-  }, [data, sortConfig]);
+  }, [data, debouncedQuery, sortConfig]);
 
   const getSortIcon = (key: SortKey) => {
     if (sortConfig?.key !== key) return <HiChevronUpDown className="w-4 h-4 text-gray-400 group-hover:text-gray-500 transition-colors" />;
@@ -98,16 +143,75 @@ export default function MedicineUsageDialog({ open, onClose, patientId, patientN
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden flex flex-col"
           >
-            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white truncate pr-4">
-                Lịch sử dùng thuốc: {patientName}
-              </h3>
-              <button 
-                onClick={onClose}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors shrink-0"
-              >
-                <HiOutlineXMark className="w-6 h-6 text-gray-500" />
-              </button>
+            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex flex-col gap-2">
+              <div className="flex items-center justify-between gap-4">
+                <h3 
+                  title={`Lịch sử dùng thuốc: ${patientName}`}
+                  className="text-lg font-bold text-gray-900 dark:text-white whitespace-normal line-clamp-2"
+                >
+                  Lịch sử dùng thuốc: {patientName}
+                </h3>
+                <div className="flex items-center gap-1 shrink-0">
+                  <button
+                    onClick={() => {
+                      setIsSearching(!isSearching);
+                      if (isSearching) {
+                        setSearchQuery('');
+                        setDebouncedQuery('');
+                      }
+                    }}
+                    className={cn(
+                      "p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors",
+                      isSearching && "text-primary-600 dark:text-primary-400 bg-gray-50 dark:bg-gray-800"
+                    )}
+                    aria-label="Toggle search"
+                  >
+                    <HiOutlineMagnifyingGlass className="w-6 h-6 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" />
+                  </button>
+                  <button 
+                    onClick={onClose}
+                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+                    aria-label="Close"
+                  >
+                    <HiOutlineXMark className="w-6 h-6 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" />
+                  </button>
+                </div>
+              </div>
+
+              <AnimatePresence>
+                {isSearching && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="relative mt-2">
+                      <input
+                        type="text"
+                        autoFocus
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Tìm kiếm thuốc..."
+                        className="w-full pl-3 pr-10 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
+                      />
+                      {searchQuery && (
+                        <button
+                          onClick={() => {
+                            setSearchQuery('');
+                            setDebouncedQuery('');
+                          }}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                          aria-label="Clear search"
+                        >
+                          <HiOutlineXMark className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <div className="p-6 overflow-y-auto max-h-[calc(100vh-200px)]">
@@ -118,6 +222,10 @@ export default function MedicineUsageDialog({ open, onClose, patientId, patientN
               ) : data.length === 0 ? (
                 <div className="text-center py-12">
                   <p className="text-gray-500 dark:text-gray-400">Chưa có lịch sử dùng thuốc</p>
+                </div>
+              ) : filteredData.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-gray-500 dark:text-gray-400">Không tìm thấy thuốc khớp với từ khóa</p>
                 </div>
               ) : (
                 <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
@@ -145,7 +253,7 @@ export default function MedicineUsageDialog({ open, onClose, patientId, patientN
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                      {sortedData.map((row, index) => {
+                      {filteredData.map((row, index) => {
                         const isBold = row.times_prescribed >= 3;
                         return (
                           <tr key={index} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors">

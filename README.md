@@ -32,12 +32,15 @@ Dự án được xây dựng dựa trên các tiêu chuẩn công nghệ hiện
 
 ### 1. Quản lý Hồ sơ Bệnh nhân Thông minh
 * Tìm kiếm nhanh chóng, lọc động theo Tên hoặc Số điện thoại.
-* Quản lý thông tin chi tiết lịch sử khám bệnh, cân nặng, tiền sử dị ứng thuốc và các chỉ số sinh tồn (huyết áp, nhiệt độ, nhịp tim).
+* **Tích hợp liên kết `tel:` thông minh**: Cho phép bấm gọi trực tiếp số điện thoại của bệnh nhân trên giao diện Desktop & Mobile, đồng thời ngăn chặn sự kiện lan truyền (event propagation) tránh chuyển trang nhầm lẫn.
+* **Hiệu ứng Hover Trực quan (UX Polish)**: Hỗ trợ hiệu ứng đổi màu hover sinh động trên danh sách bệnh nhân và thẻ thông tin di động giúp tăng trải nghiệm tương tác trực quan.
+* Quản lý thông tin chi tiết lịch sử khám bệnh, cân nặng, tiền sử dị ứng thuốc và các chỉ số sinh tồn (huyết áp, nhiệt độ, nhịp tim) kèm cơ chế tooltip thông minh tránh tràn/cắt xén thông tin.
 * Tự động chuẩn hóa định dạng ngày sinh (DOB) và đồng bộ thông tin thời gian thực.
 
 ### 2. Kê đơn & Quản lý Kho thuốc Tích hợp AI 🤖
 * **AI-Assisted Dosage Lookup**: Tự động tra cứu liều dùng thuốc phù hợp cho trẻ em và người lớn sử dụng mô hình Google Gemini AI tối tân. Hệ thống tự động phân tích độ tuổi, cân nặng và tham chiếu các Dược thư Quốc gia danh tiếng để đưa ra đề xuất chính xác nhất dạng cấu trúc JSON sạch.
 * **AI Dosage Caching (Bộ nhớ đệm Liều lượng AI)**: Tích hợp lớp lưu trữ bộ nhớ đệm cơ sở dữ liệu (`medicine_dosage_cache` với thời gian tồn tại 7 ngày - TTL) giúp tối ưu hóa thời gian phản hồi từ ~8-12 giây xuống dưới 100ms cho các truy vấn trùng lặp, tiết kiệm hạn ngạch API token.
+* **Bộ lọc Lịch sử Kê đơn Động**: Tích hợp thanh tìm kiếm lịch sử dùng thuốc của bệnh nhân có cơ chế **Debounce 300ms** hạn chế tính toán dư thừa, kết hợp hoạt ảnh mượt mà từ `Framer Motion` và tự động lấy nét (`autoFocus`).
 * **Kiểm tra Tồn kho Tự động**: Hệ thống tự động trừ kho vật lý ngay khi hoàn thành đơn thuốc, đánh dấu cảnh báo thuốc sắp hết hạn hoặc dưới mức tối thiểu thông qua API RPC bảo mật.
 * **Sao chép Prompt Nghiên cứu lâm sàng**: Nút "Copy prompt" tiện lợi cho phép bác sĩ nhanh chóng trích xuất dữ liệu lâm sàng để tham khảo ý kiến chuyên gia AI hoặc lưu trữ hồ sơ.
 
@@ -138,6 +141,6 @@ QLPK-SaaS-main/
 
 ## 🛡 Bản quyền & Sở hữu
 
-Copyright {this_year} Nguyễn Duy Trường
+Copyright 2026 Nguyễn Duy Trường
 
 *Tất cả các quyền được bảo lưu. Dự án được phát triển và vận hành chuyên nghiệp bởi Nguyễn Duy Trường và các cộng sự lâm sàng.*

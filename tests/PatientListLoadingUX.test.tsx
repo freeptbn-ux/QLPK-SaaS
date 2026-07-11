@@ -100,8 +100,7 @@ describe('PatientListClient Loading UX (Phase 02)', () => {
     expect(container).toBeInTheDocument();
     
     // Check classes
-    expect(container?.className).toContain('card');
-    expect(container?.className).toContain('overflow-hidden');
+    expect(container?.className).toContain('w-full');
     expect(container?.className).toContain('transition-opacity');
     expect(container?.className).toContain('duration-200');
     expect(container?.className).not.toContain('opacity-55');
@@ -129,8 +128,7 @@ describe('PatientListClient Loading UX (Phase 02)', () => {
     expect(container).toBeInTheDocument();
     
     // Check classes
-    expect(container?.className).toContain('card');
-    expect(container?.className).toContain('overflow-hidden');
+    expect(container?.className).toContain('w-full');
     expect(container?.className).toContain('transition-opacity');
     expect(container?.className).toContain('duration-200');
     expect(container?.className).toContain('opacity-55');

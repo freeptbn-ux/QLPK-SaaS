@@ -136,14 +136,6 @@ export default function PatientListClient({
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={handleOpenMerge}
-            className="px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl transition-all flex items-center gap-2 whitespace-nowrap shadow-sm"
-            title="Dọn dẹp hồ sơ trùng lặp"
-          >
-            <HiOutlineTrash className="w-5 h-5 text-red-500" />
-            <span className="hidden sm:inline">Dọn trùng</span>
-          </button>
-          <button
             onClick={handleAddPatient}
             className="btn-primary flex items-center justify-center gap-2 whitespace-nowrap"
           >
@@ -156,14 +148,14 @@ export default function PatientListClient({
       {/* Table / Mobile Cards */}
       <div 
         className={cn(
-          "card overflow-hidden transition-opacity duration-200",
+          "w-full transition-opacity duration-200",
           isPending && "opacity-55 pointer-events-none"
         )}
         aria-busy={isPending}
       >
         {/* Desktop Table */}
         <div className="hidden md:block overflow-x-auto">
-          <table className="w-full text-sm text-left">
+          <table className="w-full text-sm text-left border-separate border-spacing-y-3">
             <thead className="bg-slate-50/50 dark:bg-slate-800/30 text-slate-800 dark:text-slate-200 border-b border-slate-200 dark:border-slate-700">
               <tr>
                 <th className="px-6 py-5 font-bold tracking-tight w-16">STT</th>
@@ -174,10 +166,13 @@ export default function PatientListClient({
                 <th className="px-6 py-5 font-bold tracking-tight text-right">Thao tác</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+            <tbody>
               {patients.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-20 text-center">
+                  <td 
+                    colSpan={6} 
+                    className="bg-white dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/50 rounded-xl px-6 py-20 text-center shadow-sm"
+                  >
                     <EmptyState 
                       title="Không tìm thấy bệnh nhân nào" 
                       description="Thử thay đổi từ khóa tìm kiếm hoặc thêm mới bệnh nhân để bắt đầu quản lý hồ sơ" 
@@ -186,21 +181,26 @@ export default function PatientListClient({
                 </tr>
               ) : (
                 patients.map((patient, index) => (
-                  <tr key={patient.id} className="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all duration-200">
-                    <td className="px-6 py-5 text-slate-400 font-medium">
+                  <tr 
+                    key={patient.id} 
+                    onClick={() => router.push(`/patients/${patient.id}`)}
+                    className="group cursor-pointer"
+                  >
+                    <td className="px-6 py-5 text-slate-400 font-medium bg-white dark:bg-slate-800/40 group-hover:bg-slate-50 dark:group-hover:bg-slate-800/60 border-t border-b border-l border-slate-200/80 dark:border-slate-700/50 group-hover:border-primary-200 dark:group-hover:border-primary-800/50 rounded-l-xl transition-all duration-200 shadow-sm group-hover:shadow-md">
                       {page * rowsPerPage + index + 1}
                     </td>
-                    <td className="px-6 py-5">
+                    <td className="px-6 py-5 bg-white dark:bg-slate-800/40 group-hover:bg-slate-50 dark:group-hover:bg-slate-800/60 border-t border-b border-slate-200/80 dark:border-slate-700/50 group-hover:border-primary-200 dark:group-hover:border-primary-800/50 transition-all duration-200 shadow-sm group-hover:shadow-md">
                       <div className="font-bold text-slate-900 dark:text-slate-100 transition-colors">
                         <Link 
                           href={`/patients/${patient.id}`}
+                          onClick={(e) => e.stopPropagation()}
                           className="hover:text-primary-600 hover:underline transition-colors"
                         >
                           {patient.name}
                         </Link>
                       </div>
                     </td>
-                    <td className="px-6 py-5">
+                    <td className="px-6 py-5 bg-white dark:bg-slate-800/40 group-hover:bg-slate-50 dark:group-hover:bg-slate-800/60 border-t border-b border-slate-200/80 dark:border-slate-700/50 group-hover:border-primary-200 dark:group-hover:border-primary-800/50 transition-all duration-200 shadow-sm group-hover:shadow-md">
                       <div className="text-slate-700 dark:text-slate-300 font-medium">{formatDob(patient.dob)}</div>
                       {patient.dob && (
                         <div className="text-xs text-slate-500 mt-0.5">
@@ -208,8 +208,20 @@ export default function PatientListClient({
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-5 font-medium text-slate-700 dark:text-slate-300">{patient.phone || 'N/A'}</td>
-                    <td className="px-6 py-5">
+                    <td className="px-6 py-5 font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800/40 group-hover:bg-slate-50 dark:group-hover:bg-slate-800/60 border-t border-b border-slate-200/80 dark:border-slate-700/50 group-hover:border-primary-200 dark:group-hover:border-primary-800/50 transition-all duration-200 shadow-sm group-hover:shadow-md">
+                      {patient.phone ? (
+                        <a
+                          href={`tel:${patient.phone}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="hover:text-primary-600 dark:hover:text-primary-400 hover:underline transition-colors"
+                        >
+                          {patient.phone}
+                        </a>
+                      ) : (
+                        <span className="text-slate-400 dark:text-slate-600 italic">N/A</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-5 bg-white dark:bg-slate-800/40 group-hover:bg-slate-50 dark:group-hover:bg-slate-800/60 border-t border-b border-slate-200/80 dark:border-slate-700/50 group-hover:border-primary-200 dark:group-hover:border-primary-800/50 transition-all duration-200 shadow-sm group-hover:shadow-md">
                       <div className={`text-sm font-medium ${
                         patient.last_visit_date 
                           ? 'text-slate-700 dark:text-slate-300' 
@@ -223,17 +235,21 @@ export default function PatientListClient({
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-5 text-right">
+                    <td className="px-6 py-5 text-right bg-white dark:bg-slate-800/40 group-hover:bg-slate-50 dark:group-hover:bg-slate-800/60 border-t border-b border-r border-slate-200/80 dark:border-slate-700/50 group-hover:border-primary-200 dark:group-hover:border-primary-800/50 rounded-r-xl transition-all duration-200 shadow-sm group-hover:shadow-md">
                       <div className="flex justify-end items-center gap-1">
                         <Link
                           href={`/patients/${patient.id}`}
+                          onClick={(e) => e.stopPropagation()}
                           className="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-xl transition-all"
                           title="Xem chi tiết"
                         >
                           <HiOutlineEye className="w-5 h-5" />
                         </Link>
                         <button
-                          onClick={() => handleEditPatient(patient)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditPatient(patient);
+                          }}
                           className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all"
                           title="Chỉnh sửa"
                         >
@@ -243,7 +259,10 @@ export default function PatientListClient({
                         <div className="w-px h-4 bg-slate-200 dark:bg-slate-700 mx-1" />
                         
                         <button
-                          onClick={() => handleDeleteClick(patient)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteClick(patient);
+                          }}
                           className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all"
                           title="Xóa"
                         >
@@ -259,19 +278,24 @@ export default function PatientListClient({
         </div>
 
         {/* Mobile Cards */}
-        <div className="md:hidden divide-y divide-slate-200 dark:divide-slate-700">
+        <div className="md:hidden flex flex-col gap-4">
           {patients.length === 0 ? (
-            <div className="p-12 text-center">
+            <div className="card border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm p-12 text-center">
               <EmptyState title="Không tìm thấy bệnh nhân nào" />
             </div>
           ) : (
             patients.map((patient) => (
-              <div key={patient.id} className="p-5 space-y-4 hover:bg-slate-50 transition-colors">
+              <div 
+                key={patient.id} 
+                onClick={() => router.push(`/patients/${patient.id}`)}
+                className="card border border-slate-200 dark:border-slate-700 hover:border-primary-200 dark:hover:border-primary-800/50 bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-all duration-200 p-5 space-y-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer"
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
                       <Link 
                         href={`/patients/${patient.id}`}
+                        onClick={(e) => e.stopPropagation()}
                         className="hover:text-primary-600 hover:underline transition-colors"
                       >
                         {patient.name}
@@ -284,27 +308,44 @@ export default function PatientListClient({
                       🩺 {formatLastVisit(patient.last_visit_date)}
                     </p>
                   </div>
-                  <span className="px-2.5 py-1 text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-lg border border-slate-200 dark:border-slate-700">
-                    {patient.phone || 'No phone'}
-                  </span>
+                  {patient.phone ? (
+                    <a
+                      href={`tel:${patient.phone}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="px-2.5 py-1 text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-lg border border-slate-200 dark:border-slate-700 hover:text-primary-600 dark:hover:text-primary-400 hover:underline transition-all"
+                    >
+                      {patient.phone}
+                    </a>
+                  ) : (
+                    <span className="px-2.5 py-1 text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 rounded-lg border border-slate-200 dark:border-slate-700 italic">
+                      No phone
+                    </span>
+                  )}
                 </div>
                 <div className="flex justify-end gap-3 pt-3 border-t border-slate-50 dark:border-slate-800/50">
                    <Link
                     href={`/patients/${patient.id}`}
+                    onClick={(e) => e.stopPropagation()}
                     className="flex items-center gap-2 px-3 py-1.5 text-sm font-semibold text-slate-600 hover:text-primary-600 transition-colors"
                   >
                     <HiOutlineEye className="w-5 h-5" />
                     Chi tiết
                   </Link>
                   <button
-                    onClick={() => handleEditPatient(patient)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEditPatient(patient);
+                    }}
                     className="flex items-center gap-2 px-3 py-1.5 text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors"
                   >
                     <HiOutlinePencil className="w-5 h-5" />
                     Sửa
                   </button>
                   <button
-                    onClick={() => handleDeleteClick(patient)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteClick(patient);
+                    }}
                     className="flex items-center gap-2 px-3 py-1.5 text-sm font-semibold text-red-500 hover:text-red-700 transition-colors"
                   >
                     <HiOutlineTrash className="w-5 h-5" />

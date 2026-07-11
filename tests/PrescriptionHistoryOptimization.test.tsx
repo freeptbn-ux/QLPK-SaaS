@@ -38,6 +38,7 @@ vi.mock('react-icons/hi2', () => ({
   HiOutlineCheck: () => <div data-testid="icon-check" />,
   HiOutlineArrowPath: () => <div data-testid="icon-refresh" />,
   HiOutlineCalculator: () => <div data-testid="icon-calc" />,
+  HiOutlineMagnifyingGlass: () => <div data-testid="icon-search" />,
 }));
 
 // Mock framer-motion

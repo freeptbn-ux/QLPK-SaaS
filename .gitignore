@@ -48,6 +48,7 @@ clinic.db.backup-*
 __pycache__/
 *.pyc
 venv/
+.venv/
 *.txt
 load3.md
 kedon.txt
