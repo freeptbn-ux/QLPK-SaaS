@@ -12,6 +12,7 @@ vi.mock('@/actions/settings', () => ({
 vi.mock('../src/actions/medicines', () => ({
   getAllMedicines: vi.fn(),
   getLowStockMedicines: vi.fn(),
+  getOutOfStockCount: vi.fn().mockResolvedValue(0),
 }));
 
 vi.mock('@/components/ui/PageHeader', () => ({

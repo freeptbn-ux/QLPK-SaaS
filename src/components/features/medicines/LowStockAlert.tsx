@@ -5,14 +5,57 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { HiOutlineExclamationTriangle } from 'react-icons/hi2';
 
 interface LowStockAlertProps {
-  count: number;
-  onFilterClick: () => void;
-  isFiltered: boolean;
-  onClearFilter: () => void;
+  lowStockCount?: number;
+  outOfStockCount?: number;
+  stockFilter?: 'all' | 'low_stock' | 'out_of_stock';
+  onFilterChange?: (filter: 'all' | 'low_stock' | 'out_of_stock') => void;
+  count?: number;
+  onFilterClick?: () => void;
+  isFiltered?: boolean;
+  onClearFilter?: () => void;
 }
 
-export default function LowStockAlert({ count, onFilterClick, isFiltered, onClearFilter }: LowStockAlertProps) {
-  const show = count > 0 || isFiltered;
+export default function LowStockAlert({ 
+  lowStockCount: propLowStockCount, 
+  outOfStockCount = 0, 
+  stockFilter: propStockFilter, 
+  onFilterChange,
+  count,
+  onFilterClick,
+  isFiltered,
+  onClearFilter
+}: LowStockAlertProps) {
+  const lowStockCount = propLowStockCount ?? count ?? 0;
+  const stockFilter = propStockFilter ?? (isFiltered ? 'low_stock' : 'all');
+
+  const show = outOfStockCount > 0 || lowStockCount > 0 || stockFilter !== 'all';
+
+  const getMessage = () => {
+    if (stockFilter === 'out_of_stock') return 'Đang hiển thị thuốc đã hết hàng.';
+    if (stockFilter === 'low_stock') return 'Đang hiển thị thuốc sắp hết hàng.';
+    if (outOfStockCount > 0 && lowStockCount > 0) {
+      return `Có ${outOfStockCount} loại thuốc đã hết hàng và ${lowStockCount} loại sắp hết.`;
+    }
+    if (outOfStockCount > 0) return `Có ${outOfStockCount} loại thuốc đã hết hàng.`;
+    if (lowStockCount > 0) return `Có ${lowStockCount} loại thuốc sắp hết hàng.`;
+    return '';
+  };
+
+  const handleClear = () => {
+    if (onFilterChange) {
+      onFilterChange('all');
+    } else if (onClearFilter) {
+      onClearFilter();
+    }
+  };
+
+  const handleFilterClick = () => {
+    if (onFilterChange) {
+      onFilterChange(outOfStockCount > 0 ? 'out_of_stock' : 'low_stock');
+    } else if (onFilterClick) {
+      onFilterClick();
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -30,23 +73,20 @@ export default function LowStockAlert({ count, onFilterClick, isFiltered, onClea
             <div className="flex-grow">
               <h4 className="text-sm font-bold text-amber-900 dark:text-amber-100">Cảnh báo tồn kho</h4>
               <p className="text-sm text-amber-700 dark:text-amber-300">
-                {isFiltered 
-                  ? `Đang hiển thị ${count} loại thuốc sắp hết hàng.`
-                  : `Có ${count} loại thuốc sắp hết hàng (dưới ngưỡng cảnh báo).`
-                }
+                {getMessage()}
               </p>
             </div>
             <div className="shrink-0">
-              {isFiltered ? (
+              {stockFilter !== 'all' ? (
                 <button 
-                  onClick={onClearFilter}
+                  onClick={handleClear}
                   className="px-4 py-2 text-xs font-bold uppercase tracking-wider bg-white dark:bg-slate-900 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 rounded-xl hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-all active:scale-95 shadow-sm"
                 >
                   Hiện tất cả
                 </button>
               ) : (
                 <button 
-                  onClick={onFilterClick}
+                  onClick={handleFilterClick}
                   className="px-4 py-2 text-xs font-bold uppercase tracking-wider bg-amber-600 text-white rounded-xl hover:bg-amber-700 transition-all active:scale-95 shadow-lg shadow-amber-600/20"
                 >
                   Xem danh sách
@@ -59,3 +99,4 @@ export default function LowStockAlert({ count, onFilterClick, isFiltered, onClea
     </AnimatePresence>
   );
 }
+

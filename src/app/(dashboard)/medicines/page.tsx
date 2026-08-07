@@ -3,7 +3,7 @@ import { getAllSettings } from '@/actions/settings';
 import React, { Suspense } from 'react';
 import PageHeader from '@/components/ui/PageHeader';
 import MedicineList from '@/components/features/medicines/MedicineList';
-import { getAllMedicines, getLowStockMedicines } from '@/actions/medicines';
+import { getAllMedicines, getLowStockMedicines, getOutOfStockCount } from '@/actions/medicines';
 import MedicineTableSkeleton from '@/components/medicines/MedicineTableSkeleton';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -41,9 +41,10 @@ export default async function MedicinesPage({
 }
 
 async function MedicineListWrapper({ page, search }: { page: number; search: string }) {
-  const [{ data, count, limit }, lowStockMedicines] = await Promise.all([
+  const [{ data, count, limit }, lowStockMedicines, outOfStockCount] = await Promise.all([
     getAllMedicines({ page, search }),
-    getLowStockMedicines().catch(() => [])
+    getLowStockMedicines().catch(() => []),
+    getOutOfStockCount().catch(() => 0)
   ]);
 
   return (
@@ -53,6 +54,7 @@ async function MedicineListWrapper({ page, search }: { page: number; search: str
       currentPage={page} 
       limit={limit} 
       totalLowStockCount={lowStockMedicines.length}
+      totalOutOfStockCount={outOfStockCount}
     />
   );
 }

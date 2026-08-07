@@ -9,6 +9,7 @@ interface StatsOverviewProps {
     monthlyVisits: number;
     monthlyRevenue: number;
     lowStockCount: number;
+    outOfStockCount?: number;
   } | null;
 }
 
@@ -17,24 +18,28 @@ export default function StatsOverview({ stats }: StatsOverviewProps) {
     {
       title: 'Tổng bệnh nhân',
       value: stats?.totalPatients ?? 0,
+      subtitle: null,
       icon: HiOutlineUsers,
       colorClass: 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400',
     },
     {
       title: 'Lượt khám tháng này',
       value: stats?.monthlyVisits ?? 0,
+      subtitle: null,
       icon: HiOutlineDocumentText,
       colorClass: 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400',
     },
     {
       title: 'Doanh thu tháng này',
       value: (stats?.monthlyRevenue ?? 0).toLocaleString('vi-VN') + ' đ',
+      subtitle: null,
       icon: HiOutlineBanknotes,
       colorClass: 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400',
     },
     {
-      title: 'Thuốc sắp hết',
-      value: stats?.lowStockCount ?? 0,
+      title: 'Cảnh báo tồn kho',
+      value: (stats?.outOfStockCount ?? 0) + (stats?.lowStockCount ?? 0),
+      subtitle: `${stats?.outOfStockCount ?? 0} đã hết · ${stats?.lowStockCount ?? 0} sắp hết`,
       icon: HiOutlineExclamationTriangle,
       colorClass: 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400',
     },
@@ -60,6 +65,11 @@ export default function StatsOverview({ stats }: StatsOverviewProps) {
                   <div className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                     {stats ? item.value : <div className="h-10 w-32 bg-slate-100 dark:bg-slate-800 animate-pulse rounded-lg" />}
                   </div>
+                  {item.subtitle && stats && (
+                    <span className="text-xs font-medium text-amber-600 dark:text-amber-400 block mt-1">
+                      {item.subtitle}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -69,3 +79,4 @@ export default function StatsOverview({ stats }: StatsOverviewProps) {
     </div>
   );
 }
+

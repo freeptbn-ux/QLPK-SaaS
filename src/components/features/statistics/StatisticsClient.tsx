@@ -46,6 +46,7 @@ interface StatisticsClientProps {
     monthlyVisits: number;
     monthlyRevenue: number;
     lowStockCount: number;
+    outOfStockCount?: number;
   } | null;
   initialGenderData: { name: string; value: number }[];
   initialLocationData: { name: string; count: number }[];
@@ -73,6 +74,7 @@ export default function StatisticsClient({
     monthlyVisits: number;
     monthlyRevenue: number;
     lowStockCount: number;
+    outOfStockCount?: number;
   } | null>(initialOverview);
   const [genderData] = useState<{ name: string; value: number }[]>(initialGenderData);
   const [locationData] = useState<{ name: string; count: number }[]>(initialLocationData);

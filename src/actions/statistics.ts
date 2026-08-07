@@ -219,7 +219,7 @@ export async function getOverviewStats() {
   const now = dayjs().tz(VN_TIMEZONE);
   const startOfMonth = now.startOf('month').format('YYYY-MM-DD');
   
-  const [patientsCount, monthlyStatsResult, lowStock] = await Promise.all([
+  const [patientsCount, monthlyStatsResult, lowStock, outOfStock] = await Promise.all([
     supabase.from('patients')
       .select('*', { count: 'exact', head: true })
       .eq('clinic_id', clinicId),
@@ -227,7 +227,8 @@ export async function getOverviewStats() {
       .select('visit_count, total_revenue')
       .eq('clinic_id', clinicId)
       .gte('date', startOfMonth),
-    supabase.rpc('get_low_stock_count')
+    supabase.rpc('get_low_stock_count'),
+    supabase.rpc('get_out_of_stock_count')
   ]);
 
   if (patientsCount.error) {
@@ -242,6 +243,10 @@ export async function getOverviewStats() {
     console.error('Error fetching low stock count:', lowStock.error);
     throw new Error(lowStock.error.message);
   }
+  if (outOfStock.error) {
+    console.error('Error fetching out of stock count:', outOfStock.error);
+    throw new Error(outOfStock.error.message);
+  }
 
   const dailyStats = monthlyStatsResult.data || [];
   const monthlyVisits = dailyStats.reduce((acc, curr) => acc + (curr.visit_count || 0), 0);
@@ -251,6 +256,7 @@ export async function getOverviewStats() {
     totalPatients: patientsCount.count || 0,
     monthlyVisits,
     monthlyRevenue,
-    lowStockCount: Number(lowStock.data) || 0
+    lowStockCount: Number(lowStock.data) || 0,
+    outOfStockCount: Number(outOfStock.data) || 0
   };
 }

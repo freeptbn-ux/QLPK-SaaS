@@ -189,6 +189,22 @@ export const getLowStockMedicines = cache(async () => {
   return data as Medicine[];
 });
 
+export const getOutOfStockCount = cache(async () => {
+  const { supabase, clinicId } = await getAuthUser();
+
+  if (!clinicId) {
+    return 0;
+  }
+
+  const { data, error } = await supabase.rpc('get_out_of_stock_count');
+
+  if (error) {
+    throw new Error(getGenericErrorMessage(error));
+  }
+
+  return Number(data) || 0;
+});
+
 export async function isMedicineInUse(id: number): Promise<boolean> {
   const { user, supabase } = await getAuthUser();
   const clinicId = user.user_metadata?.clinic_id;

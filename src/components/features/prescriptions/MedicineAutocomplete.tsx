@@ -194,7 +194,7 @@ const MedicineAutocomplete = React.memo(function MedicineAutocomplete({ onSelect
                           isOutOfStock 
                             ? "text-red-600 dark:text-red-400 font-bold" 
                             : option.stock_quantity <= option.min_stock_level 
-                              ? "text-red-500 dark:text-orange-400" 
+                              ? "text-amber-500 dark:text-amber-400" 
                               : "text-gray-500 dark:text-gray-400"
                         )}>
                           Tồn: {option.stock_quantity}

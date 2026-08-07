@@ -1,146 +1,125 @@
-# 🏥 QLPK-SaaS — Hệ thống Quản lý Phòng khám Hiện đại & Tối ưu
+# QLPK-SaaS — Hệ Thống Quản Lý Phòng Khám SaaS Multi-Tenant
 
-[![Next.js](https://img.shields.io/badge/Framework-Next.js%2016-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/Library-React%2019-blue?style=for-the-badge&logo=react)](https://react.dev/)
-[![TailwindCSS](https://img.shields.io/badge/Styling-TailwindCSS%204-06B6D4?style=for-the-badge&logo=tailwindcss)](https://tailwindcss.com/)
-[![Supabase](https://img.shields.io/badge/Database-Supabase%20%26%20Postgres-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.com/)
-[![Vitest](https://img.shields.io/badge/Testing-Vitest-76E2FF?style=for-the-badge&logo=vitest)](https://vitest.dev/)
-[![AI-Powered](https://img.shields.io/badge/AI-Gemini%202.5%20Flash--lite-orange?style=for-the-badge&logo=googlegemini)](https://deepmind.google/technologies/gemini/)
-
-QLPK-SaaS là giải pháp phần mềm quản lý phòng khám (Clinic Management System) toàn diện được thiết kế theo mô hình **SaaS (Software as a Service)** hiện đại. Hệ thống hướng đến tối ưu hóa toàn bộ quy trình vận hành từ tiếp đón bệnh nhân, khám bệnh, kê đơn thuốc thông minh được hỗ trợ bởi trí tuệ nhân tạo (AI), quản lý kho dược cho đến phân tích báo cáo doanh thu động với tính bảo mật cao và hiệu năng vượt trội.
+QLPK-SaaS là giải pháp phần mềm quản lý phòng khám tư nhân hiện đại, linh hoạt và tối ưu theo mô hình SaaS (Multi-tenant). Hệ thống hỗ trợ toàn diện các quy trình làm việc của phòng khám: từ đón tiếp bệnh nhân, khám bệnh, kê đơn thuốc tự động tích hợp trợ lý AI tra cứu liều dùng, quản lý kho thuốc 3 trạng thái đến báo cáo thống kê doanh thu trực quan.
 
 ---
 
-## 🎨 Kiến trúc & Công nghệ Sử dụng
+## 🌟 Tính Năng Nổi Bật
 
-Dự án được xây dựng dựa trên các tiêu chuẩn công nghệ hiện đại nhất hiện nay:
+- **🏥 Quản Lý Bệnh Nhân & Hồ Sơ Y Tế**:
+  - Tiếp nhận bệnh nhân nhanh chóng, hỗ trợ tìm kiếm thông minh (không dấu, mã BN, số điện thoại).
+  - Quản lý lịch sử khám bệnh, chẩn đoán, tiền sử bệnh và sinh hiệu.
 
-| Công nghệ | Vai trò & Tính năng chính | Phiên bản |
-| :--- | :--- | :--- |
-| **Next.js** | Core framework sử dụng App Router, Server Actions và tối ưu hóa SEO hoàn hảo. | `16.2.4` |
-| **React** | Thư viện giao diện với cơ chế Concurrent Mode, hooks mới nhất. | `19.2.4` |
-| **Tailwind CSS** | Thiết kế giao diện responsive cực nhanh, giao diện hiện đại thời thượng. | `4.2.4` |
-| **Supabase** | Cơ sở dữ liệu PostgreSQL mạnh mẽ tích hợp Realtime, Storage và Authentication. | `2.104.0` |
-| **Google Gemini AI** | Tích hợp model `gemini-2.5-flash-lite` phục vụ tính năng tra cứu liều dùng thuốc tự động qua kiến trúc 2 bước (Search + Format). | `2.5-flash-lite` |
-| **Framer Motion** | Tạo hiệu ứng micro-animations mượt mà, tăng trải nghiệm người dùng cao cấp. | `12.38.0` |
-| **Vitest** | Framework kiểm thử hiệu năng cao dùng cho Unit Test và Integration Test. | `4.1.5` |
-| **Database Engines** | Tối ưu hóa thống kê qua Rollup tables (`clinic_daily_stats`) và Postgres Triggers tự động. | *PostgreSQL* |
+- **💊 Quản Lý Kho Thuốc & Tồn Kho 3 Trạng Thái**:
+  - Phân loại trực quan tình trạng tồn kho: **Đã hết** (Đỏ), **Sắp hết** (Cam/Vàng), **Còn hàng** (Xanh).
+  - Hỗ trợ nhập kho, điều chỉnh số lượng tồn, cài đặt ngưỡng cảnh báo tối thiểu cho từng loại thuốc.
+  - Hỗ trợ nhập giá thuốc và số lượng chính xác với định dạng số thập phân.
 
----
+- **🤖 Trợ Lý Kê Đơn Thuốc AI (Gemini 2.5 Flash-Lite)**:
+  - Tự động tra cứu liều dùng gợi ý theo độ tuổi (người lớn/trẻ em) và cân nặng.
+  - Sử dụng kiến trúc 2 bước (Search + Structured Output JSON) đảm bảo dữ liệu chính xác và chuẩn hóa.
+  - Cảnh báo liều tối đa và tương tác thuốc.
 
-## ✨ Các Tính năng Nổi bật
+- **📊 Thống Kê & Báo Cáo Trực Quan**:
+  - Theo dõi tổng quan lượt khám, doanh thu phòng khám theo ngày, tuần, tháng, năm.
+  - Biểu đồ phân tích cơ cấu độ tuổi, giới tính và khu vực địa lý của bệnh nhân.
+  - Báo cáo chi tiết top thuốc tiêu thụ nhiều nhất.
 
-### 1. Quản lý Hồ sơ Bệnh nhân Thông minh
-* Tìm kiếm nhanh chóng, lọc động theo Tên hoặc Số điện thoại.
-* **Tích hợp liên kết `tel:` thông minh**: Cho phép bấm gọi trực tiếp số điện thoại của bệnh nhân trên giao diện Desktop & Mobile, đồng thời ngăn chặn sự kiện lan truyền (event propagation) tránh chuyển trang nhầm lẫn.
-* **Hiệu ứng Hover Trực quan (UX Polish)**: Hỗ trợ hiệu ứng đổi màu hover sinh động trên danh sách bệnh nhân và thẻ thông tin di động giúp tăng trải nghiệm tương tác trực quan.
-* Quản lý thông tin chi tiết lịch sử khám bệnh, cân nặng, tiền sử dị ứng thuốc và các chỉ số sinh tồn (huyết áp, nhiệt độ, nhịp tim) kèm cơ chế tooltip thông minh tránh tràn/cắt xén thông tin.
-* Tự động chuẩn hóa định dạng ngày sinh (DOB) và đồng bộ thông tin thời gian thực.
-
-### 2. Kê đơn & Quản lý Kho thuốc Tích hợp AI 🤖
-* **AI-Assisted Dosage Lookup**: Tự động tra cứu liều dùng thuốc phù hợp cho trẻ em và người lớn sử dụng mô hình Google Gemini AI tối tân. Hệ thống tự động phân tích độ tuổi, cân nặng và tham chiếu các Dược thư Quốc gia danh tiếng để đưa ra đề xuất chính xác nhất dạng cấu trúc JSON sạch.
-* **AI Dosage Caching (Bộ nhớ đệm Liều lượng AI)**: Tích hợp lớp lưu trữ bộ nhớ đệm cơ sở dữ liệu (`medicine_dosage_cache` với thời gian tồn tại 7 ngày - TTL) giúp tối ưu hóa thời gian phản hồi từ ~8-12 giây xuống dưới 100ms cho các truy vấn trùng lặp, tiết kiệm hạn ngạch API token.
-* **Bộ lọc Lịch sử Kê đơn Động**: Tích hợp thanh tìm kiếm lịch sử dùng thuốc của bệnh nhân có cơ chế **Debounce 300ms** hạn chế tính toán dư thừa, kết hợp hoạt ảnh mượt mà từ `Framer Motion` và tự động lấy nét (`autoFocus`).
-* **Kiểm tra Tồn kho Tự động**: Hệ thống tự động trừ kho vật lý ngay khi hoàn thành đơn thuốc, đánh dấu cảnh báo thuốc sắp hết hạn hoặc dưới mức tối thiểu thông qua API RPC bảo mật.
-* **Sao chép Prompt Nghiên cứu lâm sàng**: Nút "Copy prompt" tiện lợi cho phép bác sĩ nhanh chóng trích xuất dữ liệu lâm sàng để tham khảo ý kiến chuyên gia AI hoặc lưu trữ hồ sơ.
-
-### 3. Thống kê Doanh thu & Báo cáo Dashboard Động
-* Biểu đồ trực quan sinh động sử dụng thư viện **Recharts** hiện đại.
-* Theo dõi doanh thu thực tế, số lượng lượt khám, xu hướng phân loại bệnh theo ngày/tuần/tháng/năm.
-* Sử dụng bảng tổng hợp Rollup `clinic_daily_stats` kết hợp DB Triggers giúp truy vấn thống kê ngay lập tức mà không làm chậm hệ thống khi lượng dữ liệu lớn.
-
-### 4. Bảo mật Đa phòng khám (SaaS Multi-tenant)
-* Cơ chế phân quyền cấp hàng **RLS (Row Level Security)** chặt chẽ của PostgreSQL.
-* Mỗi phòng khám được phân tách hoàn toàn về mặt vật lý dữ liệu; bác sĩ/nhân viên của phòng khám này tuyệt đối không thể truy cập dữ liệu của phòng khám khác.
-* Quản lý phiên làm việc bảo mật cao với Supabase Auth & Next.js Middlewares.
+- **🔒 Bảo Mật & Phân Tách Dữ Liệu Nâng Cao**:
+  - Áp dụng Row Level Security (RLS) trên PostgreSQL cho phép phân tách dữ liệu tuyệt đối giữa các phòng khám (Multi-tenant).
+  - Xác thực người dùng an toàn qua Supabase Auth.
 
 ---
 
-## 📁 Cấu trúc Thư mục Dự án
+## 🛠️ Công Nghệ Sử Dụng
 
-```text
-QLPK-SaaS-main/
-├── .github/                  # Github workflows & CI/CD tự động hóa
-├── .brain/                   # Hệ tri thức Eternal Context phục vụ phát triển
-├── public/                   # Tài sản tĩnh (Hình ảnh, logo, fonts)
-├── supabase/                 # Tài nguyên database (Migrations, RLS policies, Triggers)
-│   └── migrations/           # Các file SQL thay đổi cấu trúc DB theo thời gian
+- **Frontend**: Next.js 16 (App Router), React 19, TypeScript
+- **Styling & Motion**: TailwindCSS v4, Framer Motion, React Icons, Recharts
+- **Backend & Database**: Supabase (PostgreSQL 17, RLS, PL/pgSQL Stored Procedures / RPCs), Server Actions
+- **Form & Validation**: React Hook Form, Zod Schema Validation
+- **AI Engine**: Google Gemini 2.5 Flash-Lite
+- **Testing**: Vitest, React Testing Library, Playwright
+
+---
+
+## 📁 Cấu Trúc Thư Mục
+
+```
+QLPK-SaaS/
+├── .brain/                     # Eternal context & log quản lý session
+├── docs/                       # Tài liệu kiến trúc, API specification, báo cáo audit
+├── plans/                      # Kế hoạch phát triển tính năng (Phase plans)
+├── public/                     # Tài nguyên tĩnh (Hình ảnh, favicon)
+├── scripts/                    # Scripts tự động hóa (cập nhật năm copyright, v.v.)
 ├── src/
-│   ├── app/                  # App Router: Layouts, Pages, API Routes chính
-│   │   └── api/
-│   │       └── medicine-dosage/ # API tích hợp Gemini AI tra cứu liều lượng thuốc
-│   ├── actions/              # Server Actions thực thi logic phía Server (Medicines, Patients, Billing)
-│   ├── components/           # Các Component UI tái sử dụng (Feature-based & Common)
-│   │   ├── features/         # Components nghiệp vụ (Prescriptions, Medicines, Patients)
-│   │   └── ui/               # Base components nguyên bản (Button, Input, Badge, Dialog)
-│   ├── hooks/                # Custom React Hooks
-│   ├── lib/                  # Cấu hình Supabase Client, helpers dùng chung
-│   └── types/                # TypeScript type definitions
-├── tests/                    # Thư mục chứa các file Unit / Integration / E2E Tests
-├── package.json              # Cấu hình scripts & dependencies dự án
-└── tsconfig.json             # Cấu hình TypeScript compile
+│   ├── actions/                # Next.js Server Actions (thuốc, bệnh nhân, thống kê)
+│   ├── app/                    # Next.js App Router (Trang ứng dụng & API routes)
+│   ├── components/             # React components
+│   │   ├── features/           # Components tính năng (thuốc, bệnh nhân, kê đơn, thống kê)
+│   │   └── ui/                 # Reusable UI Base Components (Modal, Button, Pagination)
+│   ├── hooks/                  # Custom React Hooks
+│   ├── lib/                    # Thư viện tiện ích (Supabase client, helpers, error handler)
+│   └── types/                  # Định nghĩa TypeScript Types
+├── supabase/
+│   └── migrations/             # SQL Migrations cho Supabase DB
+├── tests/                      # Suites kiểm thử tự động (Vitest)
+├── package.json
+└── README.md
 ```
 
 ---
 
-## 🛠 Hướng dẫn Cài đặt & Khởi chạy Nhanh
+## 🚀 Hướng Dẫn Cài Đặt & Chạy Ứng Dụng
 
-### Yêu cầu Hệ thống
-* **Node.js**: Phiên bản `18.x` hoặc mới hơn.
-* **npm / yarn**: Công cụ quản lý package tiêu chuẩn.
+### Yêu Cầu Tiền Đề
+- **Node.js**: `>= 18.x`
+- **npm** / **yarn** / **pnpm**
+- **Supabase Project**: Tài khoản Supabase đã khởi tạo project PostgreSQL.
 
-### Các Bước Cài đặt
+### Các Bước Cài Đặt
 
-1. **Clone mã nguồn**:
+1. **Clone repository**:
    ```bash
    git clone https://github.com/freeptbn-ux/QLPK-SaaS.git
    cd QLPK-SaaS
    ```
 
-2. **Cài đặt thư viện**:
+2. **Cài đặt dependencies**:
    ```bash
    npm install
    ```
 
 3. **Cấu hình biến môi trường**:
-   Tạo file `.env` ở thư mục gốc dựa theo `.env.example`:
-   ```bash
-   cp .env.example .env
-   ```
-   Sau đó mở file `.env` và điền đầy đủ các khóa truy cập:
+   Tạo file `.env.local` tại thư mục gốc dựa theo mẫu từ `.env.example`:
    ```env
-   NEXT_PUBLIC_SUPABASE_URL=https://<your-project-ref>.supabase.co
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-anon-key>
-   GEMINI_API_KEYS=key1,key2,... # Danh sách API Key Gemini (phân cách bằng dấu phẩy)
+   NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+   GEMINI_API_KEYS=your-gemini-api-key
    ```
 
-4. **Triển khai Database Migrations**:
-   Triển khai cấu trúc bảng, RLS, Triggers và RPC bằng cách áp dụng các tệp migration trong thư mục `supabase/migrations/` vào Supabase SQL Editor của bạn.
+4. **Khởi tạo Cơ Sở Dữ Liệu**:
+   Thực thi các file migration trong thư mục `supabase/migrations/` trên Supabase SQL Editor.
 
-5. **Khởi chạy môi trường Phát triển (Development)**:
+5. **Chạy ứng dụng ở môi trường phát triển (Development)**:
    ```bash
    npm run dev
    ```
-   Mở trình duyệt truy cập: [http://localhost:3000](http://localhost:3000)
+   Truy cập ứng dụng tại địa chỉ: `http://localhost:3000`.
 
-6. **Chạy Tests kiểm thử chất lượng**:
+6. **Kiểm thử & Đóng gói (Build)**:
    ```bash
+   # Chạy unit & integration tests
    npm run test
+
+   # Build bản production (tự động chạy prebuild script cập nhật năm copyright)
+   npm run build
+
+   # Khởi chạy server production
+   npm run start
    ```
 
 ---
 
-## 📝 Thông tin Bổ sung & Quy chuẩn Vận hành
-
-### Tối ưu hóa API & An toàn Dữ liệu
-* **Không lưu trữ khóa API**: Ứng dụng tích hợp hệ thống kiểm tra và loại bỏ hoàn toàn các API key rò rỉ. Biến môi trường `GEMINI_API_KEYS` được quản lý độc quyền ở phía máy chủ (Server-side) thông qua Server Actions và Next.js API Routes, tuyệt đối không lộ ra phía Client.
-* **In đơn thuốc linh hoạt**: Hệ thống hỗ trợ định dạng in chuẩn y tế, tương thích tốt với cả máy in laser văn phòng (khổ A4/A5) và các dòng máy in nhiệt mini cầm tay (khổ K80).
-* **Tuân thủ quy chuẩn y khoa**: Các tính năng kê đơn thuốc tuân thủ hướng dẫn của Bộ Y tế Việt Nam về định danh thuốc, hoạt chất và biệt dược.
-
----
-
-## 🛡 Bản quyền & Sở hữu
+## 📜 Bản Quyền
 
 Copyright 2026 Nguyễn Duy Trường
-
-*Tất cả các quyền được bảo lưu. Dự án được phát triển và vận hành chuyên nghiệp bởi Nguyễn Duy Trường và các cộng sự lâm sàng.*

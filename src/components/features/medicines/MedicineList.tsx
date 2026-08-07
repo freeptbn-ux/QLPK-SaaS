@@ -6,7 +6,8 @@ import {
   HiOutlinePencil, 
   HiOutlineTrash, 
   HiOutlinePlus, 
-  HiOutlineArchiveBox
+  HiOutlineArchiveBox,
+  HiOutlineXCircle
 } from 'react-icons/hi2';
 import { Medicine } from '@/types/database';
 import MedicineFormDialog from './MedicineFormDialog';
@@ -19,12 +20,15 @@ import { cn } from '@/lib/utils/cn';
 import MedicineSearch from './MedicineSearch';
 import Pagination from '@/components/ui/Pagination';
 
+export type StockFilter = 'all' | 'low_stock' | 'out_of_stock';
+
 interface MedicineListProps {
   initialData: Medicine[];
   totalCount: number;
   currentPage: number;
   limit: number;
   totalLowStockCount: number;
+  totalOutOfStockCount?: number;
 }
 
 export default function MedicineList({ 
@@ -32,12 +36,13 @@ export default function MedicineList({
   totalCount, 
   currentPage, 
   limit,
-  totalLowStockCount
+  totalLowStockCount,
+  totalOutOfStockCount = 0
 }: MedicineListProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const searchTerm = searchParams.get('search') || '';
-  const [showLowStockOnly, setShowLowStockOnly] = useState(false);
+  const [stockFilter, setStockFilter] = useState<StockFilter>('all');
   const [isPending, startTransition] = useTransition();
   
   // Optimistic state for data
@@ -66,13 +71,13 @@ export default function MedicineList({
 
   const filteredData = useMemo(() => {
     let result = optimisticData;
-    if (showLowStockOnly) {
-      result = result.filter(m => m.stock_quantity <= m.min_stock_level);
+    if (stockFilter === 'low_stock') {
+      result = result.filter(m => m.stock_quantity > 0 && m.stock_quantity <= m.min_stock_level);
+    } else if (stockFilter === 'out_of_stock') {
+      result = result.filter(m => m.stock_quantity === 0);
     }
     return result;
-  }, [optimisticData, showLowStockOnly]);
-
-  const lowStockCount = totalLowStockCount;
+  }, [optimisticData, stockFilter]);
 
   const handleAdd = () => {
     setSelectedMedicine(null);
@@ -122,10 +127,10 @@ export default function MedicineList({
   return (
     <div className="space-y-6">
       <LowStockAlert 
-        count={lowStockCount} 
-        onFilterClick={() => setShowLowStockOnly(true)}
-        isFiltered={showLowStockOnly}
-        onClearFilter={() => setShowLowStockOnly(false)}
+        lowStockCount={totalLowStockCount} 
+        outOfStockCount={totalOutOfStockCount}
+        stockFilter={stockFilter}
+        onFilterChange={setStockFilter}
       />
 
       <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
@@ -133,10 +138,22 @@ export default function MedicineList({
         
         <div className="flex gap-2">
           <button
-            onClick={() => setShowLowStockOnly(!showLowStockOnly)}
+            onClick={() => setStockFilter(stockFilter === 'out_of_stock' ? 'all' : 'out_of_stock')}
             className={cn(
               "flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-all border active:scale-95",
-              showLowStockOnly 
+              stockFilter === 'out_of_stock' 
+                ? "bg-red-500 text-white border-red-500 shadow-lg shadow-red-500/20" 
+                : "text-red-600 border-red-200 hover:bg-red-50 dark:border-red-900/30 dark:hover:bg-red-900/20"
+            )}
+          >
+            <HiOutlineXCircle className="w-5 h-5" />
+            Đã hết
+          </button>
+          <button
+            onClick={() => setStockFilter(stockFilter === 'low_stock' ? 'all' : 'low_stock')}
+            className={cn(
+              "flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-all border active:scale-95",
+              stockFilter === 'low_stock' 
                 ? "bg-amber-500 text-white border-amber-500 shadow-lg shadow-amber-500/20" 
                 : "text-amber-600 border-amber-200 hover:bg-amber-50 dark:border-amber-900/30 dark:hover:bg-amber-900/20"
             )}
@@ -158,8 +175,8 @@ export default function MedicineList({
         {filteredData.length === 0 ? (
           <div className="p-20">
             <EmptyState 
-              title={searchTerm || showLowStockOnly ? "Không tìm thấy thuốc phù hợp" : "Chưa có thuốc nào trong kho"}
-              description={searchTerm || showLowStockOnly ? "Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm để tìm đúng loại thuốc cần thiết" : "Hãy thêm thuốc mới vào danh mục để bắt đầu quản lý kho và kê đơn cho bệnh nhân"}
+              title={searchTerm || stockFilter !== 'all' ? "Không tìm thấy thuốc phù hợp" : "Chưa có thuốc nào trong kho"}
+              description={searchTerm || stockFilter !== 'all' ? "Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm để tìm đúng loại thuốc cần thiết" : "Hãy thêm thuốc mới vào danh mục để bắt đầu quản lý kho và kê đơn cho bệnh nhân"}
               icon={HiOutlineArchiveBox}
             />
           </div>
@@ -178,7 +195,8 @@ export default function MedicineList({
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                 {filteredData.map((medicine) => {
-                  const isLowStock = medicine.stock_quantity <= medicine.min_stock_level;
+                  const isOutOfStock = medicine.stock_quantity === 0;
+                  const isLowStock = medicine.stock_quantity > 0 && medicine.stock_quantity <= medicine.min_stock_level;
                   return (
                     <tr key={medicine.id} className="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all duration-200">
                       <td className="px-6 py-5">
@@ -196,7 +214,7 @@ export default function MedicineList({
                         <div className="flex items-center justify-end gap-2">
                           <span className={cn(
                             "font-bold text-base",
-                            isLowStock ? "text-red-500" : "text-slate-900 dark:text-slate-100"
+                            isOutOfStock ? "text-red-600" : isLowStock ? "text-amber-500" : "text-slate-900 dark:text-slate-100"
                           )}>
                             {medicine.stock_quantity}
                           </span>
@@ -210,8 +228,12 @@ export default function MedicineList({
                         </div>
                       </td>
                       <td className="px-6 py-5 text-center">
-                        {isLowStock ? (
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 border border-red-100 dark:border-red-900/50">
+                        {isOutOfStock ? (
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400 border border-red-200 dark:border-red-900/50">
+                            Đã hết
+                          </span>
+                        ) : isLowStock ? (
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400 border border-amber-200 dark:border-amber-900/50">
                             Sắp hết
                           </span>
                         ) : (
