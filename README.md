@@ -141,6 +141,6 @@ QLPK-SaaS-main/
 
 ## 🛡 Bản quyền & Sở hữu
 
-Copyright 2026 Nguyễn Duy Trường
+Copyright {this_year} Nguyễn Duy Trường
 
 *Tất cả các quyền được bảo lưu. Dự án được phát triển và vận hành chuyên nghiệp bởi Nguyễn Duy Trường và các cộng sự lâm sàng.*
