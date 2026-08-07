@@ -147,6 +147,7 @@ export default function MedicineFormDialog({
                       <input
                         {...register('price', { valueAsNumber: true })}
                         type="number"
+                        step="any"
                         className={cn(
                           "input-field pr-12 text-right bg-white dark:bg-slate-900",
                           errors.price && "border-red-500 focus:ring-red-500/20"
