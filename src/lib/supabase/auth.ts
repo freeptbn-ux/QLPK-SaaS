@@ -13,18 +13,36 @@ export const getAuthUser = cache(async () => {
     throw new Error('Unauthorized');
   }
 
-  // Get clinic_id from metadata or fallback to profiles table
-  let clinicId = user.user_metadata?.clinic_id;
-  
-  if (!clinicId) {
-    const { data: profile } = await supabase
+  // Check app_metadata first (populated securely by server / DB trigger)
+  let clinicId = user.app_metadata?.clinic_id;
+  let role = user.app_metadata?.role;
+  let profile = null;
+
+  // Fallback to querying profiles table if claims are missing from app_metadata
+  if (!clinicId || !role) {
+    const { data: dbProfile } = await supabase
       .from('profiles')
-      .select('clinic_id')
+      .select('clinic_id, role')
       .eq('id', user.id)
       .single();
-    
-    clinicId = profile?.clinic_id;
+
+    profile = dbProfile;
+    clinicId = clinicId ?? dbProfile?.clinic_id ?? user.user_metadata?.clinic_id;
+    role = role ?? dbProfile?.role ?? user.user_metadata?.role;
+  } else {
+    profile = {
+      clinic_id: clinicId,
+      role,
+      ...(user.user_metadata?.full_name ? { full_name: user.user_metadata.full_name } : {}),
+    };
   }
-  
-  return { user, supabase, clinicId };
+
+  return {
+    user,
+    supabase,
+    clinicId,
+    clinic_id: clinicId,
+    role,
+    profile,
+  };
 });

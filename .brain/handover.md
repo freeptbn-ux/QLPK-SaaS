@@ -2,42 +2,48 @@
 📋 HANDOVER DOCUMENT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📍 Đang làm: UI/UX Enhancements & Repository Polish
-🔢 Đến bước: Hoàn thành Push Git & Cập nhật Brain Memory
+📍 Đang làm: P0 & P1 Performance & Security Hardening
+🔢 Đến bước: Hoàn thành toàn bộ 5 Phase & Apply Migration qua Supabase MCP
 
 ✅ ĐÃ XONG:
-   - Cải tiến Tìm kiếm Debounced lịch sử thuốc (300ms, Framer Motion) ✓
-   - Tích hợp link `tel:` ngăn sự kiện lan truyền (e.stopPropagation) ✓
-   - Hiệu ứng Row Hover & Tooltip trên danh sách bệnh nhân ✓
-   - Xóa nút "In đơn thuốc" & "Dọn trùng" (Merge duplicates) ✓
-   - Cấu hình `.venv/` trong `.gitignore` ✓
-   - Xóa thư mục `plans` trống và nâng cấp README.md tiếng Việt ✓
-   - Push repository lên GitHub thành công (Author: skul9x) ✓
-   - Cập nhật CHANGELOG.md và .brain files ✓
+   - Phase 01: Multi-Tenant Isolation & Clinic-Scoped Constraints (P0) ✓
+   - Phase 02: Infrastructure Alignment (icn1) & Auth Metadata Deduplication (P1) ✓
+   - Phase 03: Prescription Trigger Consolidation & Write Optimization (P1) ✓
+   - Phase 04: Statistics Waterfall Reduction (14 queries -> 1 RPC) (P1) ✓
+   - Phase 05: Medicine Autocomplete Client Overhead Elimination (P1) ✓
+   - Apply 4 migration lên database remote Supabase qua Supabase MCP ✓
+   - Chạy kiểm thử tự động toàn bộ 5 test file đạt 20/20 test cases (100% pass) ✓
 
 ⏳ CÒN LẠI:
-   - Phase 04: Dashboard Chart UI Sync (kiểm tra render chart doanh thu mới)
-   - Phase 05: Maintenance Scripts Audit
-   - Thiết kế lại RLS cho các bảng Inventory
+   - Git review & Commit/Push lên GitHub repository
+   - Kiểm tra hiển thị giao diện người dùng thực tế trên môi trường development/production
 
 🔧 QUYẾT ĐỊNH QUAN TRỌNG:
-   - Sử dụng Debounce 300ms ở Client để giảm tải CPU và tăng độ nhạy cho ô lọc thuốc.
-   - Sử dụng `e.stopPropagation()` trên thẻ `tel:` để tránh click nhầm chuyển trang chi tiết bệnh nhân.
-   - Loại bỏ các nút in và dọn trùng thừa để tinh giản UI, tăng độ tập trung.
-   - Thiết lập Git config cục bộ cho tác giả trước khi commit để tránh bị Vercel chặn deployment.
+   - Chuyển Vercel serverless region sang `icn1` (Seoul) để đặt cùng vị trí mạng với Supabase (`ap-northeast-2`), giảm 60-80ms RTT mỗi request.
+   - Ưu tiên đọc `app_metadata.clinic_id` trong `getAuthUser()`, loại bỏ N+1 query lặp lại vào bảng `profiles`.
+   - Bỏ bão trigger trên `prescription_details`; hợp nhất thao tác ghi đơn thuốc và cập nhật `clinic_daily_stats` vào RPC `create_prescription`.
+   - Dùng `pg_trgm` và `f_unaccent()` trên Postgres cho tìm kiếm thuốc tiếng Việt có dấu/không dấu, giới hạn 20 bản ghi; khử race condition bằng sequence ID ở client.
 
 ⚠️ LƯU Ý CHO SESSION SAU:
-   - Dự án đã được push sạch sẽ lên GitHub branch `main`.
-   - Các file test mới cho MedicineUsageDialog và PatientList nằm ở thư mục `tests/`.
-   - Cần chạy lại `npm run test` để đảm bảo các thay đổi mới không làm gãy các test case hiện tại.
+   - Database remote Supabase (`rrpbwyiobezgesameexo`) đã có đầy đủ 4 migration mới nhất:
+     + `20261103001314_multi_tenant_isolation`
+     + `20261103001515_prescription_trigger_consolidation`
+     + `20261102234045_dashboard_statistics_rpc`
+     + `20261103001258_search_medicines_rpc`
+   - Kiểm thử toàn diện có thể chạy lại bất cứ lúc nào bằng lệnh:
+     `npx vitest run tests/phase-01-tenant-isolation.test.ts tests/phase-02-infra-auth.test.ts tests/phase-03-prescription-triggers.test.ts tests/phase-04-statistics-waterfall.test.ts tests/phase-05-medicine-autocomplete.test.ts`
 
 📁 FILES QUAN TRỌNG:
-   - `src/components/features/patients/MedicineUsageDialog.tsx`
-   - `src/components/features/patients/PatientListClient.tsx`
-   - `README.md`
-   - `CHANGELOG.md`
-   - `.brain/brain.json`
-   - `.brain/session.json`
+   - `plans/20261102-p0-p1-performance-hardening/plan.md`
+   - `supabase/migrations/20261102000001_multi_tenant_isolation.sql`
+   - `supabase/migrations/20261102000002_prescription_trigger_consolidation.sql`
+   - `supabase/migrations/20261102000003_dashboard_statistics_rpc.sql`
+   - `supabase/migrations/20261102000004_search_medicines_rpc.sql`
+   - `src/lib/supabase/auth.ts`
+   - `src/actions/statistics.ts`
+   - `src/actions/medicines.ts`
+   - `src/components/features/prescriptions/MedicineAutocomplete.tsx`
+   - `vercel.json`
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📍 Đã lưu! Để tiếp tục: Gõ /recap

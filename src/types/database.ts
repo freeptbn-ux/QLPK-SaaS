@@ -20,12 +20,14 @@ export interface PatientWithPrescriptions extends Patient {
 }
 
 export interface Medicine {
-  id: number;
+  id: number | any;
   name: string;
-  packing_spec: string | null;
+  packing_spec?: string | null;
+  unit?: string | null;
   price: number;
   stock_quantity: number;
-  min_stock_level: number;
+  min_stock_level?: number;
+  is_active?: boolean;
 }
 
 export interface PrescriptionHeader {

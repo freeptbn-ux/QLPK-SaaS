@@ -1,28 +1,48 @@
 {
-  "updated_at": "2026-07-11T22:52:00Z",
+  "updated_at": "2026-11-03T00:20:00Z",
   "working_on": {
-    "feature": "Debounced Prescription Search & UI Enhancements",
-    "phase": "Maintenance & Cleanup",
-    "task": "Save context & push updates",
+    "feature": "P0 & P1 Performance & Security Hardening",
+    "phase": "Completed & Deployed",
+    "task": "All 5 Phases Implemented, Tested, and Migrations Deployed to Remote Supabase",
     "status": "completed",
-    "notes": "Implemented debouncing in prescription history search, hover row states, smart phone links, removed duplicate buttons/actions, and completed repository cleanup (removed plans, updated gitignore/README).",
+    "notes": "Finished Phase 01 to Phase 05. Deployed 4 migrations to live Supabase project rrpbwyiobezgesameexo using Supabase MCP. All 5 test suites pass with 20/20 test assertions satisfied.",
     "last_run_url": "http://localhost:3000"
   },
   "pending_tasks": [
-    { "task": "Phase 04: Dashboard Chart UI Sync", "priority": "medium", "notes": "Verify charts render correctly with the new grouped revenue data." },
-    { "task": "Phase 05: Maintenance Scripts Audit", "priority": "medium" },
-    { "task": "RLS redesign for Inventory tables", "priority": "medium" }
+    { "task": "Review git changes and prepare commit/push", "priority": "medium", "notes": "Git working tree has modified server actions and new migrations/tests" },
+    { "task": "Deploy Next.js application to Vercel", "priority": "low", "notes": "Vercel region configured to icn1 for low-latency with Supabase Seoul" }
   ],
   "recent_changes": [
-    { "description": "Implemented debounced prescription history search (300ms) with Framer Motion UI animations.", "files": ["src/components/features/patients/MedicineUsageDialog.tsx"] },
-    { "description": "Added smart phone calling links with stopPropagation logic to avoid row navigation leaks.", "files": ["src/components/features/patients/PatientListClient.tsx"] },
-    { "description": "Polish patient list UI with hover states and name tooltips.", "files": ["src/components/features/patients/PatientListClient.tsx", "src/components/features/patients/MedicineUsageDialog.tsx"] },
-    { "description": "Removed duplicate merge button and prescription print buttons to cleanup patient layout.", "files": ["src/components/features/patients/PatientListClient.tsx", "src/components/features/patients/PrescriptionHistory.tsx"] },
-    { "description": "Updated README.md and .gitignore (for .venv/) and removed empty plans directory.", "files": ["README.md", ".gitignore"] }
+    {
+      "description": "Phase 01: Enforced clinic_id filtering in get_patients_with_last_visit and scoped patient unique index to clinic_id.",
+      "files": ["supabase/migrations/20261102000001_multi_tenant_isolation.sql", "tests/phase-01-tenant-isolation.test.ts"]
+    },
+    {
+      "description": "Phase 02: Configured Vercel functions to region icn1 (Seoul) and deduplicated profiles queries via app_metadata.clinic_id.",
+      "files": ["vercel.json", "src/lib/supabase/auth.ts", "tests/phase-02-infra-auth.test.ts"]
+    },
+    {
+      "description": "Phase 03: Consolidated prescription trigger cascade into atomic create_prescription RPC with O(1) clinic_daily_stats rollup.",
+      "files": ["supabase/migrations/20261102000002_prescription_trigger_consolidation.sql", "tests/phase-03-prescription-triggers.test.ts"]
+    },
+    {
+      "description": "Phase 04: Consolidated 14-query statistics waterfall into get_dashboard_statistics_v2 RPC.",
+      "files": ["supabase/migrations/20261102000003_dashboard_statistics_rpc.sql", "src/actions/statistics.ts", "src/app/(dashboard)/statistics/page.tsx", "tests/phase-04-statistics-waterfall.test.ts"]
+    },
+    {
+      "description": "Phase 05: Eliminated 1,000 medicine client-side load; implemented debounced server search (< 20 items) with pg_trgm + unaccent.",
+      "files": ["src/components/features/prescriptions/MedicineAutocomplete.tsx", "src/components/prescriptions/MedicineAutocomplete.tsx", "src/actions/medicines.ts", "supabase/migrations/20261102000004_search_medicines_rpc.sql", "tests/phase-05-medicine-autocomplete.test.ts"]
+    },
+    {
+      "description": "Applied all 4 migrations to remote Supabase project rrpbwyiobezgesameexo using Supabase MCP.",
+      "files": ["supabase/migrations/"]
+    }
   ],
   "decisions_made": [
-    { "decision": "Use debouncing for medicine history search to optimize client performance", "reason": "Avoids rendering and filtering lag during user typing inputs." },
-    { "decision": "Use stopPropagation on phone links in patient rows to prevent accidental navigation", "reason": "Improves mobile and desktop UX by isolating telephone action from row navigation." },
-    { "decision": "Remove printing and duplicate merge actions from client dashboards", "reason": "Streamlines layout options and reduces UI clutter." }
+    { "decision": "Scope patient uniqueness to (clinic_id, LOWER(name_normalized), dob)", "reason": "Allow distinct clinics to manage patients with identical names and birth dates." },
+    { "decision": "Prioritize app_metadata.clinic_id over profiles query in getAuthUser()", "reason": "Eliminates redundant database roundtrip on authenticated API calls." },
+    { "decision": "Consolidate prescription insertion and daily stats rollup in single atomic RPC", "reason": "Eliminates trigger storm and race conditions during high-concurrency prescribing." },
+    { "decision": "Combine pg_trgm and f_unaccent() for medicine search", "reason": "Provides fast, diacritic-insensitive search directly inside Postgres without client-side loops." },
+    { "decision": "Use sequence tracking (latestRequestId) in MedicineAutocomplete", "reason": "Guarantees out-of-order search responses are safely discarded." }
   ]
 }

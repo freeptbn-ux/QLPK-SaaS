@@ -7,6 +7,7 @@ import { formatZodError } from '@/lib/validations/helpers';
 import { revalidatePath } from 'next/cache';
 import { cache } from 'react';
 import { getGenericErrorMessage } from '@/lib/error-handler';
+import { removeDiacritics } from '@/lib/utils/normalize';
 
 export const getAllMedicines = cache(async (params?: { page?: number; limit?: number; search?: string }) => {
   const { user, supabase, clinicId } = await getAuthUser();
@@ -288,4 +289,89 @@ export const getMedicinesForSearch = cache(async () => {
 
   return data as Medicine[];
 });
+
+export interface SearchMedicinesParams {
+  query?: string;
+  limit?: number;
+  excludeIds?: (number | string)[];
+}
+
+export async function searchMedicines(params: SearchMedicinesParams = {}): Promise<{ data: Medicine[]; error: string | null }> {
+  try {
+    const { supabase, clinicId } = await getAuthUser();
+
+    if (!clinicId) {
+      return { data: [], error: 'Không tìm thấy thông tin phòng khám.' };
+    }
+
+    const limit = Math.min(Math.max(params.limit || 20, 1), 20);
+    const query = params.query?.trim() || '';
+    const numericExcludeIds = (params.excludeIds || [])
+      .map(id => Number(id))
+      .filter(id => !isNaN(id));
+
+    // Attempt RPC first
+    const { data: rpcData, error: rpcError } = await supabase.rpc('search_medicines_v2', {
+      p_clinic_id: clinicId,
+      p_query: query,
+      p_limit: limit,
+      p_exclude_ids: numericExcludeIds,
+    });
+
+    if (!rpcError && rpcData) {
+      return { data: rpcData as Medicine[], error: null };
+    }
+
+    // Fallback if RPC is unavailable
+    let q = supabase
+      .from('medicines')
+      .select('id, name, unit, packing_spec, price, stock_quantity, min_stock_level')
+      .eq('clinic_id', clinicId)
+      .eq('is_active', true);
+
+    if (numericExcludeIds.length > 0) {
+      q = q.not('id', 'in', `(${numericExcludeIds.join(',')})`);
+    }
+
+    if (query) {
+      const normalized = removeDiacritics(query);
+      q = q.or(`name.ilike.%${query}%,name_normalized.ilike.%${normalized}%`);
+    }
+
+    const { data, error } = await q.order('name', { ascending: true }).limit(limit);
+
+    if (error) {
+      return { data: [], error: getGenericErrorMessage(error) };
+    }
+
+    return { data: (data as Medicine[]) || [], error: null };
+  } catch (err: any) {
+    return { data: [], error: err?.message || 'Lỗi tìm kiếm thuốc' };
+  }
+}
+
+export async function getAllActiveMedicines(): Promise<{ data: Medicine[]; error: string | null }> {
+  try {
+    const { supabase, clinicId } = await getAuthUser();
+
+    if (!clinicId) {
+      return { data: [], error: 'Không tìm thấy thông tin phòng khám.' };
+    }
+
+    const { data, error } = await supabase
+      .from('medicines')
+      .select('id, name, unit, packing_spec, price, stock_quantity, min_stock_level')
+      .eq('clinic_id', clinicId)
+      .eq('is_active', true)
+      .order('name', { ascending: true });
+
+    if (error) {
+      return { data: [], error: getGenericErrorMessage(error) };
+    }
+
+    return { data: (data as Medicine[]) || [], error: null };
+  } catch (err: any) {
+    return { data: [], error: err?.message || 'Lỗi tải danh sách thuốc' };
+  }
+}
 

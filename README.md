@@ -1,81 +1,96 @@
 # QLPK-SaaS — Hệ Thống Quản Lý Phòng Khám SaaS Multi-Tenant
 
-QLPK-SaaS là giải pháp phần mềm quản lý phòng khám tư nhân hiện đại, linh hoạt và tối ưu theo mô hình SaaS (Multi-tenant). Hệ thống hỗ trợ toàn diện các quy trình làm việc của phòng khám: từ đón tiếp bệnh nhân, khám bệnh, kê đơn thuốc tự động tích hợp trợ lý AI tra cứu liều dùng, quản lý kho thuốc 3 trạng thái đến báo cáo thống kê doanh thu trực quan.
+QLPK-SaaS là nền tảng quản lý phòng khám tư nhân hiện đại, linh hoạt và tối ưu theo kiến trúc **Multi-Tenant (Đa phòng khám)**. Hệ thống số hóa toàn diện quy trình vận hành phòng khám: tiếp đón và quản lý hồ sơ bệnh nhân, kê đơn thuốc thông minh với trợ lý AI, quản lý kho dược phẩm theo 3 trạng thái tồn kho, và hệ thống báo cáo - phân tích doanh thu hiệu năng cao.
 
 ---
 
 ## 🌟 Tính Năng Nổi Bật
 
-- **🏥 Quản Lý Bệnh Nhân & Hồ Sơ Y Tế**:
-  - Tiếp nhận bệnh nhân nhanh chóng, hỗ trợ tìm kiếm thông minh (không dấu, mã BN, số điện thoại).
-  - Quản lý lịch sử khám bệnh, chẩn đoán, tiền sử bệnh và sinh hiệu.
-  - Hỗ trợ thao tác gọi điện trực tiếp từ thẻ liên hệ (`tel:`) mượt mà trên thiết bị di động.
+### 1. 🏥 Quản Lý Bệnh Nhân & Hồ Sơ Bệnh Án
+- **Tiếp nhận nhanh**: Tạo và cập nhật hồ sơ bệnh nhân với thông tin hành chính, sinh hiệu, tiền sử bệnh lý và chẩn đoán ban đầu.
+- **Tìm kiếm thông minh**: Hỗ trợ tìm kiếm theo tên không dấu, mã bệnh nhân, hoặc số điện thoại với chỉ mục Trigram (`pg_trgm`).
+- **Gọi điện trực tiếp (`tel:`)**: Tích hợp liên kết gọi nhanh từ thẻ bệnh nhân trên cả giao diện Desktop và Mobile, ngăn chặn sự kiện click lan truyền (`e.stopPropagation`).
+- **Cách ly dữ liệu tuyệt đối (P0)**: Phân tách dữ liệu bệnh nhân nghiêm ngặt giữa các phòng khám; độc lập hóa chỉ mục ràng buộc duy nhất theo `(clinic_id, LOWER(name_normalized), dob)`.
 
-- **💊 Quản Lý Kho Thuốc & Tồn Kho 3 Trạng Thái**:
-  - Phân loại trực quan tình trạng tồn kho: **Đã hết** (Đỏ), **Sắp hết** (Cam/Vàng), **Còn hàng** (Xanh).
-  - Hỗ trợ nhập kho, điều chỉnh số lượng tồn, cài đặt ngưỡng cảnh báo tối thiểu cho từng loại thuốc.
-  - Hỗ trợ nhập giá thuốc và số lượng chính xác với định dạng số thập phân.
+### 2. 💊 Quản Lý Kho Dược & Tồn Kho 3 Trạng Thái
+- **Phân loại trực quan 3 màu sắc**:
+  - 🔴 **Đã hết hàng** (`stock_quantity = 0`): Khóa chọn thuốc khi kê đơn, hiển thị nhãn cảnh báo.
+  - 🟡 **Sắp hết hàng** (`stock_quantity <= min_stock_level`): Cảnh báo ngưỡng tồn kho an toàn để bổ sung kịp thời.
+  - 🟢 **Còn hàng**: Đầy đủ số lượng khả dụng.
+- **Hỗ trợ định dạng số thập phân**: Cho phép nhập giá bán và số lượng chính xác cao cho từng loại thuốc.
+- **Tự động trừ kho & hoàn kho nguyên tử**: Quản lý xuất kho tức thời khi kê đơn và hoàn kho tự động khi hủy/xóa đơn thuốc với khóa `FOR NO KEY UPDATE`.
 
-- **📋 Tra Cứu Lịch Sử Dùng Thuốc Trực Tiếp Khi Kê Đơn (Modal Dialog)**:
-  - Tích hợp nút "Lịch sử dùng thuốc" ngay trên màn hình kê đơn thuốc (`PrescriptionForm`) bên cạnh nút "Tính liều nhanh".
-  - Cho phép bác sĩ tra cứu ngay các thuốc bệnh nhân đã dùng nhiều nhất trong quá khứ mà không làm mất trạng thái hay dữ liệu bản nháp của đơn thuốc hiện tại.
-  - Tìm kiếm nhanh tên thuốc và quy cách đóng gói (hỗ trợ tiếng Việt không dấu) với cơ chế debounced lọc tức thì.
+### 3. 📋 Kê Đơn Thuốc Nguyên Khối & Tra Cứu Lịch Sử
+- **Tối ưu hóa Autocomplete Thuốc (P1)**:
+  - Khử tải 1.000 thuốc lên RAM client; chuyển sang tìm kiếm phía Server (`search_medicines_v2`) giới hạn $\le 20$ kết quả.
+  - Hỗ trợ tiếng Việt có dấu và không dấu bằng `pg_trgm` + `unaccent`.
+  - Tích hợp Sequence ID ngăn chặn triệt để Race Condition khi bác sĩ gõ phím nhanh.
+- **Modal "Lịch sử dùng thuốc"**: Tra cứu ngay các loại thuốc bệnh nhân từng sử dụng nhiều nhất trong quá khứ ngay trên form kê đơn mà không làm mất bản nháp hiện tại.
+- **Atomic Prescription RPC (P1)**: Hợp nhất header, details và rollup thống kê trong 1 giao dịch database duy nhất, xóa bỏ hoàn toàn bão trigger cascade (Trigger Storm).
 
-- **🤖 Trợ Lý Kê Đơn Thuốc AI (Gemini 2.5 Flash-Lite)**:
-  - Tự động tra cứu liều dùng gợi ý theo độ tuổi (người lớn/trẻ em) và cân nặng.
-  - Sử dụng kiến trúc 2 bước (Search + Structured Output JSON) đảm bảo dữ liệu chính xác và chuẩn hóa.
-  - Cảnh báo liều tối đa và tương tác thuốc.
+### 4. 🤖 Trợ Lý Kê Đơn AI (Google Gemini 2.5 Flash-Lite)
+- **Tính liều chuẩn hóa**: Đề xuất liều dùng theo lứa tuổi (người lớn/trẻ em), cân nặng và triệu chứng.
+- **Kiến trúc 2 bước (Two-Step Flow)**:
+  1. *Tra cứu*: Tìm kiếm thông tin thực tế qua Google Search grounding.
+  2. *Định dạng*: Chuyển đổi dữ liệu chuẩn hóa sang JSON Schema an toàn.
+- **Bảo mật AI**: Kiểm duyệt đầu vào qua Zod, phòng chống Prompt Injection, Rate Limit tự động xoay vòng API Keys.
 
-- **⚡ Tối Ưu Hóa Hiệu Năng & Độ Trễ Vercel ↔ Supabase**:
-  - Khử trùng lặp xác thực phiên (Auth Deduplication): gom `supabase.auth.getUser()` thành 1 lần gọi duy nhất trong Proxy/Middleware, cắt giảm 150ms - 300ms network round-trip.
-  - Đồng bộ Region Vercel Serverless Function sang khu vực Singapore (`sin1`), cùng datacenter với Supabase Database giúp giảm thiểu tối đa ping mạng.
+### 5. 📊 Báo Cáo & Phân Tích Hiệu Năng Cao
+- **Consolidated Dashboard (P1)**: Gom 14 query riêng lẻ thành 1 RPC `get_dashboard_statistics_v2`, tải toàn bộ biểu đồ và chỉ số KPI dưới 100ms.
+- **Phân tích đa chiều**: Thống kê doanh thu theo ngày/tuần/tháng, cơ cấu độ tuổi và giới tính bệnh nhân, bảng xếp hạng thuốc tiêu thụ nhiều nhất.
+- **Bảng tổng hợp `clinic_daily_stats`**: Lưu trữ chỉ số theo ngày giúp báo cáo mở rộng quy mô $O(1)$.
 
-- **📊 Thống Kê & Báo Cáo Trực Quan**:
-  - Theo dõi tổng quan lượt khám, doanh thu phòng khám theo ngày, tuần, tháng, năm.
-  - Biểu đồ phân tích cơ cấu độ tuổi, giới tính và khu vực địa lý của bệnh nhân.
-  - Báo cáo chi tiết top thuốc tiêu thụ nhiều nhất.
-
-- **🔒 Bảo Mật & Phân Tách Dữ Liệu Nâng Cao**:
-  - Áp dụng Row Level Security (RLS) trên PostgreSQL cho phép phân tách dữ liệu tuyệt đối giữa các phòng khám (Multi-tenant).
-  - Xác thực người dùng an toàn qua Supabase Auth.
-  - Content Security Policy (CSP) chặt chẽ với cryptographic nonce bảo vệ chống XSS.
+### 6. ⚡ Tối Ưu Hạ Tầng & Bảo Mật
+- **Căn chỉnh Vercel Region `icn1` (P1)**: Đặt Serverless Functions tại Seoul cùng vị trí với Supabase Database (`ap-northeast-2`), cắt giảm 60-80ms RTT mỗi request.
+- **Khử trùng lặp Auth (P1)**: Ưu tiên đọc `app_metadata.clinic_id` trong `getAuthUser()`, loại bỏ N+1 query lặp lại vào bảng `profiles`.
+- **Phòng thủ đa tầng**: Row Level Security (RLS) trên mọi bảng dữ liệu, thu hồi toàn bộ quyền của vai trò `anon` trên schema `public` (Default Deny).
 
 ---
 
 ## 🛠️ Công Nghệ Sử Dụng
 
-- **Frontend**: Next.js 16 (App Router), React 19, TypeScript
-- **Styling & Motion**: TailwindCSS v4, Framer Motion, React Icons, Recharts
-- **Backend & Database**: Supabase (PostgreSQL 17, RLS, PL/pgSQL Stored Procedures / RPCs), Server Actions
-- **Form & Validation**: React Hook Form, Zod Schema Validation
-- **AI Engine**: Google Gemini 2.5 Flash-Lite
-- **Testing**: Vitest, React Testing Library, Playwright
+| Thành Phần | Công Nghệ & Thư Viện |
+| :--- | :--- |
+| **Frontend Framework** | [Next.js 16](https://nextjs.org/) (App Router), [React 19](https://react.dev/), TypeScript |
+| **Giao Diện & Hiệu Ứng** | [Tailwind CSS v4](https://tailwindcss.com/), [Framer Motion 12](https://www.framer.com/motion/), [React Icons](https://react-icons.github.io/react-icons/), [Recharts](https://recharts.org/) |
+| **Backend & Cơ Sở Dữ Liệu** | [Supabase](https://supabase.com/) (PostgreSQL 17, RLS, Stored Procedures, PL/pgSQL RPCs), Next.js Server Actions |
+| **AI Engine** | [Google Gemini 2.5 Flash-Lite](https://ai.google.dev/) (Two-Step Architecture: Search + Format) |
+| **Xử Lý Biểu Mẫu** | [React Hook Form](https://react-hook-form.com/), [Zod](https://zod.dev/) |
+| **Kiểm Thử (Testing)** | [Vitest](https://vitest.dev/), [@testing-library/react](https://testing-library.com/), [Playwright](https://playwright.dev/) |
+| **Hạ Tầng Triển Khai** | [Vercel](https://vercel.com/) (Region `icn1` - Seoul), GitHub Actions |
 
 ---
 
-## 📁 Cấu Trúc Thư Mục
+## 📁 Cấu Trúc Thư Mục Dự Án
 
 ```
 QLPK-SaaS/
-├── .brain/                     # Eternal context & log quản lý session
-├── docs/                       # Tài liệu kiến trúc, API specification, báo cáo audit
-├── plans/                      # Kế hoạch phát triển tính năng (Phase plans)
-├── public/                     # Tài nguyên tĩnh (Hình ảnh, favicon)
-├── scripts/                    # Scripts tự động hóa (cập nhật năm copyright tự động)
+├── .brain/                     # Eternal Memory & Context Management (AWF)
+│   ├── brain.json              # Static knowledge (kiến trúc, bảo mật, rules)
+│   ├── session.json            # Dynamic session context
+│   └── handover.md             # Tài liệu bàn giao tiến độ
+├── docs/                       # Tài liệu thiết kế, API docs và báo cáo audit
+│   ├── api/endpoints.md        # Danh sách API & RPC endpoints
+│   └── reports/                # Báo cáo audit hiệu năng & bảo mật
+├── plans/                      # Master plan & chi tiết từng Phase
+│   └── 20261102-p0-p1-performance-hardening/
+├── public/                     # Tài nguyên tĩnh (ảnh, icons)
+├── scripts/                    # Scripts tiện ích & build tools (update-readme-year.js)
 ├── src/
-│   ├── actions/                # Next.js Server Actions (thuốc, bệnh nhân, thống kê)
-│   ├── app/                    # Next.js App Router (Trang ứng dụng & API routes)
-│   ├── components/             # React components
-│   │   ├── features/           # Components tính năng (thuốc, bệnh nhân, kê đơn, thống kê)
-│   │   └── ui/                 # Reusable UI Base Components (Modal, Button, Pagination)
-│   ├── hooks/                  # Custom React Hooks
-│   ├── lib/                    # Thư viện tiện ích (Supabase client, helpers, error handler)
-│   ├── types/                  # Định nghĩa TypeScript Types
-│   └── proxy.ts                # Next.js Request Proxy & Route Guard (tối ưu Auth)
+│   ├── actions/                # Next.js Server Actions (medicines, patients, statistics, auth)
+│   ├── app/                    # App Router (Dashboard, Medicines, Patients, Statistics, APIs)
+│   ├── components/             # React Components
+│   │   ├── features/           # Components nghiệp vụ (kê đơn, bệnh nhân, kho thuốc, biểu đồ)
+│   │   ├── prescriptions/      # MedicineAutocomplete re-export module
+│   │   └── ui/                 # Reusable UI Base Components (Modal, Button, Toast, Input)
+│   ├── hooks/                  # Custom React Hooks (useToast, useMedicineDosage)
+│   ├── lib/                    # Core utilities (Supabase client/server, normalize, validations)
+│   ├── types/                  # TypeScript interface definitions (database, forms)
+│   └── proxy.ts                # Next.js Request Proxy & Route Guard
 ├── supabase/
-│   └── migrations/             # SQL Migrations cho Supabase DB (RLS, RPCs, Schema)
-├── tests/                      # Suites kiểm thử tự động (Vitest)
-├── vercel.json                 # Cấu hình Region Serverless Function (sin1)
+│   └── migrations/             # SQL Migration Scripts (RLS, Trigram, Stored Procedures)
+├── tests/                      # Automated Test Suites (Vitest)
+├── vercel.json                 # Cấu hình Vercel Region (icn1 - Seoul)
 ├── package.json
 └── README.md
 ```
@@ -84,12 +99,12 @@ QLPK-SaaS/
 
 ## 🚀 Hướng Dẫn Cài Đặt & Chạy Ứng Dụng
 
-### Yêu Cầu Tiền Đề
-- **Node.js**: `>= 18.x` (khuyến nghị Node 20.x trở lên)
-- **npm** / **yarn** / **pnpm**
-- **Supabase Project**: Tài khoản Supabase đã khởi tạo project PostgreSQL.
+### Yêu Cầu Môi Trường
+- **Node.js**: Phiên bản `>= 18.x` (khuyến nghị Node `20.x` LTS hoặc mới hơn)
+- **Trình quản lý gói**: `npm` hoặc `pnpm`
+- **Tài khoản Supabase**: Đã khởi tạo dự án PostgreSQL.
 
-### Các Bước Cài Đặt
+### Các Bước Triển Khai Cục Bộ
 
 1. **Clone repository**:
    ```bash
@@ -97,67 +112,69 @@ QLPK-SaaS/
    cd QLPK-SaaS
    ```
 
-2. **Cài đặt dependencies**:
+2. **Cài đặt các gói phụ thuộc**:
    ```bash
    npm install
    ```
 
 3. **Cấu hình biến môi trường**:
-   Tạo file `.env.local` tại thư mục gốc dựa theo mẫu từ `.env.example`:
+   Sao chép tệp mẫu `.env.example` thành `.env.local` và điền thông tin:
    ```env
    NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-   GEMINI_API_KEYS=your-gemini-api-key
+   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+   GEMINI_API_KEYS=your-gemini-api-key-1,your-gemini-api-key-2
    ```
 
-4. **Khởi tạo Cơ Sở Dữ Liệu**:
-   Thực thi các file migration trong thư mục `supabase/migrations/` trên Supabase SQL Editor để cấu hình Schema, RLS và các hàm RPC.
+4. **Khởi tạo và Di chuyển Dữ liệu (Migrations)**:
+   Áp dụng các tệp migration trong thư mục `supabase/migrations/` thông qua Supabase CLI hoặc SQL Editor để khởi tạo bảng, RLS và các hàm RPC.
 
-5. **Chạy ứng dụng ở môi trường phát triển (Development)**:
+5. **Khởi chạy máy chủ phát triển (Development)**:
    ```bash
    npm run dev
    ```
-   Truy cập ứng dụng tại địa chỉ: `http://localhost:3000`.
+   Mở trình duyệt và truy cập: `http://localhost:3000`.
 
-6. **Kiểm thử & Đóng gói (Build)**:
+6. **Chạy Kiểm thử (Testing)**:
    ```bash
-   # Chạy toàn bộ unit & integration tests
    npm run test
+   ```
 
-   # Build bản production (tự động chạy prebuild script cập nhật năm copyright)
+7. **Đóng gói Production (Build)**:
+   ```bash
+   # Tự động cập nhật năm bản quyền và biên dịch Next.js
    npm run build
 
-   # Khởi chạy server production
+   # Khởi chạy bản production
    npm run start
    ```
 
 ---
 
-## 📖 Hướng Dẫn Sử Dụng Tính Năng Chính
+## 📖 Hướng Dẫn Sử Dụng Các Phân Hệ Chính
 
-1. **Đón tiếp & Quản lý Bệnh nhân (`/patients`)**:
-   - Nhập thông tin bệnh nhân mới (Họ tên, ngày sinh, giới tính, số điện thoại, địa chỉ, tiền sử bệnh).
-   - Tìm kiếm nhanh bệnh nhân theo từ khóa không dấu, lọc theo lịch hẹn.
-   - Nhấp vào bệnh nhân để xem toàn bộ lịch sử các lần khám trước đó.
+1. **Phân hệ Tiếp đón & Bệnh nhân (`/patients`)**:
+   - Thêm mới bệnh nhân với định dạng chuẩn hóa họ tên và ngày sinh.
+   - Tìm kiếm nhanh bệnh nhân không dấu, xem hồ sơ bệnh án và lịch sử khám.
+   - Thao tác gọi điện nhanh bằng liên kết `tel:` trực tiếp trên bảng dữ liệu.
 
-2. **Kê đơn thuốc thông minh (`/patients/[id]/prescribe`)**:
-   - Nhập chẩn đoán và cân nặng của bệnh nhân.
-   - Bấm **"Lịch sử dùng thuốc"** để xem danh sách các loại thuốc bệnh nhân từng được kê nhiều nhất trong quá khứ mà không làm mất dữ liệu đang nhập.
-   - Bấm **"Tính liều nhanh"** để mở công cụ hỗ trợ liều lượng theo cân nặng và lứa tuổi.
-   - Tra cứu thuốc qua ô tìm kiếm tự động, xem giá và tồn kho tức thời.
-   - Bấm **"Copy Prompt AI"** để sao chép dữ liệu tra cứu tương tác thuốc và liều lượng chuẩn từ AI.
+2. **Phân hệ Kê đơn thuốc (`/patients/[id]/prescribe`)**:
+   - Nhập chẩn đoán và sinh hiệu của bệnh nhân.
+   - Sử dụng ô tìm kiếm thuốc tự động (Server-side debounced) để thêm thuốc vào đơn; hệ thống tự động cảnh báo và chặn thêm các thuốc đã hết hàng.
+   - Bấm nút **"Lịch sử dùng thuốc"** để tham khảo nhanh các đơn thuốc trước đó của bệnh nhân mà không làm mất bản nháp hiện tại.
+   - Sử dụng công cụ **"Tính liều nhanh"** hoặc **"Copy Prompt AI"** để nhận gợi ý liều lượng an toàn từ trợ lý ảo Gemini.
 
-3. **Quản lý Kho thuốc (`/medicines`)**:
-   - Theo dõi trạng thái tồn kho 3 màu: Còn hàng, Sắp hết, Đã hết.
-   - Nhập kho, xuất kho và cập nhật giá bán (hỗ trợ số thập phân chính xác).
-   - Cài đặt ngưỡng tồn kho tối thiểu để nhận cảnh báo kịp thời.
+3. **Phân hệ Quản lý Kho Dược (`/medicines`)**:
+   - Quản lý danh mục thuốc, quy cách đóng gói, giá nhập/bán (hỗ trợ số lẻ thập phân).
+   - Kiểm soát tồn kho thông qua 3 màu trạng thái trực quan: Còn hàng, Sắp hết, Hết hàng.
+   - Nhập thêm số lượng hoặc điều chỉnh tồn kho thủ công kèm ghi chú lý do.
 
-4. **Báo cáo & Thống kê (`/statistics`)**:
-   - Xem tổng quan doanh thu phòng khám, số lượt khám trong ngày, tuần, tháng.
-   - Biểu đồ phân tích độ tuổi, giới tính và top thuốc kê nhiều nhất.
+4. **Phân hệ Thống kê & Phân tích (`/statistics`)**:
+   - Theo dõi doanh thu phòng khám, số lượng đơn thuốc và lượt bệnh nhân trong ngày/tuần/tháng.
+   - Đánh giá cơ cấu nhân khẩu học người bệnh và danh sách các mặt hàng thuốc có lượng tiêu thụ cao nhất.
 
 ---
 
 ## 📜 Bản Quyền
 
-Copyright {this_year} Nguyễn Duy Trường
+Copyright 2026 Nguyễn Duy Trường

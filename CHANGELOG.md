@@ -1,5 +1,14 @@
 # Changelog
 
+## [2026-11-03]
+### Added
+- **Multi-Tenant Isolation (Phase 01 - P0)**: Bổ sung lọc `clinic_id` trong `get_patients_with_last_visit` và chuyển constraint unique bệnh nhân sang phạm vi từng phòng khám `(clinic_id, LOWER(name_normalized), dob)`.
+- **Infrastructure Alignment (Phase 02 - P1)**: Cấu hình Vercel Functions region sang `icn1` (Seoul) đồng bộ với Supabase Seoul (`ap-northeast-2`); khử trùng lặp query bảng `profiles` thông qua `app_metadata.clinic_id`.
+- **Prescription Concurrency Optimization (Phase 03 - P1)**: Hợp nhất cascade trigger kê đơn vào RPC `create_prescription` nguyên khối, loại bỏ bão trigger trên `prescription_details` và cập nhật `clinic_daily_stats` dạng $O(1)$ batch upsert.
+- **Statistics Waterfall Consolidation (Phase 04 - P1)**: Hợp nhất 14 query riêng rẽ của dashboard và trang thống kê thành 1 RPC `get_dashboard_statistics_v2` duy nhất.
+- **Medicine Autocomplete Optimization (Phase 05 - P1)**: Thay thế việc tải 1.000 thuốc lên RAM client bằng tìm kiếm server-side debounced ($\le 20$ kết quả) sử dụng index trigram `pg_trgm` + `unaccent`, tích hợp request sequence guard ngăn race condition khi gõ nhanh.
+- **Supabase Remote Synchronization**: Triển khai toàn bộ 4 migration (`multi_tenant_isolation`, `prescription_trigger_consolidation`, `dashboard_statistics_rpc`, `search_medicines_rpc`) lên live project thông qua Supabase MCP.
+
 ## [2026-07-11]
 ### Added
 - **Tìm kiếm Debounce Lịch sử Kê đơn**: Thêm tính năng bộ lọc tìm kiếm theo tên thuốc & quy cách đóng gói có Debounce 300ms, kèm hoạt ảnh mượt mà của `Framer Motion` và tự động focus.

@@ -1,65 +1,146 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { HiOutlineMagnifyingGlass } from 'react-icons/hi2';
-import { getMedicinesForSearch } from '@/actions/medicines';
+import { searchMedicines } from '@/actions/medicines';
 import { Medicine } from '@/types/database';
-import { removeDiacritics } from '@/lib/utils/normalize';
 import { cn } from '@/lib/utils/cn';
 import { BallLoader } from '@/components/Loading';
 import { useToast } from '@/hooks/useToast';
 
-interface MedicineAutocompleteProps {
-  onSelect: (medicine: Medicine | null) => void;
-  excludeIds?: number[];
+export interface MedicineAutocompleteProps {
+  value?: string;
+  onChange?: (val: string) => void;
+  onSelect: (medicine: Medicine | any) => void;
+  excludeIds?: (number | string)[];
+  debounceMs?: number;
+  placeholder?: string;
+  className?: string;
 }
 
-const MedicineAutocomplete = React.memo(function MedicineAutocomplete({ onSelect, excludeIds = [] }: MedicineAutocompleteProps) {
+export const MedicineAutocomplete = React.memo(function MedicineAutocomplete({
+  value,
+  onChange,
+  onSelect,
+  excludeIds = [],
+  debounceMs = 150,
+  placeholder = 'Nhập tên thuốc để tìm...',
+  className,
+}: MedicineAutocompleteProps) {
   const [open, setOpen] = useState(false);
-  const [allMedicines, setAllMedicines] = useState<Medicine[]>([]);
+  const [options, setOptions] = useState<Medicine[]>([]);
   const [loading, setLoading] = useState(false);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState(value ?? '');
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const { showToast } = useToast();
 
+  // Safe toast handler for environments without ToastProvider
+  let showToast: (msg: string, type?: string) => void = () => {};
+  try {
+    const toast = useToast();
+    if (toast?.showToast) {
+      showToast = toast.showToast;
+    }
+  } catch {
+    // Fallback when outside ToastProvider
+  }
+
+  // Request sequencing and debounce refs
+  const latestRequestId = useRef(0);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isCooldownRef = useRef(false);
+  const pendingTrailingQueryRef = useRef<string | null>(null);
+
+  // Synchronize external value if changed
   useEffect(() => {
-    let isMounted = true;
-    const fetchAll = async () => {
+    if (value !== undefined) {
+      setInputValue(value);
+    }
+  }, [value]);
+
+  const executeSearch = useCallback(
+    async (query: string) => {
+      const trimmed = query.trim();
+      if (!trimmed) {
+        setOptions([]);
+        setLoading(false);
+        return;
+      }
+
+      const currentRequestId = ++latestRequestId.current;
       setLoading(true);
+
       try {
-        const data = await getMedicinesForSearch();
-        if (isMounted) {
-          setAllMedicines(data);
+        const res = await searchMedicines({
+          query: trimmed,
+          limit: 20,
+        });
+
+        // Discard stale in-flight responses
+        if (currentRequestId === latestRequestId.current) {
+          if (res && Array.isArray(res.data)) {
+            const filtered = res.data.filter(
+              (m: any) => !excludeIds.some((exId) => String(exId) === String(m.id))
+            );
+            setOptions(filtered);
+          } else {
+            setOptions([]);
+          }
+          setLoading(false);
         }
-      } catch (error) {
-        console.error('Error fetching medicines for search:', error);
-      } finally {
-        if (isMounted) {
+      } catch (err) {
+        if (currentRequestId === latestRequestId.current) {
           setLoading(false);
         }
       }
-    };
-    fetchAll();
+    },
+    [excludeIds]
+  );
+
+  const triggerSearch = useCallback(
+    (query: string) => {
+      if (!isCooldownRef.current) {
+        // Leading edge: dispatch immediately for fast response
+        isCooldownRef.current = true;
+        pendingTrailingQueryRef.current = null;
+        executeSearch(query);
+
+        debounceTimerRef.current = setTimeout(() => {
+          isCooldownRef.current = false;
+          if (pendingTrailingQueryRef.current !== null) {
+            const trailingQuery = pendingTrailingQueryRef.current;
+            pendingTrailingQueryRef.current = null;
+            triggerSearch(trailingQuery);
+          }
+        }, debounceMs);
+      } else {
+        // Trailing edge: queue latest query for execution after cooldown
+        pendingTrailingQueryRef.current = query;
+      }
+    },
+    [executeSearch, debounceMs]
+  );
+
+  // Cleanup timers on unmount
+  useEffect(() => {
     return () => {
-      isMounted = false;
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
     };
   }, []);
 
-  const options = React.useMemo(() => {
-    const query = removeDiacritics(inputValue).trim();
-    const filtered = allMedicines.filter((m) => {
-      if (excludeIds.includes(m.id)) return false;
-      if (!query) return true;
-      const normalizedName = removeDiacritics(m.name);
-      return normalizedName.includes(query);
-    });
-    return filtered.slice(0, 20);
-  }, [inputValue, allMedicines, JSON.stringify(excludeIds)]);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const nextVal = e.target.value;
+    setInputValue(nextVal);
+    onChange?.(nextVal);
+    setOpen(true);
+    triggerSearch(nextVal);
+  };
 
   useEffect(() => {
-    setSelectedIndex(options.length > 0 ? 0 : -1);
+    setSelectedIndex(-1);
   }, [options]);
 
   useEffect(() => {
@@ -79,8 +160,10 @@ const MedicineAutocomplete = React.memo(function MedicineAutocomplete({ onSelect
     }
     onSelect(medicine);
     setInputValue('');
+    onChange?.('');
     setOpen(false);
     setSelectedIndex(-1);
+    setOptions([]);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -92,16 +175,17 @@ const MedicineAutocomplete = React.memo(function MedicineAutocomplete({ onSelect
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        setSelectedIndex((prev) => (prev < options.length - 1 ? prev + 1 : prev));
+        setSelectedIndex((prev) => (prev < options.length - 1 ? prev + 1 : 0));
         break;
       case 'ArrowUp':
         e.preventDefault();
-        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
+        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : options.length - 1));
         break;
       case 'Enter':
         e.preventDefault();
-        if (selectedIndex >= 0 && selectedIndex < options.length) {
-          handleSelect(options[selectedIndex]);
+        const targetIndex = selectedIndex >= 0 ? selectedIndex : 0;
+        if (targetIndex >= 0 && targetIndex < options.length) {
+          handleSelect(options[targetIndex]);
         }
         break;
       case 'Escape':
@@ -114,22 +198,27 @@ const MedicineAutocomplete = React.memo(function MedicineAutocomplete({ onSelect
   };
 
   return (
-    <div className="relative w-full" ref={dropdownRef}>
+    <div className={cn("relative w-full", className)} ref={dropdownRef}>
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
           <HiOutlineMagnifyingGlass className="h-5 w-5 text-gray-400" />
         </div>
         <input
           ref={inputRef}
+          role="combobox"
+          aria-expanded={open && (options.length > 0 || loading)}
+          aria-autocomplete="list"
           type="text"
           value={inputValue}
-          onChange={(e) => {
-            setInputValue(e.target.value);
+          onChange={handleInputChange}
+          onFocus={() => {
             setOpen(true);
+            if (inputValue.trim()) {
+              triggerSearch(inputValue);
+            }
           }}
-          onFocus={() => setOpen(true)}
           onKeyDown={handleKeyDown}
-          placeholder="Nhập tên thuốc để tìm..."
+          placeholder={placeholder}
           className={cn(
             "input-field pl-11 pr-10 bg-white dark:bg-slate-900 h-11",
             open && (options.length > 0 || loading) && "rounded-b-none border-b-transparent ring-2 ring-primary-500/20 border-primary-500"
@@ -142,7 +231,7 @@ const MedicineAutocomplete = React.memo(function MedicineAutocomplete({ onSelect
         )}
       </div>
 
-      {open && (options.length > 0 || loading) && (
+      {open && (options.length > 0 || loading || inputValue.trim().length > 0) && (
         <div className="absolute z-50 w-full mt-0 bg-white dark:bg-slate-900 border border-gray-200 dark:border-gray-800 border-t-0 rounded-b-2xl shadow-xl shadow-gray-200/50 dark:shadow-none overflow-hidden max-h-64 overflow-y-auto">
           {loading && options.length === 0 ? (
             <div className="p-4 text-center text-sm text-gray-500 dark:text-gray-400">
@@ -152,6 +241,7 @@ const MedicineAutocomplete = React.memo(function MedicineAutocomplete({ onSelect
             <ul className="divide-y divide-gray-50 dark:divide-gray-800/50">
               {options.map((option, index) => {
                 const isOutOfStock = option.stock_quantity === 0;
+                const displaySpec = option.unit || option.packing_spec || '';
                 return (
                   <li key={option.id}>
                     <button
@@ -184,8 +274,12 @@ const MedicineAutocomplete = React.memo(function MedicineAutocomplete({ onSelect
                         )}
                       </div>
                       <span className="text-[11px] font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
-                        <span>{option.packing_spec}</span>
-                        <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-700" />
+                        {displaySpec && (
+                          <>
+                            <span>{displaySpec}</span>
+                            <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-700" />
+                          </>
+                        )}
                         <span className="text-primary-600 dark:text-primary-400">
                           {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(option.price)}
                         </span>
@@ -193,7 +287,7 @@ const MedicineAutocomplete = React.memo(function MedicineAutocomplete({ onSelect
                         <span className={cn(
                           isOutOfStock 
                             ? "text-red-600 dark:text-red-400 font-bold" 
-                            : option.stock_quantity <= option.min_stock_level 
+                            : (option.min_stock_level !== undefined && option.stock_quantity <= option.min_stock_level) 
                               ? "text-amber-500 dark:text-amber-400" 
                               : "text-gray-500 dark:text-gray-400"
                         )}>

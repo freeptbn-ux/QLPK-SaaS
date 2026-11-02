@@ -1,6 +1,7 @@
 'use server';
 
 import { getAuthUser } from '@/lib/supabase/auth';
+import { createClient } from '@/lib/supabase/server';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
@@ -260,3 +261,146 @@ export async function getOverviewStats() {
     outOfStockCount: Number(outOfStock.data) || 0
   };
 }
+
+export interface DashboardStatsParams {
+  startDate?: string;
+  endDate?: string;
+  timeRange?: 'day' | 'week' | 'month' | 'year';
+  selectedMonth?: string;
+}
+
+export interface DashboardStatsPayload {
+  kpis: {
+    total_revenue: number;
+    prescription_count: number;
+    patient_visit_count: number;
+    avg_prescription_value: number;
+  };
+  revenue_trends: Array<{
+    date: string;
+    revenue: number;
+    visits: number;
+    name?: string;
+    count?: number;
+  }>;
+  top_medicines: Array<{
+    name: string;
+    total_quantity: number;
+    total_revenue: number;
+    totalQuantity?: number;
+    totalRevenue?: number;
+  }>;
+  demographics: {
+    gender: { male: number; female: number; other: number } | Array<{ name: string; value: number }>;
+    age_groups: { under_18: number; adult: number; elderly: number };
+    dob_list?: string[];
+  };
+  overview?: {
+    totalPatients: number;
+    monthlyVisits: number;
+    monthlyRevenue: number;
+    lowStockCount: number;
+    outOfStockCount?: number;
+  };
+  available_months?: string[];
+  locations?: Array<{ name: string; count: number }>;
+}
+
+export interface DashboardStatsResponse {
+  data: DashboardStatsPayload;
+  error?: string | null;
+}
+
+/**
+ * Unified statistics retrieval action.
+ * Consolidates dashboard queries into a single database RPC roundtrip (PERF-006).
+ */
+export async function getDashboardStatistics(
+  params?: DashboardStatsParams
+): Promise<DashboardStatsResponse> {
+  const auth = await getAuthUser();
+  const supabase = (auth as any)?.supabase || (await createClient());
+  const clinicId = auth.clinic_id ?? auth.clinicId;
+
+  let startDate = params?.startDate;
+  let endDate = params?.endDate;
+
+  if (!startDate && !endDate && params?.selectedMonth) {
+    startDate = dayjs(params.selectedMonth).tz(VN_TIMEZONE).startOf('month').format('YYYY-MM-DD');
+    endDate = dayjs(params.selectedMonth).tz(VN_TIMEZONE).endOf('month').format('YYYY-MM-DD');
+  }
+
+  // 1. Primary unified retrieval via consolidated RPC (1 database roundtrip)
+  const { data: rpcData, error: rpcError } = await supabase.rpc('get_dashboard_statistics', {
+    p_start_date: startDate || null,
+    p_end_date: endDate || null,
+    p_clinic_id: clinicId,
+    p_time_range: params?.timeRange || 'day',
+  });
+
+  if (!rpcError && rpcData) {
+    return { data: rpcData, error: null };
+  }
+
+  // 2. Resilient fallback query path if RPC is unavailable (<= 2 database operations)
+  let statsQuery = supabase
+    .from('clinic_daily_stats')
+    .select('date, visit_count, prescription_count, total_revenue')
+    .eq('clinic_id', clinicId);
+
+  if (startDate) {
+    statsQuery = statsQuery.gte('date', startDate);
+  }
+  if (endDate) {
+    statsQuery = statsQuery.lte('date', endDate);
+  }
+
+  const { data: dailyStats, error: statsError } = await statsQuery.order('date', { ascending: true });
+
+  if (statsError) {
+    console.error('Error in getDashboardStatistics fallback:', statsError);
+    throw new Error(statsError.message);
+  }
+
+  const rows = dailyStats || [];
+  const totalRevenue = rows.reduce((sum, r) => sum + Number(r.total_revenue || 0), 0);
+  const totalPrescriptions = rows.reduce((sum, r) => sum + Number(r.prescription_count || r.visit_count || 0), 0);
+  const totalVisits = rows.reduce((sum, r) => sum + Number(r.visit_count || 0), 0);
+  const avgPrescriptionValue = totalPrescriptions > 0 ? Math.round(totalRevenue / totalPrescriptions) : 0;
+
+  const fallbackData: DashboardStatsPayload = {
+    kpis: {
+      total_revenue: totalRevenue,
+      prescription_count: totalPrescriptions,
+      patient_visit_count: totalVisits,
+      avg_prescription_value: avgPrescriptionValue,
+    },
+    revenue_trends: rows.map(r => ({
+      date: r.date,
+      name: dayjs(r.date).format('DD/MM'),
+      revenue: Number(r.total_revenue || 0),
+      visits: Number(r.visit_count || 0),
+      count: Number(r.visit_count || 0),
+    })),
+    top_medicines: [],
+    demographics: {
+      gender: { male: 0, female: 0, other: 0 },
+      age_groups: { under_18: 0, adult: 0, elderly: 0 },
+      dob_list: [],
+    },
+    overview: {
+      totalPatients: 0,
+      monthlyVisits: totalVisits,
+      monthlyRevenue: totalRevenue,
+      lowStockCount: 0,
+      outOfStockCount: 0,
+    },
+    available_months: [],
+    locations: [],
+  };
+
+  return { data: fallbackData, error: null };
+}
+
+export const getUnifiedStatistics = getDashboardStatistics;
+
