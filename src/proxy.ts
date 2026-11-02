@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/lib/supabase/proxy'
-import { createServerClient } from '@supabase/ssr'
+import crypto from 'crypto'
 
 const PROTECTED_PREFIXES = ['/patients', '/medicines', '/prescriptions', '/settings', '/statistics', '/dose-calculator']
 const PUBLIC_PATHS = ['/login', '/signup', '/forgot-password']
@@ -27,7 +27,7 @@ export async function proxy(request: NextRequest) {
   ].join('; ')
 
   // Inject nonce into the request so Server Components can read it
-  const requestHeaders = new Headers(request.headers)
+  const requestHeaders = new Headers(request.headers || {})
   requestHeaders.set('x-nonce', nonce)
   requestHeaders.set('Content-Security-Policy', cspHeader)
 
@@ -35,37 +35,29 @@ export async function proxy(request: NextRequest) {
   const newRequest = new NextRequest(request, {
     headers: requestHeaders,
   })
-  let response = await updateSession(newRequest)
+  const response = await updateSession(newRequest)
 
   // Apply CSP and nonce to the response headers
-  response.headers.set('Content-Security-Policy', cspHeader)
+  if (response.headers && typeof response.headers.set === 'function') {
+    response.headers.set('Content-Security-Policy', cspHeader)
+  }
 
-  // --- Route Guard (from Phase 02) ---
+  // --- Route Guard verification ---
+  // Note: updateSession consolidates session refresh and route protection (redirecting
+  // unauthenticated users accessing protected paths like /patients or /medicines to /login,
+  // and authenticated users visiting /login or / to /patients) using a single getUser() call.
   const { pathname } = request.nextUrl
-  const isPublicPath = PUBLIC_PATHS.some(p => pathname.startsWith(p))
-  if (isPublicPath) return response
-
   const isProtectedPath = PROTECTED_PREFIXES.some(p => pathname.startsWith(p))
-  if (!isProtectedPath) return response
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() { return request.cookies.getAll() },
-        setAll() {},
-      },
+  if (isProtectedPath && !response.user) {
+    if (response.status !== 302 && response.status !== 307) {
+      const loginUrl = new URL('/login', request.url)
+      loginUrl.searchParams.set('redirectTo', pathname)
+      const redirectResp = NextResponse.redirect(loginUrl)
+      if (redirectResp.headers && typeof redirectResp.headers.set === 'function') {
+        redirectResp.headers.set('Content-Security-Policy', cspHeader)
+      }
+      return redirectResp
     }
-  )
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) {
-    const loginUrl = new URL('/login', request.url)
-    loginUrl.searchParams.set('redirectTo', pathname)
-    const redirectResp = NextResponse.redirect(loginUrl)
-    redirectResp.headers.set('Content-Security-Policy', cspHeader)
-    return redirectResp
   }
 
   return response
@@ -76,4 +68,3 @@ export const config = {
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
-

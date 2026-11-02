@@ -6,6 +6,7 @@ import { HiOutlineCheck, HiOutlineArrowLeft, HiOutlineCalculator, HiOutlineClipb
 import { useRouter } from 'next/navigation';
 import MedicineAutocomplete from './MedicineAutocomplete';
 import DoseCalculator from '../dose-calculator/DoseCalculator';
+import MedicineUsageDialog from '@/components/features/patients/MedicineUsageDialog';
 import PrescriptionItemRow from './PrescriptionItemRow';
 import { PrescriptionItem, CreatePrescriptionData } from '@/types/forms';
 import { Patient, Medicine } from '@/types/database';
@@ -87,6 +88,7 @@ export default function PrescriptionForm({ patient, consultationFee, presets }: 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showCalculator, setShowCalculator] = useState(false);
+  const [showUsageDialog, setShowUsageDialog] = useState(false);
   const [weight, setWeight] = useState(patient.weight || '');
   const [weightError, setWeightError] = useState<string | null>(null);
   const [activeDosageLookup, setActiveDosageLookup] = useState<{
@@ -375,7 +377,7 @@ export default function PrescriptionForm({ patient, consultationFee, presets }: 
                       rows={2}
                       value={diagnosis}
                       onChange={(e) => setDiagnosis(e.target.value)}
-                      placeholder="Ví dụ: Viêm họng cấp, Sốt siêu vi..."
+                      placeholder="Nhập chẩn đoán. Ví dụ: Viêm họng cấp, Sốt siêu vi..."
                       className="input-field"
                     />
                   </div>
@@ -385,14 +387,24 @@ export default function PrescriptionForm({ patient, consultationFee, presets }: 
                       <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                         Chọn thuốc
                       </label>
-                      <button
-                        type="button"
-                        onClick={() => setShowCalculator(!showCalculator)}
-                        className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-primary-600 bg-primary-50 hover:bg-primary-100 dark:text-primary-400 dark:bg-primary-900/20 dark:hover:bg-primary-900/30 rounded-lg transition-colors"
-                      >
-                        <HiOutlineCalculator className="w-4 h-4" />
-                        {showCalculator ? 'Đóng tính liều' : 'Tính liều nhanh'}
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setShowUsageDialog(true)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                        >
+                          <HiOutlineClipboardDocumentList className="w-4 h-4" />
+                          Lịch sử dùng thuốc
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowCalculator(!showCalculator)}
+                          className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-primary-600 bg-primary-50 hover:bg-primary-100 dark:text-primary-400 dark:bg-primary-900/20 dark:hover:bg-primary-900/30 rounded-lg transition-colors"
+                        >
+                          <HiOutlineCalculator className="w-4 h-4" />
+                          {showCalculator ? 'Đóng tính liều' : 'Tính liều nhanh'}
+                        </button>
+                      </div>
                     </div>
                     
                     {showCalculator && (
@@ -715,6 +727,14 @@ export default function PrescriptionForm({ patient, consultationFee, presets }: 
           </div>
         )}
       </AnimatePresence>
+
+      {/* Medicine Usage Dialog */}
+      <MedicineUsageDialog
+        open={showUsageDialog}
+        onClose={() => setShowUsageDialog(false)}
+        patientId={patient.id}
+        patientName={patient.name}
+      />
     </div>
   );
 }

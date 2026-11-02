@@ -1,9 +1,16 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import type { User } from '@supabase/supabase-js'
 
-export async function updateSession(request: NextRequest) {
+export type UpdateSessionResult = NextResponse & {
+  response: NextResponse
+  user: User | null
+}
+
+export async function updateSession(request: NextRequest): Promise<UpdateSessionResult> {
   let supabaseResponse = NextResponse.next({
     request,
+    status: 200,
   })
 
   const supabase = createServerClient(
@@ -18,6 +25,7 @@ export async function updateSession(request: NextRequest) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
           supabaseResponse = NextResponse.next({
             request,
+            status: 200,
           })
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
@@ -35,43 +43,38 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith('/login') &&
-    !request.nextUrl.pathname.startsWith('/auth') &&
-    !request.nextUrl.pathname.startsWith('/api')
-  ) {
+  const pathname = request.nextUrl.pathname
+  const isPublicPath =
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/signup') ||
+    pathname.startsWith('/forgot-password') ||
+    pathname.startsWith('/auth') ||
+    pathname.startsWith('/api')
+
+  if (!user && !isPublicPath) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone()
     url.pathname = '/login'
-    return NextResponse.redirect(url)
+    url.searchParams.set('redirectTo', pathname)
+    const redirectResponse = NextResponse.redirect(url)
+    return Object.assign(redirectResponse, { response: redirectResponse, user })
   }
 
   // Nếu đã login mà vào /login thì redirect về /patients
-  if (user && request.nextUrl.pathname.startsWith('/login')) {
+  if (user && pathname.startsWith('/login')) {
     const url = request.nextUrl.clone()
     url.pathname = '/patients'
-    return NextResponse.redirect(url)
+    const redirectResponse = NextResponse.redirect(url)
+    return Object.assign(redirectResponse, { response: redirectResponse, user })
   }
 
   // Nếu vào root / thì redirect về /patients
-  if (user && request.nextUrl.pathname === '/') {
+  if (user && pathname === '/') {
     const url = request.nextUrl.clone()
     url.pathname = '/patients'
-    return NextResponse.redirect(url)
+    const redirectResponse = NextResponse.redirect(url)
+    return Object.assign(redirectResponse, { response: redirectResponse, user })
   }
 
-  // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
-  // creating a new response object with NextResponse.next() make sure to:
-  // 1. Pass the request in it, like so:
-  //    const myNewResponse = NextResponse.next({
-  //      request,
-  //    })
-  // 2. Copy over the cookies, like so:
-  //    myNewResponse.cookies.setAll(supabaseResponse.cookies.getAll())
-  // 3. Change the myNewResponse object to fit your needs, but stop using
-  //    the supabaseResponse object!
-  // 4. Return the myNewResponse object.
-
-  return supabaseResponse
+  return Object.assign(supabaseResponse, { response: supabaseResponse, user })
 }

@@ -1,33 +1,72 @@
-# 💡 BRIEF: Gộp Hồ Sơ Bệnh Nhân (Patient Merge)
+# 💡 BRIEF: Lịch sử dùng thuốc khi Kê đơn & Tối ưu hiệu năng Vercel ↔ Supabase
 
-**Ngày tạo:** 25/04/2026
+**Ngày tạo:** 2026-11-02  
+**Mục tiêu:** 
+1. Nâng cao trải nghiệm kê đơn bằng cách cho phép bác sĩ xem thống kê thuốc bệnh nhân dùng nhiều nhất trực tiếp trong màn hình kê đơn (Modal Dialog).
+2. Tối ưu triệt để độ trễ (latency) mạng giữa Vercel Serverless Functions và Supabase Database bằng cách loại bỏ duplicate auth calls và đồng bộ Region.
 
 ---
 
 ## 1. VẤN ĐỀ CẦN GIẢI QUYẾT
-Hiện tại, dữ liệu phòng khám đang bị phân mảnh do cách lưu cũ: một bệnh nhân đến khám nhiều lần thì bị tạo thành **nhiều ID bệnh nhân khác nhau** (mỗi ID tương ứng 1 lượt khám). 
-Điều này làm rác dữ liệu và sai logic thiết kế chuẩn của hệ thống (1 bệnh nhân chỉ nên có 1 ID, và bên trong ID đó chứa nhiều lịch sử khám).
+
+1. **Khó khăn trong lúc kê đơn:**
+   - Khi bác sĩ đang kê đơn mới tại `/patients/[id]/prescribe`, nếu muốn nhớ lại bệnh nhân này trước đây hay đáp ứng thuốc gì hoặc dùng loại thuốc nào nhiều nhất, bác sĩ phải quay lại trang danh sách bệnh nhân hoặc lật từng đơn thuốc cũ.
+   - Thao tác chuyển qua lại làm gián đoạn luồng tư duy kê đơn của bác sĩ.
+
+2. **Nghẽn hiệu năng giao tiếp Vercel ↔ Supabase:**
+   - **Double Auth Round-Trip:** Trong `src/proxy.ts` (và `src/lib/supabase/proxy.ts`), mỗi request tới các route được bảo vệ đang gọi `supabase.auth.getUser()` tới **2 lần**:
+     - Lần 1: Trong `updateSession` để làm mới session cookie.
+     - Lần 2: Ở đoạn route guard cuối file `src/proxy.ts`.
+     Mỗi lần gọi `getUser()` là một network round-trip độc lập từ Vercel Edge/Serverless sang Supabase Auth server, gây tăng thêm 150ms - 300ms latency không cần thiết.
+   - **Mất đồng bộ Region:** Nếu Vercel deploy mặc định ở Bắc Mỹ (`iad1` - Washington D.C) trong khi cơ sở dữ liệu Supabase đặt tại Singapore (`ap-southeast-1` / `sin1`), mỗi Server Action / Query sẽ chịu ping xuyên lục địa (200ms - 400ms).
+
+---
 
 ## 2. GIẢI PHÁP ĐỀ XUẤT
-Tạo ra một luồng **"Gộp hồ sơ bệnh nhân"** (Merge Patients) ngay trong màn hình "Quản lý Bệnh nhân".
-- App sẽ tự động quét và phát hiện các hồ sơ nghi ngờ trùng lặp dựa trên: **Tên (không dấu) + Ngày tháng năm sinh + Số điện thoại**.
-- Sau đó, hiển thị danh sách để Bác sĩ/Lễ tân đối chiếu (xem địa chỉ, SĐT) và quyết định gộp.
-- Khi gộp: Chuyển toàn bộ "Lịch sử khám" (prescriptions) của các ID phụ về ID chính, sau đó xóa các ID phụ đi.
 
-## 3. THUẬT TOÁN TÌM KIẾM CHI TIẾT
-Hệ thống sẽ tìm các bệnh nhân thỏa mãn **ĐỒNG THỜI 3 ĐIỀU KIỆN**:
-1. **Tên:** Bỏ dấu, không phân biệt hoa/thường (VD: "Nguyễn Văn A" = "nguyen van a").
-2. **Ngày sinh:** Khớp chính xác 100% chuỗi ký tự `dd/mm/yyyy`.
-3. **Số điện thoại:** Khớp chính xác.
+### 2.1. Feature: Modal "Lịch sử dùng thuốc" trong Kê đơn (Option A)
+- **Vị trí UI:** Đặt nút bấm **"Lịch sử dùng thuốc"** (kèm icon `HiOutlineClipboardDocumentList` hoặc `HiOutlineClock`) cạnh nút **"Tính liều nhanh"** phía trên bảng chọn thuốc trong `PrescriptionForm.tsx`.
+- **Tái sử dụng Component:** Tận dụng trực tiếp `MedicineUsageDialog.tsx` đã có sẵn tính năng:
+  - Gọi RPC Postgres `get_medicine_usage_by_patient(patient_id)` trả về các thuốc xếp theo số lần kê (`times_prescribed DESC`).
+  - Tìm kiếm Debounced Search (300ms).
+  - Phân loại / sắp xếp theo tên thuốc hoặc số lần dùng.
+  - Hiệu ứng Modal Framer Motion mượt mà, hỗ trợ Dark/Light mode.
+- **Phạm vi tác động:** Không làm xáo trộn logic form kê đơn, dễ dàng bật tắt modal độc lập.
 
-## 4. GIAO DIỆN & TRẢI NGHIỆM SỬ DỤNG (UI/UX)
-- Khi tìm thấy các hồ sơ trùng lặp, hiển thị một **Bảng danh sách** liệt kê rõ: Tên, Ngày sinh, Số điện thoại, Địa chỉ của từng ID.
-- Bác sĩ sẽ tự chọn bằng mắt xem ai là người đang đứng trước mặt mình để lấy làm ID "Gốc" (Master ID).
-- Bấm "Gộp": Hệ thống làm việc ngầm để đưa tất cả lịch sử khám về ID Gốc.
+### 2.2. Performance: Khử Double Auth & Tối ưu Vercel Region
+- **Khử Double Auth trong Proxy:**
+  - Hợp nhất việc check user vào một lần duy nhất. Cho phép `updateSession` trả về cả `response` và thông tin `user` (hoặc kiểm tra route guard trực tiếp trong một luồng đồng nhất), loại bỏ hoàn toàn lệnh `getUser()` thứ 2.
+- **Cấu hình `vercel.json`:**
+  - Thiết lập vùng chạy Serverless Functions của Vercel khớp với Supabase (mặc định đặt `sin1` - Singapore / `ap-southeast-1` cho các phòng khám tại Đông Nam Á / Việt Nam).
 
-## 5. ƯỚC TÍNH SƠ BỘ
-- **Độ phức tạp:** Trung bình. (Cần viết query gộp data cẩn thận để không làm mất đơn thuốc cũ của bệnh nhân).
-- **Rủi ro:** Cần hỏi xác nhận chắc chắn (Confirm dialog) trước khi gộp vì hành động này thay đổi cấu trúc dữ liệu khám bệnh diện rộng.
+---
+
+## 3. ĐỐI TƯỢNG SỬ DỤNG
+- **Bác sĩ / Dược sĩ phòng khám:** Kê đơn nhanh hơn, chính xác hơn, không bị giật lag khi chuyển trang hoặc tải dữ liệu.
+
+---
+
+## 4. TÍNH NĂNG VÀ PHẠM VI TRIỂN KHAI
+
+### 🚀 MVP (Triển khai ngay):
+- [ ] **UI PrescriptionForm:** Thêm button "Lịch sử dùng thuốc" và tích hợp `MedicineUsageDialog` vào `PrescriptionForm.tsx`.
+- [ ] **Khử Double Auth trong Proxy:** Tái cấu trúc `src/proxy.ts` và `src/lib/supabase/proxy.ts` để chỉ gọi `supabase.auth.getUser()` đúng 1 lần cho mỗi HTTP request.
+- [ ] **Cấu hình Vercel Region:** Tạo/cập nhật `vercel.json` với `regions: ["sin1"]` (hoặc region tương ứng của Supabase).
+- [ ] **Kiểm thử:** Chạy bộ test suite hiện có (`npm run test`) đảm bảo không ảnh hưởng middleware security test và luồng kê đơn.
+
+### 🎁 Phase 2 (Nâng cao - Xem xét sau):
+- [ ] Tính năng "1-Click Add" (chọn thuốc từ lịch sử để tự động điền vào bảng kê đơn).
+- [ ] Triển khai `getClaims()` cho middleware đối với các trang static/public nếu cần tối ưu hơn nữa.
+
+---
+
+## 5. ƯỚC TÍNH SƠ BỘ & RỦI RO
+- **Độ phức tạp:** Thấp (🟢 Dễ làm - Tận dụng 100% logic và component đã có).
+- **Rủi ro:**
+  - Cần cẩn trọng khi sửa middleware proxy để không làm lọt các route được bảo vệ (đã có bộ unit test `src/test/middleware-security.test.ts` để kiểm tra bảo vệ regression).
+  - Region Vercel cần khớp với tài khoản Vercel (Hobby plan chỉ hỗ trợ 1 region, Pro hỗ trợ multi-region).
+
+---
 
 ## 6. BƯỚC TIẾP THEO
-→ Chạy `/plan` để lên thiết kế chi tiết (UI, API, Schema changes)
+→ Chuyển sang `/plan` để lên chi tiết các bước sửa code, file diff và test plan!
