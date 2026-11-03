@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode, useMemo } from 'react';
 
 interface Settings {
   clinic_name: string;
@@ -24,13 +24,19 @@ export function SettingsProvider({
   children: ReactNode; 
   initialSettings: Record<string, string>;
 }) {
-  const settings: Settings = {
-    clinic_name: initialSettings.clinic_name || 'QLPK SaaS',
-    ...initialSettings,
-  };
+  const value = useMemo<SettingsContextType>(() => {
+    const settings: Settings = {
+      clinic_name: initialSettings.clinic_name || 'QLPK SaaS',
+      ...initialSettings,
+    };
+    return {
+      settings,
+      clinic_name: settings.clinic_name,
+    };
+  }, [initialSettings]);
 
   return (
-    <SettingsContext.Provider value={{ settings, clinic_name: settings.clinic_name }}>
+    <SettingsContext.Provider value={value}>
       {children}
     </SettingsContext.Provider>
   );

@@ -2,49 +2,49 @@
 📋 HANDOVER DOCUMENT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📍 Đang làm: P0 & P1 Performance & Security Hardening
-🔢 Đến bước: Hoàn thành toàn bộ 5 Phase & Apply Migration qua Supabase MCP
+📍 Đang làm: Kiểm toán Hiệu năng & Khắc phục Lỗi Toàn Diện (QLPK SaaS)
+🔢 Đến bước: Đã hoàn thành 100% nhóm Medium (P2) & sao lưu bảo toàn Database
 
 ✅ ĐÃ XONG:
-   - Phase 01: Multi-Tenant Isolation & Clinic-Scoped Constraints (P0) ✓
-   - Phase 02: Infrastructure Alignment (icn1) & Auth Metadata Deduplication (P1) ✓
-   - Phase 03: Prescription Trigger Consolidation & Write Optimization (P1) ✓
-   - Phase 04: Statistics Waterfall Reduction (14 queries -> 1 RPC) (P1) ✓
-   - Phase 05: Medicine Autocomplete Client Overhead Elimination (P1) ✓
-   - Apply 4 migration lên database remote Supabase qua Supabase MCP ✓
-   - Chạy kiểm thử tự động toàn bộ 5 test file đạt 20/20 test cases (100% pass) ✓
+   - Xây dựng bộ công cụ sao lưu và khôi phục database độc lập: `scripts/backup_supabase.js` và `scripts/restore_supabase.js` (`npm run db:backup`, `npm run db:restore`) ✓
+   - Sao lưu snapshot 7.310 bản ghi cục bộ tại `backups/backup_20261103_061202/` (được bảo vệ trong `.gitignore`) ✓
+   - Khôi phục 1.022 chi tiết đơn thuốc vào `prescription_details` và hoàn thiện RPC `get_medicine_usage_by_patient` ✓
+   - Khắc phục trọn gói 8/8 vấn đề hiệu năng nhóm Medium (P2) trong `audit.11.2026.md`:
+     • PERF-014: Tối ưu CountUp animation trực tiếp qua DOM ref `textContent`, loại bỏ hoàn toàn 60-120 re-render/giây ✓
+     • PERF-015: Thêm `useMemo` và `useCallback` vào SettingsContext, ThemeContext, ToastContext ✓
+     • PERF-011: Tái cấu trúc `getDrugPresets()` đọc từ `getCachedSettings()`, loại bỏ query DB dư thừa ✓
+     • PERF-012: Chuyển đếm badge kho thuốc sang RPC vô hướng `get_low_stock_count()`, triệt tiêu over-fetching ✓
+     • PERF-010: Xóa duplicate index `idx_prescriptions_patient_date_desc` trên `prescriptions_header` ✓
+     • PERF-008: Khôi phục nhánh `'all'` và default parameter trong RPC `get_patient_dobs_by_time` ✓
+     • PERF-009: Hợp nhất RLS policies trên 5 bảng cốt lõi, loại bỏ 7 cảnh báo permissive overlap và 3 initplan warning ✓
+     • PERF-013: Tạo cột ảo `is_low_stock` (STORED generated column) và partial indexes; lọc phân trang chính xác từ server ✓
+   - Triển khai migration `20261103000006_fix_p2_medium_issues.sql` thành công lên Supabase Live DB ✓
+   - Supabase Performance Linter: 0 warnings ✓
+   - 14/14 Unit & Integration Tests vượt qua 100% (`tests/p2-medium-performance.test.ts`, CountUp, MedicineList, StockAdjust) ✓
+   - TypeScript compilation: 0 lỗi (`npx tsc --noEmit`) ✓
+   - Cập nhật tài liệu: `CHANGELOG.md`, `audit.11.2026.md`, `.brain/brain.json`, `.brain/session.json` ✓
 
 ⏳ CÒN LẠI:
-   - Git review & Commit/Push lên GitHub repository
-   - Kiểm tra hiển thị giao diện người dùng thực tế trên môi trường development/production
+   - Commit & Push các thay đổi lên GitHub repository
+   - (Tùy chọn) Khắc phục các mục Low (P3) trong file audit: PERF-016 đến PERF-019 (unindexed foreign keys, dọn dẹp config build npm thừa)
 
 🔧 QUYẾT ĐỊNH QUAN TRỌNG:
-   - Chuyển Vercel serverless region sang `icn1` (Seoul) để đặt cùng vị trí mạng với Supabase (`ap-northeast-2`), giảm 60-80ms RTT mỗi request.
-   - Ưu tiên đọc `app_metadata.clinic_id` trong `getAuthUser()`, loại bỏ N+1 query lặp lại vào bảng `profiles`.
-   - Bỏ bão trigger trên `prescription_details`; hợp nhất thao tác ghi đơn thuốc và cập nhật `clinic_daily_stats` vào RPC `create_prescription`.
-   - Dùng `pg_trgm` và `f_unaccent()` trên Postgres cho tìm kiếm thuốc tiếng Việt có dấu/không dấu, giới hạn 20 bản ghi; khử race condition bằng sequence ID ở client.
-
-⚠️ LƯU Ý CHO SESSION SAU:
-   - Database remote Supabase (`rrpbwyiobezgesameexo`) đã có đầy đủ 4 migration mới nhất:
-     + `20261103001314_multi_tenant_isolation`
-     + `20261103001515_prescription_trigger_consolidation`
-     + `20261102234045_dashboard_statistics_rpc`
-     + `20261103001258_search_medicines_rpc`
-   - Kiểm thử toàn diện có thể chạy lại bất cứ lúc nào bằng lệnh:
-     `npx vitest run tests/phase-01-tenant-isolation.test.ts tests/phase-02-infra-auth.test.ts tests/phase-03-prescription-triggers.test.ts tests/phase-04-statistics-waterfall.test.ts tests/phase-05-medicine-autocomplete.test.ts`
+   - Dùng Postgres STORED generated column `is_low_stock` thay vì client memory slice: PostgREST hỗ trợ native filtering, pagination count chính xác và có thể đánh partial index.
+   - CountUp dùng DOM ref mutation: bypass Virtual DOM reconciliation, 0 frame drop và không re-render component cha.
+   - Thư mục `backups/` chứa dữ liệu bệnh nhân thực tế được giữ an toàn trên máy cục bộ, không đẩy lên Git.
 
 📁 FILES QUAN TRỌNG:
-   - `plans/20261102-p0-p1-performance-hardening/plan.md`
-   - `supabase/migrations/20261102000001_multi_tenant_isolation.sql`
-   - `supabase/migrations/20261102000002_prescription_trigger_consolidation.sql`
-   - `supabase/migrations/20261102000003_dashboard_statistics_rpc.sql`
-   - `supabase/migrations/20261102000004_search_medicines_rpc.sql`
-   - `src/lib/supabase/auth.ts`
-   - `src/actions/statistics.ts`
-   - `src/actions/medicines.ts`
-   - `src/components/features/prescriptions/MedicineAutocomplete.tsx`
-   - `vercel.json`
+   - `audit.11.2026.md` (báo cáo kiểm toán hiệu năng)
+   - `supabase/migrations/20261103000006_fix_p2_medium_issues.sql` (migration P2)
+   - `src/components/ui/CountUp.tsx`
+   - `src/actions/medicines.ts` & `src/actions/settings.ts`
+   - `src/components/features/medicines/MedicineList.tsx`
+   - `tests/p2-medium-performance.test.ts`
+   - `CHANGELOG.md`
+   - `.brain/session.json`
+   - `.brain/brain.json`
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📍 Đã lưu! Để tiếp tục: Gõ /recap
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+

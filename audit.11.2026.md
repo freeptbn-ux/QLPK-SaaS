@@ -541,6 +541,7 @@ flowchart TD
 ### 🟡 NHÓM P2: VẤN ĐỀ HIỆU NĂNG TRUNG BÌNH (MEDIUM BOTTLENECKS)
 
 #### PERF-008: Broken RPC get_patient_dobs_by_time for 'all' Filter Type
+* **Status:** ✅ Resolved (Migration `20261103000006_fix_p2_medium_issues.sql`)
 * **Severity:** P2 (Medium)
 * **Confidence:** Confirmed
 * **Category:** Database
@@ -564,6 +565,7 @@ flowchart TD
 ---
 
 #### PERF-009: Multiple Permissive RLS Policies on Core Tables
+* **Status:** ✅ Resolved (Migration `20261103000006_fix_p2_medium_issues.sql`)
 * **Severity:** P2 (Medium)
 * **Confidence:** Confirmed
 * **Category:** Database
@@ -586,6 +588,7 @@ flowchart TD
 ---
 
 #### PERF-010: Duplicate Indexes on prescriptions_header
+* **Status:** ✅ Resolved (Dropped index via migration `20261103000006_fix_p2_medium_issues.sql`)
 * **Severity:** P2 (Medium)
 * **Confidence:** Confirmed
 * **Category:** Database
@@ -608,6 +611,7 @@ flowchart TD
 ---
 
 #### PERF-011: High-Frequency Uncached Drug Presets Query on Prescribe Page
+* **Status:** ✅ Resolved (Read from getCachedSettings in `src/actions/settings.ts`)
 * **Severity:** P2 (Medium)
 * **Confidence:** Confirmed
 * **Category:** Backend
@@ -631,6 +635,7 @@ flowchart TD
 ---
 
 #### PERF-012: Low Stock Medicine List Over-fetching for Count Badge
+* **Status:** ✅ Resolved (Scalar RPC `get_low_stock_count` in `src/actions/medicines.ts`)
 * **Severity:** P2 (Medium)
 * **Confidence:** Confirmed
 * **Category:** Backend
@@ -654,6 +659,7 @@ flowchart TD
 ---
 
 #### PERF-013: Client-Only Stock Filtering on Paginated Dataset
+* **Status:** ✅ Resolved (Generated column is_low_stock + server-side filtering & pagination)
 * **Severity:** P2 (Medium)
 * **Confidence:** Confirmed
 * **Category:** Frontend
@@ -675,6 +681,7 @@ flowchart TD
 ---
 
 #### PERF-014: CountUp Animation Main Thread Flooding and Intl Allocations
+* **Status:** ✅ Resolved (Direct DOM textContent ref mutation + Singleton NumberFormat)
 * **Severity:** P2 (Medium)
 * **Confidence:** Confirmed
 * **Category:** Frontend
@@ -697,6 +704,7 @@ flowchart TD
 ---
 
 #### PERF-015: Unmemoized Context Values Causing Cascade Re-renders
+* **Status:** ✅ Resolved (useMemo on SettingsContext, ThemeContext, ToastContext)
 * **Severity:** P2 (Medium)
 * **Confidence:** Confirmed
 * **Category:** Frontend

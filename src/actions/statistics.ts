@@ -362,10 +362,10 @@ export async function getDashboardStatistics(
     throw new Error(statsError.message);
   }
 
-  const rows = dailyStats || [];
-  const totalRevenue = rows.reduce((sum, r) => sum + Number(r.total_revenue || 0), 0);
-  const totalPrescriptions = rows.reduce((sum, r) => sum + Number(r.prescription_count || r.visit_count || 0), 0);
-  const totalVisits = rows.reduce((sum, r) => sum + Number(r.visit_count || 0), 0);
+  const rows = (dailyStats || []) as Array<Record<string, any>>;
+  const totalRevenue = rows.reduce((sum: number, r: Record<string, any>) => sum + Number(r.total_revenue || 0), 0);
+  const totalPrescriptions = rows.reduce((sum: number, r: Record<string, any>) => sum + Number(r.prescription_count || r.visit_count || 0), 0);
+  const totalVisits = rows.reduce((sum: number, r: Record<string, any>) => sum + Number(r.visit_count || 0), 0);
   const avgPrescriptionValue = totalPrescriptions > 0 ? Math.round(totalRevenue / totalPrescriptions) : 0;
 
   const fallbackData: DashboardStatsPayload = {
@@ -375,7 +375,7 @@ export async function getDashboardStatistics(
       patient_visit_count: totalVisits,
       avg_prescription_value: avgPrescriptionValue,
     },
-    revenue_trends: rows.map(r => ({
+    revenue_trends: rows.map((r: Record<string, any>) => ({
       date: r.date,
       name: dayjs(r.date).format('DD/MM'),
       revenue: Number(r.total_revenue || 0),

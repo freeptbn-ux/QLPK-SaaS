@@ -49,8 +49,7 @@ describe('Phase 03: Prescription Trigger Consolidation & Write Optimization', ()
 
   afterAll(async () => {
     if (adminClient) {
-      await adminClient.from('prescription_details').delete().neq('id', 0);
-      await adminClient.from('prescriptions').delete().eq('clinic_id', testClinicId);
+      await adminClient.from('prescriptions_header').delete().eq('clinic_id', testClinicId);
       await adminClient.from('medicines').delete().eq('clinic_id', testClinicId);
       await adminClient.from('patients').delete().eq('clinic_id', testClinicId);
       await adminClient.from('clinic_daily_stats').delete().eq('clinic_id', testClinicId);

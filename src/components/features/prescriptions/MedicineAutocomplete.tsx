@@ -7,6 +7,7 @@ import { Medicine } from '@/types/database';
 import { cn } from '@/lib/utils/cn';
 import { BallLoader } from '@/components/Loading';
 import { useToast } from '@/hooks/useToast';
+import { AlertColor } from '@/components/ui/Toast';
 
 export interface MedicineAutocompleteProps {
   value?: string;
@@ -36,7 +37,7 @@ export const MedicineAutocomplete = React.memo(function MedicineAutocomplete({
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Safe toast handler for environments without ToastProvider
-  let showToast: (msg: string, type?: string) => void = () => {};
+  let showToast: (msg: string, type?: AlertColor) => void = () => {};
   try {
     const toast = useToast();
     if (toast?.showToast) {

@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useMemo, useOptimistic, useTransition } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useState, useMemo, useOptimistic, useTransition, useCallback } from 'react';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { 
   HiOutlinePencil, 
   HiOutlineTrash, 
@@ -29,6 +29,7 @@ interface MedicineListProps {
   limit: number;
   totalLowStockCount: number;
   totalOutOfStockCount?: number;
+  currentStockFilter?: StockFilter;
 }
 
 export default function MedicineList({ 
@@ -37,13 +38,32 @@ export default function MedicineList({
   currentPage, 
   limit,
   totalLowStockCount,
-  totalOutOfStockCount = 0
+  totalOutOfStockCount = 0,
+  currentStockFilter = 'all'
 }: MedicineListProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const searchTerm = searchParams.get('search') || '';
-  const [stockFilter, setStockFilter] = useState<StockFilter>('all');
+  const stockFilter: StockFilter = (searchParams.get('stock') as StockFilter) || currentStockFilter;
   const [isPending, startTransition] = useTransition();
+
+  const handleStockFilterChange = useCallback((newFilter: StockFilter) => {
+    const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
+    if (newFilter === 'all') {
+      params.delete('stock');
+    } else {
+      params.set('stock', newFilter);
+    }
+    params.delete('page');
+    const queryString = params.toString();
+    const targetUrl = queryString ? `${pathname || '/medicines'}?${queryString}` : (pathname || '/medicines');
+    if (typeof (router as any)?.replace === 'function') {
+      router.replace(targetUrl);
+    } else if (typeof router?.push === 'function') {
+      router.push(targetUrl);
+    }
+  }, [pathname, router, searchParams]);
   
   // Optimistic state for data
   const [optimisticData, addOptimisticAction] = useOptimistic(
@@ -69,15 +89,8 @@ export default function MedicineList({
   const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const filteredData = useMemo(() => {
-    let result = optimisticData;
-    if (stockFilter === 'low_stock') {
-      result = result.filter(m => m.stock_quantity > 0 && m.stock_quantity <= m.min_stock_level);
-    } else if (stockFilter === 'out_of_stock') {
-      result = result.filter(m => m.stock_quantity === 0);
-    }
-    return result;
-  }, [optimisticData, stockFilter]);
+  // Server-side filtered data with optimistic updates applied
+  const filteredData = optimisticData;
 
   const handleAdd = () => {
     setSelectedMedicine(null);
@@ -130,7 +143,7 @@ export default function MedicineList({
         lowStockCount={totalLowStockCount} 
         outOfStockCount={totalOutOfStockCount}
         stockFilter={stockFilter}
-        onFilterChange={setStockFilter}
+        onFilterChange={handleStockFilterChange}
       />
 
       <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
@@ -138,7 +151,7 @@ export default function MedicineList({
         
         <div className="flex gap-2">
           <button
-            onClick={() => setStockFilter(stockFilter === 'out_of_stock' ? 'all' : 'out_of_stock')}
+            onClick={() => handleStockFilterChange(stockFilter === 'out_of_stock' ? 'all' : 'out_of_stock')}
             className={cn(
               "flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-all border active:scale-95",
               stockFilter === 'out_of_stock' 
@@ -150,7 +163,7 @@ export default function MedicineList({
             Đã hết
           </button>
           <button
-            onClick={() => setStockFilter(stockFilter === 'low_stock' ? 'all' : 'low_stock')}
+            onClick={() => handleStockFilterChange(stockFilter === 'low_stock' ? 'all' : 'low_stock')}
             className={cn(
               "flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-all border active:scale-95",
               stockFilter === 'low_stock' 

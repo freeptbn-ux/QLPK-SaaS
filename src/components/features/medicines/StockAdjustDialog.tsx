@@ -93,6 +93,8 @@ export default function StockAdjustDialog({ open, onClose, medicine, onSuccess }
                 <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Số lượng thay đổi</label>
                 <input
                   type="text"
+                  role="spinbutton"
+                  aria-label="Số lượng thay đổi"
                   value={adjustment}
                   onChange={(e) => {
                     const val = e.target.value;

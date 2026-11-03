@@ -2,8 +2,8 @@ import { Metadata } from 'next';
 import { getAllSettings } from '@/actions/settings';
 import React, { Suspense } from 'react';
 import PageHeader from '@/components/ui/PageHeader';
-import MedicineList from '@/components/features/medicines/MedicineList';
-import { getAllMedicines, getLowStockMedicines, getOutOfStockCount } from '@/actions/medicines';
+import MedicineList, { StockFilter } from '@/components/features/medicines/MedicineList';
+import { getAllMedicines, getLowStockCount, getOutOfStockCount } from '@/actions/medicines';
 import MedicineTableSkeleton from '@/components/medicines/MedicineTableSkeleton';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -18,11 +18,12 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function MedicinesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; search?: string }>;
+  searchParams: Promise<{ page?: string; search?: string; stock?: string }>;
 }) {
   const params = await searchParams;
   const page = Number(params.page) || 1;
   const search = params.search || '';
+  const stock = (params.stock || 'all') as StockFilter;
 
   return (
     <div className="flex flex-col gap-6">
@@ -33,17 +34,25 @@ export default async function MedicinesPage({
       
       <div className="">
         <Suspense fallback={<MedicineTableSkeleton />}>
-          <MedicineListWrapper page={page} search={search} />
+          <MedicineListWrapper page={page} search={search} stock={stock} />
         </Suspense>
       </div>
     </div>
   );
 }
 
-async function MedicineListWrapper({ page, search }: { page: number; search: string }) {
-  const [{ data, count, limit }, lowStockMedicines, outOfStockCount] = await Promise.all([
-    getAllMedicines({ page, search }),
-    getLowStockMedicines().catch(() => []),
+async function MedicineListWrapper({ 
+  page, 
+  search, 
+  stock 
+}: { 
+  page: number; 
+  search: string; 
+  stock: StockFilter;
+}) {
+  const [{ data, count, limit }, lowStockCount, outOfStockCount] = await Promise.all([
+    getAllMedicines({ page, search, stockFilter: stock }),
+    getLowStockCount().catch(() => 0),
     getOutOfStockCount().catch(() => 0)
   ]);
 
@@ -53,9 +62,9 @@ async function MedicineListWrapper({ page, search }: { page: number; search: str
       totalCount={count} 
       currentPage={page} 
       limit={limit} 
-      totalLowStockCount={lowStockMedicines.length}
+      totalLowStockCount={lowStockCount}
       totalOutOfStockCount={outOfStockCount}
+      currentStockFilter={stock}
     />
   );
 }
-

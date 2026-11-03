@@ -1,48 +1,71 @@
 {
-  "updated_at": "2026-11-03T00:20:00Z",
+  "updated_at": "2026-11-03T07:15:00Z",
   "working_on": {
-    "feature": "P0 & P1 Performance & Security Hardening",
-    "phase": "Completed & Deployed",
-    "task": "All 5 Phases Implemented, Tested, and Migrations Deployed to Remote Supabase",
+    "feature": "P2 Medium Performance Hardening",
+    "phase": "Completed & Verified",
+    "task": "Fixed and verified all 8 Medium (P2) performance bottlenecks across DB, Backend, and Frontend",
     "status": "completed",
-    "notes": "Finished Phase 01 to Phase 05. Deployed 4 migrations to live Supabase project rrpbwyiobezgesameexo using Supabase MCP. All 5 test suites pass with 20/20 test assertions satisfied.",
+    "notes": "Resolved PERF-008 through PERF-015: dropped duplicate index, fixed DOB RPC 'all' filter, consolidated 7 permissive RLS policies, memoized 3 Context Providers, optimized CountUp to 0 re-renders, reused cached settings in getDrugPresets, switched to scalar RPC for low stock count, added server-side stock filter with generated column and partial indexes. All verified by 14 unit & integration tests and Supabase performance linter.",
     "last_run_url": "http://localhost:3000"
   },
   "pending_tasks": [
-    { "task": "Review git changes and prepare commit/push", "priority": "medium", "notes": "Git working tree has modified server actions and new migrations/tests" },
-    { "task": "Deploy Next.js application to Vercel", "priority": "low", "notes": "Vercel region configured to icn1 for low-latency with Supabase Seoul" }
+    {
+      "task": "Review git changes and commit/push to GitHub",
+      "priority": "medium",
+      "notes": "Includes P2 fixes, migration 20261103000006, tests, scripts, and updated docs"
+    },
+    {
+      "task": "Proceed to Low (P3) / Cleanup optimization if desired",
+      "priority": "low",
+      "notes": "PERF-016 through PERF-019 (unindexed foreign keys, unused dependencies)"
+    }
   ],
   "recent_changes": [
     {
-      "description": "Phase 01: Enforced clinic_id filtering in get_patients_with_last_visit and scoped patient unique index to clinic_id.",
-      "files": ["supabase/migrations/20261102000001_multi_tenant_isolation.sql", "tests/phase-01-tenant-isolation.test.ts"]
+      "description": "Resolved PERF-008, PERF-009, PERF-010, PERF-013 via migration 20261103000006_fix_p2_medium_issues.sql applied to Supabase database.",
+      "files": ["supabase/migrations/20261103000006_fix_p2_medium_issues.sql"]
     },
     {
-      "description": "Phase 02: Configured Vercel functions to region icn1 (Seoul) and deduplicated profiles queries via app_metadata.clinic_id.",
-      "files": ["vercel.json", "src/lib/supabase/auth.ts", "tests/phase-02-infra-auth.test.ts"]
+      "description": "Fixed PERF-014 by mutating DOM textContent via useRef in CountUp.tsx with module-level Intl.NumberFormat singleton, eliminating 60-120 re-renders/sec.",
+      "files": ["src/components/ui/CountUp.tsx"]
     },
     {
-      "description": "Phase 03: Consolidated prescription trigger cascade into atomic create_prescription RPC with O(1) clinic_daily_stats rollup.",
-      "files": ["supabase/migrations/20261102000002_prescription_trigger_consolidation.sql", "tests/phase-03-prescription-triggers.test.ts"]
+      "description": "Fixed PERF-015 by memoizing context values with useMemo and callbacks with useCallback in SettingsContext, ThemeContext, and Toast.",
+      "files": ["src/contexts/SettingsContext.tsx", "src/theme/ThemeContext.tsx", "src/components/ui/Toast.tsx"]
     },
     {
-      "description": "Phase 04: Consolidated 14-query statistics waterfall into get_dashboard_statistics_v2 RPC.",
-      "files": ["supabase/migrations/20261102000003_dashboard_statistics_rpc.sql", "src/actions/statistics.ts", "src/app/(dashboard)/statistics/page.tsx", "tests/phase-04-statistics-waterfall.test.ts"]
+      "description": "Fixed PERF-011 by reusing getCachedSettings() in getDrugPresets() to eliminate redundant settings table round-trips.",
+      "files": ["src/actions/settings.ts"]
     },
     {
-      "description": "Phase 05: Eliminated 1,000 medicine client-side load; implemented debounced server search (< 20 items) with pg_trgm + unaccent.",
-      "files": ["src/components/features/prescriptions/MedicineAutocomplete.tsx", "src/components/prescriptions/MedicineAutocomplete.tsx", "src/actions/medicines.ts", "supabase/migrations/20261102000004_search_medicines_rpc.sql", "tests/phase-05-medicine-autocomplete.test.ts"]
+      "description": "Fixed PERF-012 by creating getLowStockCount() calling scalar RPC get_low_stock_count instead of fetching full entity array for badge count.",
+      "files": ["src/actions/medicines.ts", "src/app/(dashboard)/medicines/page.tsx"]
     },
     {
-      "description": "Applied all 4 migrations to remote Supabase project rrpbwyiobezgesameexo using Supabase MCP.",
-      "files": ["supabase/migrations/"]
+      "description": "Fixed PERF-013 by adding server-side stock filter in getAllMedicines, using Postgres is_low_stock generated column, updating MedicineList URL searchParams pagination.",
+      "files": ["src/actions/medicines.ts", "src/app/(dashboard)/medicines/page.tsx", "src/components/features/medicines/MedicineList.tsx"]
+    },
+    {
+      "description": "Created comprehensive test suite tests/p2-medium-performance.test.ts verifying all P2 fixes against live database.",
+      "files": ["tests/p2-medium-performance.test.ts"]
+    }
+  ],
+  "errors_encountered": [
+    {
+      "error": "Supabase linter reported 7 multiple_permissive_policies and duplicate index on prescriptions_header",
+      "solution": "Dropped duplicate index and restructured management policies into INSERT/UPDATE/DELETE while keeping single SELECT policies.",
+      "resolved": true
     }
   ],
   "decisions_made": [
-    { "decision": "Scope patient uniqueness to (clinic_id, LOWER(name_normalized), dob)", "reason": "Allow distinct clinics to manage patients with identical names and birth dates." },
-    { "decision": "Prioritize app_metadata.clinic_id over profiles query in getAuthUser()", "reason": "Eliminates redundant database roundtrip on authenticated API calls." },
-    { "decision": "Consolidate prescription insertion and daily stats rollup in single atomic RPC", "reason": "Eliminates trigger storm and race conditions during high-concurrency prescribing." },
-    { "decision": "Combine pg_trgm and f_unaccent() for medicine search", "reason": "Provides fast, diacritic-insensitive search directly inside Postgres without client-side loops." },
-    { "decision": "Use sequence tracking (latestRequestId) in MedicineAutocomplete", "reason": "Guarantees out-of-order search responses are safely discarded." }
-  ]
+    {
+      "decision": "Use Postgres generated column is_low_stock STORED for medicines stock filtering",
+      "reason": "Allows native PostgREST filtering and exact count pagination without requiring custom views or manual client-side memory slicing."
+    },
+    {
+      "decision": "Update CountUp via direct DOM nodeRef.current.textContent",
+      "reason": "Bypasses React reconciliation loop entirely during 60-120fps animation frames while preserving exact initial SSR rendering."
+    }
+  ],
+  "skipped_tests": []
 }

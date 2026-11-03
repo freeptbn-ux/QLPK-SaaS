@@ -2,12 +2,12 @@
   "meta": {
     "schema_version": "1.1.0",
     "awf_version": "4.0.2",
-    "last_saved": "2026-11-03T00:20:00Z"
+    "last_saved": "2026-11-03T06:23:00Z"
   },
   "project": {
     "name": "QLPK-SaaS",
     "type": "Medical Management SaaS",
-    "status": "Hardened Multi-Tenant Performance Infrastructure (P0/P1 Completed & Synced)"
+    "status": "Hardened Multi-Tenant Performance & Backed Up"
   },
   "tech_stack": {
     "frontend": "Next.js 16 (App Router), React 19, Tailwind CSS 4, Framer Motion 12",
@@ -27,9 +27,16 @@
     "infra_latency": "Vercel serverless region aligned to icn1 (Seoul) with Supabase Seoul region",
     "prescription_concurrency": "Consolidated create_prescription RPC with single-pass atomic header + detail insertion and O(1) daily stats upsert",
     "statistics_consolidation": "Consolidated get_dashboard_statistics_v2 RPC reducing 14-query waterfall into single database call",
-    "medicine_autocomplete": "Server-side debounced search (< 20 items) with unaccented trigram index and client-side race condition elimination"
+    "medicine_autocomplete": "Server-side debounced search (< 20 items) with unaccented trigram index and client-side race condition elimination",
+    "medicine_usage_aggregation": "Fast indexed patient medicine usage rollup ordered by times_prescribed DESC"
   },
   "api_endpoints": [
+    {
+      "path": "RPC public.get_medicine_usage_by_patient",
+      "method": "Database RPC / Server Action",
+      "description": "Tổng hợp lịch sử dùng thuốc của bệnh nhân (tên, quy cách, số lần kê) với cơ chế tự động fallback clinic_id.",
+      "security": "Tenant-isolated by clinic_id, security definer, search_path explicitly set."
+    },
     {
       "path": "RPC public.search_medicines_v2",
       "method": "Database RPC / Server Action",
@@ -58,6 +65,18 @@
   "knowledge_items": {
     "gotchas": [
       {
+        "issue": "Cascade Delete vs Blanket Delete in Vitest Cleanup Hooks",
+        "solution": "Never use adminClient.from('child_table').delete().neq('id', 0) in tests as it wipes real production/live data. Instead, delete the test parent record (e.g., prescriptions_header by test clinic_id) and allow PostgreSQL foreign key ON DELETE CASCADE to cleanly remove child records."
+      },
+      {
+        "issue": "Supabase Rest Pagination Limit on Data Export",
+        "solution": "Supabase REST API caps results at 1,000 items per request by default. Complete backups and restorations must query in paginated ranges (0..999, 1000..1999) using .range() until empty to avoid omitting records."
+      },
+      {
+        "issue": "RPC Authorization Fallback when get_my_clinic_id() is NULL",
+        "solution": "When calling RPCs through diverse client tokens or service roles where auth.jwt() lacks app_metadata, fallback to resolving clinic_id directly from the parent resource (e.g. patients table) to prevent false-negative access rejections."
+      },
+      {
         "issue": "Cross-timezone Date Mismatch in Vitest vs PostgreSQL",
         "solution": "When asserting clinic_daily_stats date, avoid new Date().toISOString() (UTC). Use new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }) to match database timezone."
       },
@@ -72,6 +91,14 @@
       {
         "issue": "Multi-tenancy Patient Unique Key Conflict Across Clinics",
         "solution": "Unique constraint on patients MUST include clinic_id: (clinic_id, LOWER(name_normalized), COALESCE(dob, '')) so different clinics can treat patients with identical names/birthdays."
+      },
+      {
+        "issue": "Multiple Permissive Policies on PostgreSQL RLS",
+        "solution": "Avoid combining FOR ALL with FOR SELECT for the same role; split admin policies into FOR INSERT, FOR UPDATE, FOR DELETE to prevent PostgreSQL evaluating multiple OR conditions per row on SELECT."
+      },
+      {
+        "issue": "High-Frequency CountUp Animation React Re-render Thrashing",
+        "solution": "Bypass React Virtual DOM reconciliation by updating spanRef.current.textContent directly in Framer Motion animate onUpdate callback and using a singleton Intl.NumberFormat instance."
       }
     ]
   }

@@ -114,22 +114,18 @@ export async function changePassword(currentPassword: string, newPassword: strin
 
 /**
  * Cached version of getDrugPresets for use in components.
- * Uses React cache() for per-request memoization.
+ * Reads from getCachedSettings() to eliminate redundant database queries.
  */
 export const getDrugPresets = cache(async () => {
-  const { supabase } = await getAuthUser();
-  const { data, error } = await supabase
-    .from('settings')
-    .select('value')
-    .eq('key', 'drug_presets')
-    .single();
+  const settings = await getCachedSettings();
+  const value = settings['drug_presets'];
 
-  if (error || !data) {
+  if (!value) {
     return [];
   }
 
   try {
-    return JSON.parse(data.value);
+    return JSON.parse(value);
   } catch {
     return [];
   }

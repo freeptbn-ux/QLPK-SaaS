@@ -1,7 +1,29 @@
 # Changelog
 
 ## [2026-11-03]
+### Fixed & Optimized (Nhóm Medium P2 Performance)
+- **PERF-014**: Tối ưu hóa `CountUp` KPI: chuyển sang cập nhật trực tiếp DOM `textContent` qua `ref` và sử dụng `Intl.NumberFormat` singleton module-level, loại bỏ hoàn toàn 60-120 re-renders/giây trên Main Thread.
+- **PERF-015**: Thêm `useMemo` và `useCallback` vào `SettingsContext`, `ThemeContext`, `ToastContext`, chặn đứng hiện tượng re-render lan truyền lên toàn bộ cây component con (`TopBar`, `Sidebar`, `DashboardShell`).
+- **PERF-011**: Tối ưu hàm `getDrugPresets()` đọc trực tiếp từ `getCachedSettings()`, chia sẻ chung React per-request cache và tiết kiệm 1 database query/round-trip mỗi lần mở trang kê đơn.
+- **PERF-012**: Loại bỏ over-fetching danh sách thực thể thuốc sắp hết chỉ để đếm Badge trong trang quản lý kho; thay bằng RPC vô hướng `get_low_stock_count()`.
+- **PERF-010**: Xóa bỏ chỉ mục B-tree trùng lặp 100% `idx_prescriptions_patient_date_desc` trên `prescriptions_header` (giữ lại `idx_prescriptions_patient_date`), giảm chi phí cập nhật index và dung lượng WAL khi lưu đơn thuốc.
+- **PERF-008**: Bổ sung nhánh lọc `p_filter_type = 'all'` và `p_time_value DEFAULT ''` trong RPC `get_patient_dobs_by_time`, khôi phục hiển thị dữ liệu biểu đồ phân bố nhóm tuổi bệnh nhân.
+- **PERF-009**: Hợp nhất toàn diện các Permissive RLS policies trên 5 bảng (`clinic_daily_stats`, `prescriptions_header`, `medicines`, `inventory_transaction_logs`, `settings`, `profiles`), tách các quyền ghi sang `INSERT, UPDATE, DELETE` và chuẩn hóa `(select auth.uid())` theo chuẩn Supabase, đưa số lượng cảnh báo linter về 0.
+- **PERF-013**: Thêm cột ảo `is_low_stock` dạng `GENERATED ALWAYS AS (stock_quantity > 0 AND stock_quantity <= min_stock_level) STORED` cùng partial indexes trên bảng `medicines`. Chuyển bộ lọc tồn kho (`low_stock`, `out_of_stock`) sang xử lý phân trang & tính count chính xác từ server-side thay vì cắt lát 20 dòng trên client RAM.
+- **Kiểm thử P2**: Thêm bộ test kiểm thử tự động `tests/p2-medium-performance.test.ts` (5/5 tests passed).
+
+### Fixed & Restored
+- **Lịch sử dùng thuốc (Medicine Usage)**:
+  - Khắc phục lỗi nút "Lịch sử dùng thuốc" bị trống trơn do thiếu dữ liệu chuẩn hóa và lỗi xóa sạch bảng trong unit test.
+  - Sửa lỗi trong `tests/phase-03-prescription-triggers.test.ts` (loại bỏ lệnh `adminClient.from('prescription_details').delete().neq('id', 0)` gây xóa sạch dữ liệu đơn thuốc, thay bằng xóa header test để Postgres tự động `CASCADE DELETE`).
+  - Khôi phục **1.022 bản ghi** chi tiết đơn thuốc vào bảng `prescription_details` từ 334 snapshot trong `patient_history_logs` và lịch sử bệnh nhân cũ thông qua script `scripts/restore_prescription_details.js`.
+  - Cập nhật và kiên cố hóa RPC `get_medicine_usage_by_patient`: hỗ trợ fallback tự động lấy `clinic_id` từ hồ sơ bệnh nhân khi context JWT thiếu claims, thiết lập `search_path` an toàn và sắp xếp thứ tự theo `times_prescribed DESC, m.name ASC`.
+
 ### Added
+- **Database Local Backup & Automated Recovery Tooling**:
+  - Xây dựng bộ công cụ `scripts/backup_supabase.js` và `scripts/restore_supabase.js` hỗ trợ sao lưu toàn bộ 13 bảng cơ sở dữ liệu Supabase kèm schema và tài khoản `auth.users` về máy cục bộ.
+  - Tích hợp các lệnh npm tiện ích: `npm run db:backup` và `npm run db:restore` kèm chế độ kiểm thử an toàn `--dry-run` và khôi phục riêng lẻ theo từng bảng `--table <name>`.
+  - Thực hiện sao lưu thành công snapshot cục bộ 7.310 bản ghi vào `backups/backup_20261103_061202/` (được bảo vệ qua `.gitignore`).
 - **Multi-Tenant Isolation (Phase 01 - P0)**: Bổ sung lọc `clinic_id` trong `get_patients_with_last_visit` và chuyển constraint unique bệnh nhân sang phạm vi từng phòng khám `(clinic_id, LOWER(name_normalized), dob)`.
 - **Infrastructure Alignment (Phase 02 - P1)**: Cấu hình Vercel Functions region sang `icn1` (Seoul) đồng bộ với Supabase Seoul (`ap-northeast-2`); khử trùng lặp query bảng `profiles` thông qua `app_metadata.clinic_id`.
 - **Prescription Concurrency Optimization (Phase 03 - P1)**: Hợp nhất cascade trigger kê đơn vào RPC `create_prescription` nguyên khối, loại bỏ bão trigger trên `prescription_details` và cập nhật `clinic_daily_stats` dạng $O(1)$ batch upsert.

@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useMotionValue, animate } from 'framer-motion';
+import React, { useEffect, useRef } from 'react';
+import { animate } from 'framer-motion';
 
 interface CountUpProps {
   value: number;
@@ -9,26 +9,34 @@ interface CountUpProps {
   suffix?: string;
 }
 
+// Module-level formatter singleton to avoid GC thrashing in animation loop
+const viNumberFormatter = new Intl.NumberFormat('vi-VN');
+
 export default function CountUp({ 
   value, 
   duration = 0.5, 
   suffix = ' đ' 
 }: CountUpProps) {
-  const [display, setDisplay] = useState(() => 
-    new Intl.NumberFormat('vi-VN').format(Math.floor(value)) + suffix
-  );
-  const motionValue = useMotionValue(value);
+  const spanRef = useRef<HTMLSpanElement>(null);
+  const prevValueRef = useRef(value);
 
   useEffect(() => {
-    const controls = animate(motionValue, value, {
-      duration: duration,
+    const from = prevValueRef.current;
+    const to = value;
+    prevValueRef.current = value;
+
+    const controls = animate(from, to, {
+      duration,
       ease: 'easeOut',
       onUpdate: (latest) => {
-        setDisplay(new Intl.NumberFormat('vi-VN').format(Math.floor(latest)) + suffix);
+        if (spanRef.current) {
+          spanRef.current.textContent = viNumberFormatter.format(Math.floor(latest)) + suffix;
+        }
       },
     });
-    return controls.stop;
-  }, [value, motionValue, duration, suffix]);
 
-  return <span>{display}</span>;
+    return controls.stop;
+  }, [value, duration, suffix]);
+
+  return <span ref={spanRef}>{viNumberFormatter.format(Math.floor(value)) + suffix}</span>;
 }

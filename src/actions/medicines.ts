@@ -9,7 +9,12 @@ import { cache } from 'react';
 import { getGenericErrorMessage } from '@/lib/error-handler';
 import { removeDiacritics } from '@/lib/utils/normalize';
 
-export const getAllMedicines = cache(async (params?: { page?: number; limit?: number; search?: string }) => {
+export const getAllMedicines = cache(async (params?: { 
+  page?: number; 
+  limit?: number; 
+  search?: string;
+  stockFilter?: 'all' | 'low_stock' | 'out_of_stock';
+}) => {
   const { user, supabase, clinicId } = await getAuthUser();
 
   if (!clinicId) {
@@ -19,15 +24,23 @@ export const getAllMedicines = cache(async (params?: { page?: number; limit?: nu
   const page = params?.page || 1;
   const limit = params?.limit || 20;
   const search = params?.search || '';
+  const stockFilter = params?.stockFilter || 'all';
 
   let query = supabase
     .from('medicines')
     .select('id, name, packing_spec, price, stock_quantity, min_stock_level', { count: 'exact' })
     .eq('clinic_id', clinicId)
+    .eq('is_active', true)
     .order('name', { ascending: true });
 
   if (search) {
     query = query.ilike('name', `%${search}%`);
+  }
+
+  if (stockFilter === 'low_stock') {
+    query = query.eq('is_low_stock', true);
+  } else if (stockFilter === 'out_of_stock') {
+    query = query.eq('stock_quantity', 0);
   }
 
   const from = (page - 1) * limit;
@@ -188,6 +201,22 @@ export const getLowStockMedicines = cache(async () => {
   }
 
   return data as Medicine[];
+});
+
+export const getLowStockCount = cache(async () => {
+  const { supabase, clinicId } = await getAuthUser();
+
+  if (!clinicId) {
+    return 0;
+  }
+
+  const { data, error } = await supabase.rpc('get_low_stock_count');
+
+  if (error) {
+    throw new Error(getGenericErrorMessage(error));
+  }
+
+  return Number(data) || 0;
 });
 
 export const getOutOfStockCount = cache(async () => {

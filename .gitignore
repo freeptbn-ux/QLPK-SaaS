@@ -43,6 +43,7 @@ yarn-error.log*
 next-env.d.ts
 
 # database & migration
+backups/
 clinic.db
 clinic.db.backup-*
 __pycache__/
