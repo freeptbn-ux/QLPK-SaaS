@@ -37,3 +37,30 @@ export const medicineDosageOutputSchema = z.object({
   side_effects: z.string(),
 });
 
+export const medicineAliasItemSchema = z.object({
+  raw_name: z.string().trim().min(1, 'Tên gốc không được để trống'),
+  medicine_id: z.number().int().positive('ID thuốc không hợp lệ'),
+});
+
+export const medicineAliasesBatchSchema = z.array(medicineAliasItemSchema);
+
+export const batchStockAdjustmentItemSchema = z.object({
+  medicine_id: z.number().int().positive('ID thuốc không hợp lệ'),
+  quantity: z.number().int().positive('Số lượng nhập phải lớn hơn 0'),
+});
+
+export const batchNewMedicineItemSchema = z.object({
+  name: z.string().trim().min(1, 'Tên thuốc không được để trống'),
+  packing_spec: z.string().optional(),
+  unit: z.string().optional(),
+  price: z.number().nonnegative('Giá phải >= 0').optional(),
+  initial_stock: z.number().int().nonnegative('Tồn kho ban đầu không thể âm').default(0),
+});
+
+export const importMedicineStockBatchSchema = z.object({
+  adjustments: z.array(batchStockAdjustmentItemSchema),
+  newMedicines: z.array(batchNewMedicineItemSchema).optional(),
+  reason: z.string().optional(),
+});
+
+

@@ -7,11 +7,13 @@ import {
   HiOutlineTrash, 
   HiOutlinePlus, 
   HiOutlineArchiveBox,
-  HiOutlineXCircle
+  HiOutlineXCircle,
+  HiOutlineArrowUpTray
 } from 'react-icons/hi2';
 import { Medicine } from '@/types/database';
 import MedicineFormDialog from './MedicineFormDialog';
 import StockAdjustDialog from './StockAdjustDialog';
+import MedicineImportModal from './MedicineImportModal';
 import LowStockAlert from './LowStockAlert';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { deleteMedicine } from '@/actions/medicines';
@@ -86,6 +88,7 @@ export default function MedicineList({
   // Dialog states
   const [formOpen, setFormOpen] = useState(false);
   const [stockOpen, setStockOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -175,6 +178,13 @@ export default function MedicineList({
           >
             <HiOutlineArchiveBox className="w-5 h-5" />
             Sắp hết
+          </button>
+          <button
+            onClick={() => setImportOpen(true)}
+            className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-all border border-emerald-600 bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm active:scale-95 whitespace-nowrap"
+          >
+            <HiOutlineArrowUpTray className="w-5 h-5" />
+            Nhập thuốc
           </button>
           <button
             onClick={handleAdd}
@@ -304,6 +314,12 @@ export default function MedicineList({
         open={stockOpen}
         onClose={() => setStockOpen(false)}
         medicine={selectedMedicine}
+        onSuccess={refreshData}
+      />
+
+      <MedicineImportModal
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
         onSuccess={refreshData}
       />
 

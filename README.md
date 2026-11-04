@@ -1,6 +1,6 @@
 # QLPK-SaaS — Hệ Thống Quản Lý Phòng Khám Đa Khoa SaaS Multi-Tenant
 
-**QLPK-SaaS** là nền tảng quản lý phòng khám tư nhân hiện đại, bảo mật cao và vận hành mượt mà, được xây dựng theo kiến trúc **Multi-Tenant (Đa phòng khám)** toàn diện. Hệ thống số hóa và tối ưu hóa toàn bộ chu trình khám chữa bệnh ngoại trú: tiếp đón và quản lý hồ sơ bệnh nhân, tìm kiếm thuốc không độ trễ (Zero-Latency Instant Autocomplete), kê đơn thuốc thông minh với trợ lý AI (Google Gemini 2.5 Flash-Lite), quản lý kho dược phẩm theo 3 trạng thái tồn kho trực quan, dashboard thống kê - phân tích doanh thu hợp nhất dưới 100ms, cùng bộ công cụ sao lưu và khôi phục cơ sở dữ liệu độc lập.
+**QLPK-SaaS** là nền tảng quản lý phòng khám tư nhân hiện đại, bảo mật cao và vận hành mượt mà, được xây dựng theo kiến trúc **Multi-Tenant (Đa phòng khám)** toàn diện. Hệ thống số hóa và tối ưu hóa toàn bộ chu trình khám chữa bệnh ngoại trú: tiếp đón và quản lý hồ sơ bệnh nhân, tìm kiếm thuốc không độ trễ (Zero-Latency Instant Autocomplete), đối soát và nhập thuốc tự động từ bảng tính Excel/CSV chống Look-Alike Sound-Alike (LASA), kê đơn thuốc thông minh với trợ lý AI (Google Gemini 2.5 Flash-Lite), quản lý kho dược phẩm theo 3 trạng thái tồn kho trực quan, dashboard thống kê - phân tích doanh thu hợp nhất dưới 100ms, cùng bộ công cụ sao lưu và khôi phục cơ sở dữ liệu độc lập.
 
 ---
 
@@ -15,10 +15,24 @@
 ### 2. ⚡ Tìm Kiếm Thuốc Tức Thời & Đồng Bộ Tồn Kho (Instant Medicine Search)
 - **Zero-Latency In-Memory Autocomplete**: Bộ nhớ đệm danh mục thuốc active tại client (`useSyncExternalStore`), phản hồi **0ms** ngay khi gõ phím mà không phải chờ đợi network hay debounce server.
 - **Tìm kiếm tiếng Việt không dấu đa từ (Multi-token)**: Thuật toán tách từ linh hoạt, tìm kiếm chính xác theo nhiều từ khóa không dấu (ví dụ: `vi xanh 500` tìm ra `Paracetamol 500mg vỉ xanh`).
-- **Tự động làm mới bộ nhớ đệm (Auto-Revalidation)**: Kích hoạt làm mới cache tức thì ngay khi bác sĩ lưu đơn thuốc, hoặc khi thủ kho thêm thuốc mới, sửa thông tin, xóa thuốc hoặc điều chỉnh tồn kho.
+- **Tự động làm mới bộ nhớ đệm (Auto-Revalidation)**: Kích hoạt làm mới cache tức thì ngay khi bác sĩ lưu đơn thuốc, hoặc khi thủ kho thêm thuốc mới, sửa thông tin, xóa thuốc, nhập kho Excel hoặc điều chỉnh tồn kho.
 - **Bảo vệ toàn vẹn tồn kho**: Hiển thị rõ ràng thuốc hết hàng, tự động chặn lựa chọn thuốc đã cạn kho và xử lý thông báo lỗi nhẹ nhàng khi có thay đổi tồn kho đồng thời.
 
-### 3. 💊 Quản Lý Kho Dược & Tồn Kho 3 Trạng Thái
+### 3. 📥 Đối Soát & Nhập Kho Thuốc Thông Minh Từ Excel / CSV (Smart Stock Reconciliation)
+- **Hỗ trợ đa định dạng bảng tính**: Phân tích cú pháp linh hoạt cho các tệp `.xlsx`, `.xls` và `.csv` (thông qua SheetJS), tự động nhận diện các biến thể cột header tiếng Việt và định dạng số kiểu Việt Nam (`1.500`, `20,5`).
+- **Engine so khớp dược phẩm đa tầng (4-Tier Matching)**:
+  - *Tầng 1 (Exact)*: Khớp chuỗi chính xác 100%.
+  - *Tầng 2 (Alias)*: Khớp từ bộ nhớ bí danh đã học của phòng khám (`medicine_aliases`).
+  - *Tầng 3 (Normalized)*: Khớp sau khi chuẩn hóa, lọc từ đệm dược liệu (`thuốc`, `viên`, `siro`) và bảo toàn nghiêm ngặt token nồng độ/hàm lượng.
+  - *Tầng 4 (Fuzzy)*: Kết hợp Levenshtein, Trigram và Sorensen-Dice.
+- **Bảo vệ chống nhầm lẫn LASA (Look-Alike Sound-Alike)**: Ngăn chặn triệt để việc gộp nhầm các thuốc khác hàm lượng (ví dụ: `Augbactam 281.25mg` không bao giờ gộp vào bản `500mg` hay `1g`).
+- **Bảng đối soát trực quan (Reconciliation Modal)**:
+  - Phân loại rõ ràng 3 trạng thái: 🟢 Khớp chính xác, 🟡 Cần kiểm tra, 🔴 Chưa khớp, 🔵 Tạo mới.
+  - Trực quan công thức biến động kho: `[Tồn hiện tại] + [SL nhập] = [Tồn mới]`.
+  - Hỗ trợ đổi thuốc tại chỗ (Inline Autocomplete Search) và tùy chọn tick "Tạo thuốc mới vào kho" tự động điền đơn giá, quy cách.
+- **Cam kết nguyên tử & Học ánh xạ**: Khóa dòng `FOR UPDATE` theo thứ tự `medicine_id ASC`, ghi log kiểm toán vào `inventory_transaction_logs`, lưu bí danh người dùng đã xác nhận vào `medicine_aliases` và tự động bust client catalog cache.
+
+### 4. 💊 Quản Lý Kho Dược & Tồn Kho 3 Trạng Thái
 - **Phân loại trực quan 3 màu sắc**:
   - 🔴 **Đã hết hàng** (`stock_quantity = 0`): Khóa chọn thuốc khi kê đơn, hiển thị nhãn cảnh báo đỏ.
   - 🟡 **Sắp hết hàng** (`stock_quantity <= min_stock_level`): Cảnh báo ngưỡng tồn kho an toàn để bổ sung kịp thời.
@@ -27,25 +41,25 @@
 - **Hỗ trợ định dạng số thập phân**: Cho phép nhập giá bán và số lượng chính xác cao cho từng loại thuốc.
 - **Trừ kho & hoàn kho nguyên tử**: Quản lý xuất kho tức thời khi kê đơn và hoàn kho tự động khi hủy/xóa đơn thuốc với khóa giao dịch an toàn.
 
-### 4. 📋 Kê Đơn Thuốc Nguyên Khối & Tra Cứu Lịch Sử
+### 5. 📋 Kê Đơn Thuốc Nguyên Khối & Tra Cứu Lịch Sử
 - **Điền dữ liệu tự động**: Tự động điền tên thuốc, quy cách đóng gói (`packing_spec`), đơn vị (`unit`), đơn giá và số lượng mặc định ngay khi chọn gợi ý.
 - **Modal "Lịch sử dùng thuốc"**: Tra cứu các loại thuốc bệnh nhân từng sử dụng nhiều nhất trong quá khứ ngay trên form kê đơn mà không làm mất bản nháp hiện tại.
 - **Atomic Prescription RPC**: Hợp nhất header, details và rollup thống kê trong 1 giao dịch database duy nhất, xóa bỏ hoàn toàn bão trigger cascade (Trigger Storm).
 - **Bộ nhớ đệm Presets**: Tái sử dụng `getCachedSettings()` chia sẻ chung React request cache, tiết kiệm 1 round-trip database mỗi lượt mở trang kê đơn.
 
-### 5. 🤖 Trợ Lý Kê Đơn AI (Google Gemini 2.5 Flash-Lite)
+### 6. 🤖 Trợ Lý Kê Đơn AI (Google Gemini 2.5 Flash-Lite)
 - **Tính liều chuẩn hóa**: Đề xuất liều dùng theo lứa tuổi (người lớn/trẻ em), cân nặng và triệu chứng.
 - **Kiến trúc 2 bước (Two-Step Flow)**:
   1. *Tra cứu*: Tìm kiếm thông tin thực tế qua Google Search grounding.
   2. *Định dạng*: Chuyển đổi dữ liệu chuẩn hóa sang JSON Schema an toàn.
 - **Bảo mật AI**: Kiểm duyệt đầu vào qua Zod, phòng chống Prompt Injection, Rate Limit tự động xoay vòng API Keys qua biến môi trường `GEMINI_API_KEYS`.
 
-### 6. 📊 Báo Cáo & Phân Tích Hiệu Năng Cao
+### 7. 📊 Báo Cáo & Phân Tích Hiệu Năng Cao
 - **Consolidated Dashboard**: Gom 14 query riêng lẻ thành 1 RPC `get_dashboard_statistics_v2`, tải toàn bộ biểu đồ và chỉ số KPI dưới 100ms.
 - **Phân tích đa chiều**: Thống kê doanh thu theo ngày/tuần/tháng, cơ cấu độ tuổi và giới tính bệnh nhân, bảng xếp hạng thuốc tiêu thụ nhiều nhất.
 - **KPI CountUp mượt mà**: Cập nhật trực tiếp qua DOM ref `textContent` và singleton `Intl.NumberFormat`, loại bỏ hoàn toàn 60-120 re-renders/giây trên Main Thread.
 
-### 7. ⚡ Tối Ưu Hạ Tầng, RLS & Sao Lưu Phục Hồi
+### 8. ⚡ Tối Ưu Hạ Tầng, RLS & Sao Lưu Phục Hồi
 - **Căn chỉnh Vercel Region `icn1`**: Đặt Serverless Functions tại Seoul cùng vị trí với Supabase Database (`ap-northeast-2`), cắt giảm 60-80ms RTT mỗi request.
 - **Khử trùng lặp Auth**: Ưu tiên đọc `app_metadata.clinic_id` trong `getAuthUser()`, loại bỏ N+1 query lặp lại vào bảng `profiles`.
 - **Hợp nhất Permissive RLS Policies**: Tách quyền quản trị sang `INSERT/UPDATE/DELETE`, giữ 1 policy `SELECT` duy nhất và chuẩn hóa `(select auth.uid())`, đưa số cảnh báo linter về 0.
@@ -61,10 +75,11 @@
 | **Frontend Framework** | [Next.js 16](https://nextjs.org/) (App Router), [React 19](https://react.dev/), TypeScript |
 | **Giao Diện & Hiệu Ứng** | [Tailwind CSS v4](https://tailwindcss.com/), [Framer Motion 12](https://www.framer.com/motion/), [React Icons](https://react-icons.github.io/react-icons/), [Recharts](https://recharts.org/) |
 | **Client State & Cache** | `useSyncExternalStore` (Zero-latency catalog cache & auto-sync) |
+| **Xử Lý Bảng Tính & Nhập Kho** | [SheetJS (xlsx)](https://docs.sheetjs.com/) (Excel/CSV parser, Vietnamese numeric normalizer) |
 | **Backend & Cơ Sở Dữ Liệu** | [Supabase](https://supabase.com/) (PostgreSQL 17, RLS, Stored Procedures, PL/pgSQL RPCs), Next.js Server Actions |
 | **AI Engine** | [Google Gemini 2.5 Flash-Lite](https://ai.google.dev/) (Two-Step Architecture: Search + Format) |
 | **Xử Lý Biểu Mẫu & Xác Thực** | [React Hook Form](https://react-hook-form.com/), [Zod](https://zod.dev/) |
-| **Kiểm Thử (Testing)** | [Vitest](https://vitest.dev/), [@testing-library/react](https://testing-library.com/) |
+| **Kiểm Thử (Testing)** | [Vitest](https://vitest.dev/), [@testing-library/react](https://testing-library.com/), [@testing-library/user-event](https://testing-library.com/) |
 | **Hạ Tầng Triển Khai** | [Vercel](https://vercel.com/) (Region `icn1` - Seoul), GitHub Actions |
 
 ---
@@ -76,14 +91,16 @@ QLPK-SaaS/
 ├── .brain/                     # Eternal Memory & Context Management (AWF 2.0)
 │   ├── brain.json              # Static knowledge (kiến trúc, bảng, gotchas)
 │   ├── session.json            # Dynamic session context & current tasks
-│   └── session_log.txt         # Append-only log chi tiết tiến độ
+│   ├── session_log.txt         # Append-only log chi tiết tiến độ
+│   └── handover.md             # Tài liệu chuyển giao phiên làm việc
 ├── docs/                       # Tài liệu thiết kế kỹ thuật, API docs, audit report
 │   ├── api/endpoints.md        # Danh mục API & RPC endpoints
 │   ├── architecture/           # Kiến trúc hệ thống & data flow
 │   └── BRIEF.md                # Tóm tắt nghiệp vụ & định hướng
 ├── plans/                      # Master plan & chi tiết từng Phase
 │   ├── 20261102-p0-p1-performance-hardening/
-│   └── 20261104-instant-medicine-search/
+│   ├── 20261104-instant-medicine-search/
+│   └── 20261104-excel-medicine-import/
 ├── public/                     # Tài nguyên tĩnh (ảnh, icons)
 ├── scripts/                    # Scripts tiện ích & công cụ sao lưu / khôi phục
 │   ├── backup_supabase.js      # Công cụ snapshot toàn bộ database về máy cục bộ
@@ -95,22 +112,29 @@ QLPK-SaaS/
 │   ├── app/                    # Next.js App Router (Dashboard, Medicines, Patients, Statistics, APIs)
 │   ├── components/             # React Components
 │   │   ├── features/           # Components nghiệp vụ (kê đơn, bệnh nhân, kho thuốc, biểu đồ)
-│   │   ├── medicines/          # Skeletons & bảng danh sách thuốc
-│   │   ├── prescriptions/      # MedicineAutocomplete & liều dùng
+│   │   │   ├── medicines/      # MedicineList, MedicineImportModal, StockAdjustDialog, MedicineFormDialog
+│   │   │   ├── prescriptions/  # MedicineAutocomplete & liều dùng
+│   │   │   └── patients/       # MedicineUsageDialog, PrescriptionHistory, PatientTable
 │   │   └── ui/                 # Reusable UI Base Components (Modal, Button, Toast, Input, CountUp)
 │   ├── contexts/               # React Context Providers (SettingsContext memoized)
 │   ├── theme/                  # Theme Context & chế độ Dark/Light
 │   ├── hooks/                  # Custom React Hooks (useMedicineCatalog, useToast, useMedicineDosage)
-│   ├── lib/                    # Core utilities (Supabase client/server, normalize, validations)
+│   ├── lib/                    # Core utilities & modules
+│   │   ├── pharma/             # Pharma Normalizer, Multi-Layer Matcher, Excel Parser, Similarity
+│   │   ├── supabase/           # Supabase client / server helpers & auth
+│   │   ├── validations/        # Zod validation schemas
+│   │   └── utils/              # Helper functions (normalize, cn, formatters)
 │   └── types/                  # TypeScript interface definitions (database, forms)
 ├── supabase/
-│   └── migrations/             # SQL Migration Scripts (RLS, Trigram, Stored Procedures)
+│   └── migrations/             # SQL Migration Scripts (RLS, Trigram, Stored Procedures, Aliases)
 ├── tests/                      # Automated Test Suites (Vitest)
+│   ├── phase-01-medicine-import-backend.test.ts
+│   ├── phase-02-excel-pharma-matcher.test.ts
+│   ├── phase-03-medicine-import-ui.test.tsx
 │   ├── phase-01-medicine-catalog-cache.test.ts
 │   ├── phase-02-instant-medicine-autocomplete.test.ts
 │   ├── phase-03-prescription-stock-sync.test.ts
 │   └── p2-medium-performance.test.ts
-├── audit.11.2026.md            # Báo cáo kiểm toán hiệu năng toàn diện (P0, P1, P2)
 ├── CHANGELOG.md                # Nhật ký phát hành & thay đổi
 ├── vercel.json                 # Cấu hình Vercel Region (icn1 - Seoul)
 ├── package.json
@@ -196,7 +220,12 @@ QLPK-SaaS/
    - Sử dụng công cụ **"Tính liều nhanh"** hoặc **"Copy Prompt AI"** để nhận gợi ý liều lượng an toàn từ trợ lý ảo Gemini.
    - Bấm **"Lưu đơn thuốc"**: đơn được tạo nguyên khối, tự động trừ kho và đồng bộ làm mới dữ liệu tồn kho.
 
-3. **Phân hệ Quản lý Kho Dược (`/medicines`)**:
+3. **Phân hệ Quản lý Kho Dược & Nhập thuốc Excel (`/medicines`)**:
+   - **Nhập thuốc Excel / CSV**: Bấm nút **"Nhập thuốc"** trên thanh công cụ để tải lên hóa đơn hoặc bảng kê từ nhà cung cấp.
+     - Hệ thống tự động so khớp theo 4 tầng, chống nhầm lẫn LASA đối với thuốc khác hàm lượng.
+     - Xem lại các dòng thuốc theo nhóm: Khớp chính xác (🟢), Cần kiểm tra (🟡), Chưa khớp (🔴).
+     - Đổi thuốc nhanh bằng tìm kiếm tại chỗ (Inline Search) hoặc tick chọn "Tạo thuốc mới" cho mặt hàng chưa có trong kho.
+     - Bấm "Xác nhận nhập kho" để cập nhật tồn kho cộng dồn và tự động lưu ánh xạ cho các lần nhập sau.
    - Quản lý danh mục thuốc, quy cách đóng gói, giá bán (hỗ trợ số lẻ thập phân).
    - Kiểm soát tồn kho thông qua 3 màu trạng thái trực quan: Còn hàng, Sắp hết, Hết hàng với bộ lọc URL searchParams và phân trang chuẩn server.
    - Nhập thêm số lượng hoặc điều chỉnh tồn kho thủ công kèm ghi chú lý do. Bất kỳ thay đổi kho nào cũng ngay lập tức đồng bộ sang màn hình kê đơn.
@@ -209,4 +238,4 @@ QLPK-SaaS/
 
 ## 📜 Bản Quyền
 
-Copyright 2026 Nguyễn Duy Trường
+Copyright {this_year} Nguyễn Duy Trường

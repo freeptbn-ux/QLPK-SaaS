@@ -22,6 +22,7 @@ const TABLES_CONFIG = [
   { name: 'profiles', pkey: 'id' },
   { name: 'settings', pkey: 'clinic_id,key' },
   { name: 'medicines', pkey: 'id' },
+  { name: 'medicine_aliases', pkey: 'id' },
   { name: 'patients', pkey: 'id' },
   { name: 'prescriptions_header', pkey: 'id' },
   { name: 'prescription_details', pkey: 'id' },

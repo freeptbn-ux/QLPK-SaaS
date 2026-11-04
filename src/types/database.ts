@@ -79,3 +79,31 @@ export interface ClinicDailyStats {
   visit_count: number;
   medicine_count: number;
 }
+
+export interface MedicineAlias {
+  id: number;
+  clinic_id: number;
+  raw_name: string;
+  medicine_id: number;
+  created_at: string;
+}
+
+export interface StockAdjustmentItem {
+  medicine_id: number;
+  quantity: number;
+}
+
+export interface NewMedicineItem {
+  name: string;
+  packing_spec?: string | null;
+  unit?: string | null;
+  price?: number;
+  initial_stock: number;
+}
+
+export interface BatchImportPayload {
+  adjustments: StockAdjustmentItem[];
+  newMedicines?: NewMedicineItem[];
+  reason?: string;
+}
+

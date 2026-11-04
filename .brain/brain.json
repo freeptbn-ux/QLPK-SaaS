@@ -2,15 +2,15 @@
   "meta": {
     "schema_version": "1.1.0",
     "awf_version": "4.0.2",
-    "last_saved": "2026-11-04T16:01:00Z"
+    "last_saved": "2026-11-04T18:35:00Z"
   },
   "project": {
     "name": "QLPK-SaaS",
     "type": "Medical Management SaaS",
-    "status": "Hardened Multi-Tenant Performance & Instant Medicine Search Ready"
+    "status": "Hardened Multi-Tenant Performance, Instant Search & Excel Stock Reconciliation Ready"
   },
   "tech_stack": {
-    "frontend": "Next.js 16 (App Router), React 19, Tailwind CSS 4, Framer Motion 12",
+    "frontend": "Next.js 16 (App Router), React 19, Tailwind CSS 4, Framer Motion 12, SheetJS (xlsx)",
     "backend": "Next.js Server Actions, Supabase PostgreSQL, Supabase MCP",
     "database": "PostgreSQL 17 (Supabase) with pg_trgm, unaccent, Atomic Rollups & RPCs",
     "ai": "Google Gemini 2.5 Flash-Lite (Two-Step Architecture: Search + Format)",
@@ -18,9 +18,9 @@
     "testing": "Vitest, React Testing Library"
   },
   "security_status": {
-    "rls": "Strict tenant isolation on patients, medicines, prescriptions, and statistics",
+    "rls": "Strict tenant isolation on patients, medicines, medicine_aliases, prescriptions, and statistics",
     "anon_access": "REVOKED on public schema (Default Deny)",
-    "multi_tenancy": "Clinic-scoped uniqueness (clinic_id, LOWER(name_normalized), dob) and explicit clinic_id checks in all RPCs",
+    "multi_tenancy": "Clinic-scoped uniqueness (clinic_id, raw_name on medicine_aliases; clinic_id, LOWER(name_normalized), dob on patients) and explicit clinic_id checks in all RPCs",
     "auth_dedup": "app_metadata.clinic_id prioritized in getAuthUser() to avoid N+1 queries to profiles table"
   },
   "performance_features": {
@@ -28,9 +28,22 @@
     "prescription_concurrency": "Consolidated create_prescription RPC with single-pass atomic header + detail insertion and O(1) daily stats upsert",
     "statistics_consolidation": "Consolidated get_dashboard_statistics_v2 RPC reducing 14-query waterfall into single database call",
     "instant_medicine_search": "Zero-latency in-memory client catalog cache (useSyncExternalStore) with Vietnamese multi-token unaccented filtering, deduplicated concurrent requests, and automated mutation invalidation",
+    "excel_stock_reconciliation": "Client-side SheetJS parsing with 4-tier pharmaceutical normalization, LASA dosage preservation, inline search override, and atomic FOR UPDATE batch RPC",
     "medicine_usage_aggregation": "Fast indexed patient medicine usage rollup ordered by times_prescribed DESC"
   },
   "api_endpoints": [
+    {
+      "path": "RPC public.import_medicine_stock_batch",
+      "method": "Database RPC / Server Action",
+      "description": "Cập nhật tồn kho cộng dồn hàng loạt có khóa dòng FOR UPDATE theo thứ tự medicine_id ASC, tạo mới thuốc trên luồng và ghi log kiểm toán.",
+      "security": "Tenant-isolated by clinic_id from session."
+    },
+    {
+      "path": "Server Action saveMedicineAliases",
+      "method": "Server Action / Table Upsert",
+      "description": "Lưu các ánh xạ bí danh tên nhà cung cấp vào bảng medicine_aliases phục vụ tự học so khớp.",
+      "security": "Tenant-isolated by clinic_id, RLS enforced."
+    },
     {
       "path": "Server Action getAllActiveMedicines",
       "method": "Server Action / Cached Catalog Feed",
@@ -71,6 +84,14 @@
   "knowledge_items": {
     "gotchas": [
       {
+        "issue": "jsdom File.prototype.arrayBuffer is Undefined in Vitest Runner",
+        "solution": "When passing synthetic File objects to parseSpreadsheet in tests using jsdom, input.arrayBuffer is not available. Provide a fallback using FileReader so both browser ArrayBuffer and test environments parse correctly."
+      },
+      {
+        "issue": "Look-Alike Sound-Alike (LASA) Drug Strength Auto-Merging Danger",
+        "solution": "Never merge medicines based purely on string similarity if extracted dosage tokens differ (e.g. Augbactam 281.25mg vs 500mg). Mark row as UNMATCHED to force explicit clinical verification."
+      },
+      {
         "issue": "Client-side Invalidation Call Compatibility with Sync/Async Mocks",
         "solution": "Wrap client cache invalidation calls in Promise.resolve(invalidateMedicineCatalog?.()).catch(() => {}) so mock functions returning undefined or void in test runners do not throw TypeError."
       },
@@ -89,10 +110,6 @@
       {
         "issue": "Cross-timezone Date Mismatch in Vitest vs PostgreSQL",
         "solution": "When asserting clinic_daily_stats date, avoid new Date().toISOString() (UTC). Use new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }) to match database timezone."
-      },
-      {
-        "issue": "Supabase MCP Client Destructive Statement Cancellation",
-        "solution": "Supabase MCP automatically prompts for confirmation on DROP/DELETE statements and may cancel in non-interactive clients. Execute atomic DDL through admin helper RPC with service role key if needed."
       },
       {
         "issue": "Client-side Autocomplete Race Conditions in Rapid Typing",

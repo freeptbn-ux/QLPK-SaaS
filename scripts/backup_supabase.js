@@ -23,6 +23,7 @@ const TABLES = [
   { name: 'profiles', orderCol: 'id', seqName: null, pkey: 'id' },
   { name: 'settings', orderCol: 'key', seqName: null, pkey: 'clinic_id,key' },
   { name: 'medicines', orderCol: 'id', seqName: 'medicines_id_seq', pkey: 'id' },
+  { name: 'medicine_aliases', orderCol: 'id', seqName: 'medicine_aliases_id_seq', pkey: 'id' },
   { name: 'patients', orderCol: 'id', seqName: 'patients_id_seq', pkey: 'id' },
   { name: 'prescriptions_header', orderCol: 'id', seqName: 'prescriptions_header_id_seq', pkey: 'id' },
   { name: 'prescription_details', orderCol: 'id', seqName: 'prescription_details_id_seq', pkey: 'id' },

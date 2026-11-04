@@ -1,8 +1,13 @@
 'use server';
 
 import { getAuthUser } from '@/lib/supabase/auth';
-import { Medicine } from '@/types/database';
-import { medicineFormSchema, stockAdjustmentSchema } from '@/lib/validations/medicine';
+import { Medicine, MedicineAlias, BatchImportPayload } from '@/types/database';
+import { 
+  medicineFormSchema, 
+  stockAdjustmentSchema,
+  medicineAliasesBatchSchema,
+  importMedicineStockBatchSchema
+} from '@/lib/validations/medicine';
 import { formatZodError } from '@/lib/validations/helpers';
 import { revalidatePath } from 'next/cache';
 import { cache } from 'react';
@@ -403,4 +408,111 @@ export async function getAllActiveMedicines(): Promise<{ data: Medicine[]; error
     return { data: [], error: err?.message || 'Lỗi tải danh sách thuốc' };
   }
 }
+
+export async function getMedicineAliases(): Promise<MedicineAlias[]> {
+  const { supabase, clinicId } = await getAuthUser();
+
+  if (!clinicId) {
+    throw new Error('Không tìm thấy thông tin phòng khám.');
+  }
+
+  const { data, error } = await supabase
+    .from('medicine_aliases')
+    .select('id, clinic_id, raw_name, medicine_id, created_at')
+    .eq('clinic_id', clinicId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    throw new Error(getGenericErrorMessage(error));
+  }
+
+  return (data as MedicineAlias[]) || [];
+}
+
+export async function saveMedicineAliases(
+  mappings: Array<{ raw_name: string; medicine_id: number }>
+): Promise<MedicineAlias[]> {
+  const { supabase, clinicId } = await getAuthUser();
+
+  if (!clinicId) {
+    throw new Error('Không tìm thấy thông tin phòng khám.');
+  }
+
+  const validation = medicineAliasesBatchSchema.safeParse(mappings);
+  if (!validation.success) {
+    throw new Error(formatZodError(validation.error));
+  }
+
+  if (validation.data.length === 0) {
+    return [];
+  }
+
+  const rows = validation.data.map(item => ({
+    clinic_id: clinicId,
+    raw_name: item.raw_name.trim(),
+    medicine_id: item.medicine_id,
+  }));
+
+  const { data, error } = await supabase
+    .from('medicine_aliases')
+    .upsert(rows, { onConflict: 'clinic_id,raw_name' })
+    .select();
+
+  if (error) {
+    throw new Error(getGenericErrorMessage(error));
+  }
+
+  return (data as MedicineAlias[]) || [];
+}
+
+export async function importMedicineStockBatch(payload: {
+  adjustments: Array<{ medicine_id: number; quantity: number }>;
+  newMedicines?: Array<{
+    name: string;
+    packing_spec?: string;
+    unit?: string;
+    price?: number;
+    initial_stock: number;
+  }>;
+  reason?: string;
+}): Promise<{
+  success: boolean;
+  updated_count: number;
+  created_count: number;
+  created_ids: number[];
+}> {
+  const { supabase, clinicId } = await getAuthUser();
+
+  if (!clinicId) {
+    throw new Error('Không tìm thấy thông tin phòng khám.');
+  }
+
+  const validation = importMedicineStockBatchSchema.safeParse(payload);
+  if (!validation.success) {
+    throw new Error(formatZodError(validation.error));
+  }
+
+  const { adjustments, newMedicines = [], reason = 'IMPORT_EXCEL' } = validation.data;
+
+  const { data, error } = await supabase.rpc('import_medicine_stock_batch', {
+    p_adjustments: adjustments,
+    p_new_medicines: newMedicines,
+    p_reason: reason,
+    p_clinic_id: clinicId,
+  });
+
+  if (error) {
+    throw new Error(getGenericErrorMessage(error));
+  }
+
+  revalidatePath('/medicines');
+
+  return data as {
+    success: boolean;
+    updated_count: number;
+    created_count: number;
+    created_ids: number[];
+  };
+}
+
 

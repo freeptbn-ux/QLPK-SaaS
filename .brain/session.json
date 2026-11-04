@@ -1,18 +1,18 @@
 {
-  "updated_at": "2026-11-04T16:01:00Z",
+  "updated_at": "2026-11-04T18:35:00Z",
   "working_on": {
-    "feature": "Instant Medicine Search & Catalog Sync (20261104)",
+    "feature": "Excel Medicine Import & Smart Stock Reconciliation",
     "phase": "Completed & Verified (Phase 01, 02, 03)",
-    "task": "Phase 03: Prescription Integration, Stock Revalidation & Cache Invalidation",
+    "task": "All phases implemented, verified via test suites, and build validated",
     "status": "completed",
-    "notes": "Full end-to-end integration of client-side in-memory active medicine catalog with Vietnamese token search, prescription form auto-population, and automatic cache invalidation upon medicine mutations (add, update, delete, stock adjust) and prescription finalization.",
-    "last_run_url": "https://pkngoctruong.vercel.app/patients/96/prescribe"
+    "notes": "Full end-to-end integration: 'Nhập thuốc' button, accessible drag-and-drop file upload dialog, 4-tier pharmaceutical matching engine with LASA dosage protection, interactive 3-tier reconciliation table with inline search override & 'Tạo thuốc mới' option, atomic stock batch ingestion RPC, persistent alias memory in medicine_aliases, and live cache invalidation via invalidateMedicineCatalog().",
+    "last_run_url": "http://localhost:3000/medicines"
   },
   "pending_tasks": [
     {
       "task": "Review git status and commit/push changes",
       "priority": "medium",
-      "notes": "plans/20261104-instant-medicine-search/, useMedicineCatalog.ts, PrescriptionForm, MedicineAutocomplete, tests"
+      "notes": "plans/20261104-excel-medicine-import/, src/components/features/medicines/MedicineImportModal.tsx, src/lib/pharma/, supabase migration, tests"
     },
     {
       "task": "P3 Low Performance / Cleanup optimizations if desired",
@@ -22,48 +22,60 @@
   ],
   "recent_changes": [
     {
-      "description": "Implemented Phase 01: Client-Side Medicine Catalog Cache Engine with useSyncExternalStore, per-tenant caching, request deduplication, and stale-while-revalidate.",
-      "files": ["src/hooks/useMedicineCatalog.ts", "tests/phase-01-medicine-catalog-cache.test.ts"]
-    },
-    {
-      "description": "Implemented Phase 02: Zero-Latency In-Memory Vietnamese Token Search & Autocomplete UI (MedicineAutocomplete) with unaccented token filtering, keyboard navigation, and out-of-stock guard.",
-      "files": ["src/components/features/prescriptions/MedicineAutocomplete.tsx", "tests/phase-02-instant-medicine-autocomplete.test.ts"]
-    },
-    {
-      "description": "Implemented Phase 03: Prescription Integration, Stock Revalidation & Cache Invalidation across PrescriptionForm, PrescriptionItemRow, PrescriptionHistory, MedicineFormDialog, StockAdjustDialog, and MedicineList.",
+      "description": "Implemented Phase 01: Database Alias Storage & Atomic Batch Ingestion. Created medicine_aliases table with tenant RLS, getMedicineAliases and saveMedicineAliases server actions, and atomic import_medicine_stock_batch RPC with row locking and audit logging.",
       "files": [
-        "src/components/features/prescriptions/PrescriptionForm.tsx",
-        "src/components/features/prescriptions/PrescriptionItemRow.tsx",
-        "src/components/features/patients/PrescriptionHistory.tsx",
-        "src/components/features/medicines/MedicineFormDialog.tsx",
-        "src/components/features/medicines/StockAdjustDialog.tsx",
+        "supabase/migrations/20261104000001_medicine_aliases_and_batch_import.sql",
+        "src/actions/medicines.ts",
+        "src/lib/validations/medicine.ts",
+        "src/types/database.ts",
+        "tests/phase-01-medicine-import-backend.test.ts"
+      ]
+    },
+    {
+      "description": "Implemented Phase 02: Spreadsheet Parser & Multi-Layer Pharma Matching Engine. Created excelParser.ts (.xlsx, .xls, .csv with Vietnamese number parsing), pharmaNormalizer.ts (dosage token preservation and pharma stopword removal), and pharmaMatcher.ts (4-tier matcher with LASA conflict prevention).",
+      "files": [
+        "src/lib/pharma/excelParser.ts",
+        "src/lib/pharma/pharmaNormalizer.ts",
+        "src/lib/pharma/similarity.ts",
+        "src/lib/pharma/pharmaMatcher.ts",
+        "src/lib/pharma/types.ts",
+        "src/lib/pharma/index.ts",
+        "tests/phase-02-excel-pharma-matcher.test.ts"
+      ]
+    },
+    {
+      "description": "Implemented Phase 03: Interactive Reconciliation Modal & Catalog Sync. Added 'Nhập thuốc' button to MedicineList.tsx, created MedicineImportModal.tsx with dropzone, 3-tier review table, inline search autocomplete override, new medicine toggle, batch commit pipeline, alias learning, and cache invalidation.",
+      "files": [
+        "src/components/features/medicines/MedicineImportModal.tsx",
         "src/components/features/medicines/MedicineList.tsx",
-        "src/lib/validations/prescription.ts",
-        "src/types/forms.ts",
-        "tests/phase-03-prescription-stock-sync.test.ts"
+        "tests/phase-03-medicine-import-ui.test.tsx"
       ]
     }
   ],
   "errors_encountered": [
     {
-      "error": "Testing Library getByDisplayValue on PrescriptionItemRow required input values for medicine_name, unit, and unit_price.",
-      "solution": "Added read-only hidden input fields to PrescriptionItemRow to sync display values across all test runners and form states.",
+      "error": "jsdom File.prototype.arrayBuffer is undefined in Vitest environment during parseSpreadsheet(file).",
+      "solution": "Added defensive FileReader fallback in excelParser.ts so it supports both modern browser File.arrayBuffer() and jsdom FileReader.",
       "resolved": true
     },
     {
-      "error": "invalidateMedicineCatalog mocked as synchronous void in tests caused TypeError when calling .catch() directly.",
-      "solution": "Wrapped invalidation call in Promise.resolve(invalidateMedicineCatalog?.()).catch(() => {}) across all components.",
+      "error": "Testing Library getByText matched multiple duplicate texts where Excel raw name matched clinic medicine name (e.g. ATErsin).",
+      "solution": "Refined test assertions in phase-03-medicine-import-ui.test.tsx to use getAllByText and element targeting.",
       "resolved": true
     }
   ],
   "decisions_made": [
     {
-      "decision": "Use client-side in-memory catalog cache with useSyncExternalStore for active medicines (~100-300 rows)",
-      "reason": "Eliminates network latency (0ms response) during keystrokes while typing medicine names in prescription form, outperforming server debouncing."
+      "decision": "Enforce strict dosage token matching in pharmaMatcher to protect against LASA errors",
+      "reason": "Prevent dangerous clinical errors where different strengths (e.g. Augbactam 281.25mg vs 500mg) would be auto-merged by naive string similarity."
     },
     {
-      "decision": "Synchronize cache invalidation across all inventory and prescription mutations",
-      "reason": "Ensures clinicans immediately see newly created medicines and updated stock levels without stale states."
+      "decision": "Use inline table cell autocomplete search override rather than floating absolute popover",
+      "reason": "Avoids dropdown clipping inside scrollable table/modal containers and ensures smooth keyboard and click navigation."
+    },
+    {
+      "decision": "Persist user-confirmed mappings to medicine_aliases upon batch import",
+      "reason": "Implements persistent alias learning per clinic so subsequent imports of identical supplier spreadsheets achieve 100% automated confidence."
     }
   ]
 }

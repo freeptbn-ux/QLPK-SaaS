@@ -1,6 +1,6 @@
 # API Documentation - QLPK-SaaS
 
-Ngày cập nhật: 2026-05-11
+Ngày cập nhật: 2026-11-04
 Base URL: `http://localhost:3000`
 
 ---
@@ -45,6 +45,42 @@ Tra cứu thông tin liều dùng thuốc bằng AI (Gemini 2.5 Flash-Lite). H�
 - `401 Unauthorized`: Người dùng chưa đăng nhập.
 - `503 Service Unavailable`: Lỗi kết nối API Gemini hoặc hết lượt dùng (Rate Limit).
 - `500 Internal Server Error`: Lỗi hệ thống hoặc lỗi parse dữ liệu AI.
+
+---
+
+## 📥 Excel Medicine Import & Inventory Ingestion (2026-11-04)
+
+### `public.import_medicine_stock_batch`
+Cập nhật tồn kho hàng loạt theo nguyên tắc cộng dồn (`new_stock = old_stock + imported_quantity`) và đăng ký thuốc mới tức thì từ bảng tính Excel/CSV.
+
+- **Caller:** `src/actions/medicines.ts` -> `importMedicineStockBatch()`
+- **Security:** Security Definer, tenant isolation theo `p_clinic_id` (ưu tiên context session, fallback explicit clinic_id).
+- **Concurrency & Locking:** Sắp xếp `medicine_id` tăng dần và khóa từng dòng thuốc bằng `FOR UPDATE` để chống race condition / deadlock.
+- **Audit Logging:** Tự động ghi lại biến động kho vào bảng `inventory_transaction_logs` cho mỗi dòng thuốc cập nhật hoặc tạo mới.
+- **Params:**
+  - `p_adjustments (JSONB)`: Danh sách `[{ medicine_id: number, quantity: number }]`
+  - `p_new_medicines (JSONB)`: Danh sách `[{ name: string, packing_spec?: string, unit?: string, price?: number, initial_stock: number }]`
+  - `p_reason (TEXT)`: Mặc định `'IMPORT_EXCEL'`
+  - `p_clinic_id (BIGINT)`: ID phòng khám
+- **Response:**
+  ```json
+  {
+    "success": true,
+    "updated_count": 10,
+    "created_count": 2,
+    "created_ids": [101, 102]
+  }
+  ```
+
+---
+
+### `saveMedicineAliases`
+Lưu trữ danh mục bí danh ánh xạ tên nhà cung cấp sang thuốc phòng khám vào bảng `medicine_aliases`.
+
+- **Caller:** `src/actions/medicines.ts` -> `saveMedicineAliases()`
+- **Security:** RLS tenant isolation theo `clinic_id`, xác thực session bắt buộc.
+- **Upsert Rule:** On conflict `(clinic_id, raw_name)` do update `medicine_id` để ghi nhớ cặp ánh xạ do nhân viên phòng khám chủ động xác nhận hoặc đổi thuốc thủ công.
+- **Params:** `Array<{ raw_name: string, medicine_id: number }>`
 
 ---
 

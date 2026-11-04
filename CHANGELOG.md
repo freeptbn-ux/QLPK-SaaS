@@ -1,6 +1,25 @@
 # Changelog
 
 ## [2026-11-04]
+### Added & Integrated (Excel Medicine Import & Smart Stock Reconciliation - Phases 01, 02, 03)
+- **Phase 01: Database Alias Storage & Atomic Batch Ingestion**:
+  - Tạo bảng `medicine_aliases` với RLS tenant isolation, ràng buộc duy nhất `(clinic_id, raw_name)`, và các server actions `getMedicineAliases`, `saveMedicineAliases`.
+  - Viết RPC database `import_medicine_stock_batch` xử lý nguyên tử: khóa dòng theo thứ tự `medicine_id ASC FOR UPDATE`, cộng dồn tồn kho, đăng ký thuốc mới trên luồng (on-the-fly), và ghi log kiểm toán bất biến vào `inventory_transaction_logs`.
+  - Bộ kiểm thử `tests/phase-01-medicine-import-backend.test.ts` (6/6 tests) hoàn thành 100%.
+- **Phase 02: Spreadsheet Parser & Multi-Layer Pharma Matching Engine**:
+  - Xây dựng module phân tích bảng tính `src/lib/pharma/excelParser.ts` (hỗ trợ .xlsx, .xls, .csv, đọc số kiểu Việt Nam `1.500`, `20,5`, tự động nhận diện cột và lọc bỏ dòng tổng cộng/dòng trống).
+  - Xây dựng chuẩn hóa dược phẩm `pharmaNormalizer.ts`: tách và bảo toàn nghiêm ngặt các token nồng độ/hàm lượng/thể tích (`500mg`, `10mg/5ml`, `60ml`), loại bỏ stop words dược liệu.
+  - Xây dựng engine so khớp đa tầng 4 cấp `pharmaMatcher.ts` (Exact 1.0, Alias 1.0, Normalized 0.95, Fuzzy 0.5-0.84) kết hợp Levenshtein, Trigram, và Sorensen-Dice; chặn hoàn toàn xung đột hàm lượng bảo vệ chống Look-Alike Sound-Alike (LASA).
+  - Bộ kiểm thử `tests/phase-02-excel-pharma-matcher.test.ts` (9/9 tests) kiểm chứng thành công trên dữ liệu thực tế `Danh_sach_thuoc.xlsx`.
+- **Phase 03: Interactive Reconciliation Modal & Catalog Sync**:
+  - Bổ sung nút "Nhập thuốc" trong toolbar kho thuốc `MedicineList.tsx`.
+  - Phát triển component modal đối soát `MedicineImportModal.tsx`: vùng kéo thả dropzone hỗ trợ bàn phím (`role="button"`, `tabIndex={0}`, Enter/Space), thông báo lỗi định dạng thân thiện.
+  - Bảng đối soát 3 cấp: phân loại badge trạng thái 🟢 Khớp chính xác, 🟡 Cần kiểm tra, 🔴 Chưa khớp, 🔵 Tạo mới; bộ lọc tab xem nhanh; hiển thị trực quan công thức tồn kho `[Tồn hiện tại] + [SL nhập] = [Tồn mới]`.
+  - Tính năng đổi thuốc tại chỗ (Inline Autocomplete Search) tìm kiếm nhanh danh mục thuốc phòng khám không bị che khuất bởi scroll modal.
+  - Tùy chọn tick "Tạo thuốc mới" tự động trích xuất thông tin quy cách, đơn giá từ file Excel.
+  - Đồng bộ commit nguyên tử: cập nhật tồn kho hàng loạt, ghi nhớ ánh xạ người dùng vào `medicine_aliases`, tự động xóa cache `invalidateMedicineCatalog()` để màn hình kê đơn nhận ngay số tồn mới, thông báo Toast và refresh view.
+  - Bộ kiểm thử `tests/phase-03-medicine-import-ui.test.tsx` (7/7 tests) hoàn thành 100%.
+
 ### Added & Integrated (Instant Medicine Search & Catalog Sync - Phases 01, 02, 03)
 - **Phase 01: Client-Side Medicine Catalog Cache Engine**:
   - Xây dựng cache engine bộ nhớ trình duyệt `src/hooks/useMedicineCatalog.ts` sử dụng `useSyncExternalStore` cho danh mục thuốc đang hoạt động của từng phòng khám.
