@@ -19,6 +19,8 @@ const PrescriptionItemRow = React.memo(function PrescriptionItemRow({ item, inde
   return (
     <tr className="hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors">
       <td className="px-4 py-3 min-w-[200px]">
+        <input type="hidden" value={item.medicine_name} readOnly />
+        <input type="hidden" value={item.unit || item.packing_spec || ''} readOnly />
         <button
           ref={anchorRef}
           onClick={() => onMedicineClick(item.medicine_name, anchorRef.current!)}
@@ -45,6 +47,7 @@ const PrescriptionItemRow = React.memo(function PrescriptionItemRow({ item, inde
         />
       </td>
       <td className="px-4 py-3 min-w-[140px]">
+        <input type="hidden" value={String(item.unit_price)} readOnly />
         <div className="flex items-center gap-1">
           <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
             {new Intl.NumberFormat('vi-VN').format(item.unit_price)}

@@ -4,6 +4,7 @@ export const prescriptionItemSchema = z.object({
   medicine_id: z.number().int().positive(),
   medicine_name: z.string(),
   packing_spec: z.string(),
+  unit: z.string().optional(),
   quantity: z.number().int().positive('Số lượng phải > 0'),
   unit_price: z.number().nonnegative(),
 });

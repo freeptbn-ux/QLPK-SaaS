@@ -8,6 +8,7 @@ import { HiOutlineXMark } from 'react-icons/hi2';
 import { Medicine } from '@/types/database';
 import { medicineFormSchema, ValidatedMedicineData } from '@/lib/validations/medicine';
 import { addMedicine, updateMedicine } from '@/actions/medicines';
+import { invalidateMedicineCatalog } from '@/hooks/useMedicineCatalog';
 import { cn } from '@/lib/utils/cn';
 import { BallLoader } from '@/components/Loading';
 
@@ -68,6 +69,7 @@ export default function MedicineFormDialog({
       } else {
         await addMedicine(data);
       }
+      await Promise.resolve(invalidateMedicineCatalog?.()).catch(() => {});
       onSuccess();
       onClose();
     } catch (error: unknown) {

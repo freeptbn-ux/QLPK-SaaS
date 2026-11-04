@@ -20,3 +20,16 @@
 - Deployed migration 20261103000006_fix_p2_medium_issues.sql to live database.
 - Supabase Linter: 0 warnings across multiple_permissive_policies, duplicate_index, and auth_rls_initplan.
 - 14/14 tests in tests/p2-medium-performance.test.ts and UI test suites passed (100%).
+[2026-11-04 14:36] Disaster Recovery - Historical Prescription Details Restoration:
+- Restored 2,040 prescription_details rows, bringing total to 3,065 rows.
+- 976 / 992 prescription headers (98.4%) now have full medication details.
+- 259 / 269 patients (96.3%) now have 100% full prescription history.
+- Specifically verified Patient 96 (Nguyễn Kiều Anh) Header #830 (26/04/2026, 81đ) restored with 3 medicines.
+- Verified sequence synchronization (prescription_details_id_seq at 47814+).
+- Saved complete local snapshot to backups/backup_20261104_142726/.
+
+[2026-11-04 16:01] SAVE BRAIN: Instant Medicine Search & Auto-Revalidation Completed (Phases 01, 02, 03).
+- Implemented client-side catalog cache engine with useSyncExternalStore in src/hooks/useMedicineCatalog.ts.
+- Built zero-latency Vietnamese tokenized in-memory autocomplete component in src/components/features/prescriptions/MedicineAutocomplete.tsx.
+- Integrated PrescriptionForm, PrescriptionItemRow, PrescriptionHistory, and inventory dialogs with automated cache invalidation upon mutations.
+- Verified 100% test passing across phase-01, phase-02, and phase-03 test suites.

@@ -2,12 +2,12 @@
   "meta": {
     "schema_version": "1.1.0",
     "awf_version": "4.0.2",
-    "last_saved": "2026-11-03T06:23:00Z"
+    "last_saved": "2026-11-04T16:01:00Z"
   },
   "project": {
     "name": "QLPK-SaaS",
     "type": "Medical Management SaaS",
-    "status": "Hardened Multi-Tenant Performance & Backed Up"
+    "status": "Hardened Multi-Tenant Performance & Instant Medicine Search Ready"
   },
   "tech_stack": {
     "frontend": "Next.js 16 (App Router), React 19, Tailwind CSS 4, Framer Motion 12",
@@ -27,10 +27,16 @@
     "infra_latency": "Vercel serverless region aligned to icn1 (Seoul) with Supabase Seoul region",
     "prescription_concurrency": "Consolidated create_prescription RPC with single-pass atomic header + detail insertion and O(1) daily stats upsert",
     "statistics_consolidation": "Consolidated get_dashboard_statistics_v2 RPC reducing 14-query waterfall into single database call",
-    "medicine_autocomplete": "Server-side debounced search (< 20 items) with unaccented trigram index and client-side race condition elimination",
+    "instant_medicine_search": "Zero-latency in-memory client catalog cache (useSyncExternalStore) with Vietnamese multi-token unaccented filtering, deduplicated concurrent requests, and automated mutation invalidation",
     "medicine_usage_aggregation": "Fast indexed patient medicine usage rollup ordered by times_prescribed DESC"
   },
   "api_endpoints": [
+    {
+      "path": "Server Action getAllActiveMedicines",
+      "method": "Server Action / Cached Catalog Feed",
+      "description": "Cung cấp toàn bộ danh mục thuốc active của phòng khám cho client-side cache engine useMedicineCatalog.",
+      "security": "Tenant-isolated by clinic_id from session."
+    },
     {
       "path": "RPC public.get_medicine_usage_by_patient",
       "method": "Database RPC / Server Action",
@@ -64,6 +70,10 @@
   ],
   "knowledge_items": {
     "gotchas": [
+      {
+        "issue": "Client-side Invalidation Call Compatibility with Sync/Async Mocks",
+        "solution": "Wrap client cache invalidation calls in Promise.resolve(invalidateMedicineCatalog?.()).catch(() => {}) so mock functions returning undefined or void in test runners do not throw TypeError."
+      },
       {
         "issue": "Cascade Delete vs Blanket Delete in Vitest Cleanup Hooks",
         "solution": "Never use adminClient.from('child_table').delete().neq('id', 0) in tests as it wipes real production/live data. Instead, delete the test parent record (e.g., prescriptions_header by test clinic_id) and allow PostgreSQL foreign key ON DELETE CASCADE to cleanly remove child records."

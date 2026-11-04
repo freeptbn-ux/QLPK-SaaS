@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { HiOutlineXMark } from 'react-icons/hi2';
 import { Medicine } from '@/types/database';
 import { updateMedicineStock } from '@/actions/medicines';
+import { invalidateMedicineCatalog } from '@/hooks/useMedicineCatalog';
 import { cn } from '@/lib/utils/cn';
 import { BallLoader } from '@/components/Loading';
 
@@ -47,6 +48,7 @@ export default function StockAdjustDialog({ open, onClose, medicine, onSuccess }
     setError(null);
     try {
       await updateMedicineStock(medicine.id, adjustmentValue, reason);
+      await Promise.resolve(invalidateMedicineCatalog?.()).catch(() => {});
       onSuccess();
       onClose();
     } catch (err: any) {

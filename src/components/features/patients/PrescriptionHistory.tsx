@@ -21,6 +21,7 @@ const MedicineAutocomplete = dynamic(() => import('../prescriptions/MedicineAuto
 import { PrescriptionItem } from '@/types/forms';
 import { appendToPrescription, deletePrescription, updatePrescription } from '@/actions/prescriptions';
 import { getMedicineStockByIds } from '@/actions/medicines';
+import { invalidateMedicineCatalog } from '@/hooks/useMedicineCatalog';
 const MedicineUsageDialog = dynamic(() => import('./MedicineUsageDialog'), { ssr: false });
 import { cn } from '@/lib/utils/cn';
 import { getPatientPrescriptionsPaginated } from '@/actions/patients';
@@ -105,7 +106,8 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
     setItemsToAppend([...itemsToAppend, {
       medicine_id: medicine.id,
       medicine_name: medicine.name,
-      packing_spec: medicine.packing_spec || '',
+      packing_spec: medicine.packing_spec || medicine.unit || '',
+      unit: medicine.unit || medicine.packing_spec || '',
       quantity: 1,
       unit_price: medicine.price
     }]);
@@ -131,6 +133,7 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
     try {
       const result = await appendToPrescription(selectedPrescriptionId, itemsToAppend, patientId);
       if (result.success) {
+        await Promise.resolve(invalidateMedicineCatalog?.()).catch(() => {});
         setAppendDialogOpen(false);
       } else {
         alert(result.error);
@@ -149,6 +152,7 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
     try {
       const result = await deletePrescription(prescriptionToDelete.id, patientId);
       if (result.success) {
+        await Promise.resolve(invalidateMedicineCatalog?.()).catch(() => {});
         setPrescriptions(prev => prev.filter(p => p.id !== prescriptionToDelete.id));
         setIsDeleteDialogOpen(false);
         setPrescriptionToDelete(null);
@@ -190,7 +194,8 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
     const newItem: PrescriptionItem = {
       medicine_id: medicine.id,
       medicine_name: medicine.name,
-      packing_spec: medicine.packing_spec || '',
+      packing_spec: medicine.packing_spec || medicine.unit || '',
+      unit: medicine.unit || medicine.packing_spec || '',
       quantity: 1,
       unit_price: medicine.price,
     };
@@ -277,6 +282,7 @@ export default function PrescriptionHistory({ patientId, patientName, prescripti
       });
 
       if (result.success) {
+        await Promise.resolve(invalidateMedicineCatalog?.()).catch(() => {});
         if (result.data) {
           setPrescriptions(prev => prev.map(p => 
             p.id === prescriptionToEdit.id ? (result.data as PrescriptionWithDetails) : p

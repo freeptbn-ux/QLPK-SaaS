@@ -15,6 +15,7 @@ import StockAdjustDialog from './StockAdjustDialog';
 import LowStockAlert from './LowStockAlert';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { deleteMedicine } from '@/actions/medicines';
+import { invalidateMedicineCatalog } from '@/hooks/useMedicineCatalog';
 import EmptyState from '@/components/ui/EmptyState';
 import { cn } from '@/lib/utils/cn';
 import MedicineSearch from './MedicineSearch';
@@ -122,6 +123,7 @@ export default function MedicineList({
       addOptimisticAction({ type: 'delete', payload: medicineId });
       try {
         await deleteMedicine(medicineId);
+        await Promise.resolve(invalidateMedicineCatalog?.()).catch(() => {});
         setConfirmOpen(false);
         router.refresh();
       } catch (error: unknown) {

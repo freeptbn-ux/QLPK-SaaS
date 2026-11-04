@@ -1,5 +1,31 @@
 # Changelog
 
+## [2026-11-04]
+### Added & Integrated (Instant Medicine Search & Catalog Sync - Phases 01, 02, 03)
+- **Phase 01: Client-Side Medicine Catalog Cache Engine**:
+  - Xây dựng cache engine bộ nhớ trình duyệt `src/hooks/useMedicineCatalog.ts` sử dụng `useSyncExternalStore` cho danh mục thuốc đang hoạt động của từng phòng khám.
+  - Hỗ trợ khử trùng lặp các request đồng thời (request deduplication), stale-while-revalidate TTL 5 phút, và hàm kích hoạt làm mới `invalidateMedicineCatalog()`.
+  - Bộ kiểm thử `tests/phase-01-medicine-catalog-cache.test.ts` hoàn thành 100%.
+- **Phase 02: Zero-Latency In-Memory Vietnamese Token Search & Autocomplete UI**:
+  - Phát triển component `src/components/features/prescriptions/MedicineAutocomplete.tsx` cho phép tìm kiếm thuốc 0ms ngay khi gõ phím.
+  - Xử lý tách từ không dấu chuẩn tiếng Việt (`removeDiacritics`), hỗ trợ phím điều hướng mũi tên lên/xuống/Enter, hiển thị trạng thái hết hàng/tồn kho thấp và tự động cảnh báo Toast chặn kê thuốc hết hàng.
+  - Bộ kiểm thử `tests/phase-02-instant-medicine-autocomplete.test.ts` hoàn thành 100%.
+- **Phase 03: Prescription Integration, Stock Revalidation & Cache Invalidation**:
+  - Tích hợp trơn tru `PrescriptionForm`, `PrescriptionItemRow`, và `PrescriptionHistory` với `MedicineAutocomplete` và danh mục thuốc chia sẻ chung.
+  - Tự động điền đầy đủ tên thuốc, đơn vị/quy cách đóng gói (`unit`, `packing_spec`) và đơn giá khi chọn gợi ý.
+  - Đồng bộ kích hoạt `invalidateMedicineCatalog()` khi lưu đơn thuốc, sửa/thêm đơn thuốc hoặc khi thực hiện các thao tác thay đổi kho (`MedicineFormDialog`, `StockAdjustDialog`, `MedicineList`).
+  - Xử lý graceful degradation khi phát hiện thuốc bị hết hàng/lỗi tồn kho trong lúc submit đơn thuốc và đồng thời trigger background revalidation.
+  - Bộ kiểm thử `tests/phase-03-prescription-stock-sync.test.ts` (5/5 tests) hoàn thành 100%.
+
+### Restored & Secured (Khôi phục toàn diện dữ liệu Đơn thuốc lịch sử)
+- **Disaster Recovery bảng `prescription_details`**:
+  - Khôi phục thành công **2.040 bản ghi chi tiết đơn thuốc**, đưa tổng số dòng từ `1.025` lên **`3.065 dòng`**, nâng tỷ lệ bao phủ đơn thuốc có chi tiết lên **976 / 992 đơn (98.4%)** và **259 / 269 bệnh nhân (96.3%)** có đầy đủ 100% lịch sử thuốc.
+  - Tái tạo dữ liệu nguyên bản từ bản lưu trữ Git của database (`Supabase Database/prescription_details_rows.sql` cho các đơn $\le$ #818).
+  - Tái cấu trúc bộ trích xuất chi tiết thuốc từ `patient_history_logs` và `patients.medical_history`, xử lý lỗi nuốt dòng do ký tự phân dòng `\\n` (literal backslash n) đối với các đơn giai đoạn chuyển tiếp #819 – #888 (đặc biệt là đơn #830 của bệnh nhân 96 Nguyễn Kiều Anh với 3 loại thuốc Aubactam 281, Astemix, Deslotid 30ml khớp 100% tổng tiền 81đ).
+  - Viết và chạy script khôi phục toàn diện `scripts/restore_all_prescription_details.js` với cơ chế kiểm tra khóa ngoại, ánh xạ alias chuẩn hóa và chia batch insert an toàn.
+  - Đồng bộ và kiểm thử auto-increment của sequence PostgreSQL `prescription_details_id_seq` (đạt mức 47814+), đảm bảo không bao giờ bị lỗi xung đột `duplicate key`.
+  - Sao lưu snapshot cục bộ an toàn 13 bảng trước và sau khi khôi phục vào `backups/backup_20261104_142726/`.
+
 ## [2026-11-03]
 ### Fixed & Optimized (Nhóm Medium P2 Performance)
 - **PERF-014**: Tối ưu hóa `CountUp` KPI: chuyển sang cập nhật trực tiếp DOM `textContent` qua `ref` và sử dụng `Intl.NumberFormat` singleton module-level, loại bỏ hoàn toàn 60-120 re-renders/giây trên Main Thread.

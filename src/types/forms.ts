@@ -12,6 +12,7 @@ export interface PrescriptionItem {
   medicine_id: number;
   medicine_name: string; // display only
   packing_spec: string; // display only
+  unit?: string;
   quantity: number;
   unit_price: number;
 }

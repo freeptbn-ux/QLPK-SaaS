@@ -4,6 +4,7 @@ import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiOutlineCheck, HiOutlineArrowLeft, HiOutlineCalculator, HiOutlineClipboardDocumentList } from 'react-icons/hi2';
 import { useRouter } from 'next/navigation';
+import { invalidateMedicineCatalog } from '@/hooks/useMedicineCatalog';
 import MedicineAutocomplete from './MedicineAutocomplete';
 import DoseCalculator from '../dose-calculator/DoseCalculator';
 import MedicineUsageDialog from '@/components/features/patients/MedicineUsageDialog';
@@ -76,11 +77,11 @@ const PROMPT_TEMPLATE = {
 
 interface PrescriptionFormProps {
   patient: Patient;
-  consultationFee: number;
-  presets: any[]; // Ideally use DrugPreset[] if shared
+  consultationFee?: number;
+  presets?: any[]; // Ideally use DrugPreset[] if shared
 }
 
-export default function PrescriptionForm({ patient, consultationFee, presets }: PrescriptionFormProps) {
+export default function PrescriptionForm({ patient, consultationFee = 0, presets = [] }: PrescriptionFormProps) {
   const router = useRouter();
   const [diagnosis, setDiagnosis] = useState('');
   const [items, setItems] = useState<PrescriptionItem[]>([]);
@@ -89,7 +90,9 @@ export default function PrescriptionForm({ patient, consultationFee, presets }: 
   const [error, setError] = useState<string | null>(null);
   const [showCalculator, setShowCalculator] = useState(false);
   const [showUsageDialog, setShowUsageDialog] = useState(false);
-  const [weight, setWeight] = useState(patient.weight || '');
+  const [weight, setWeight] = useState(
+    patient.weight !== undefined && patient.weight !== null ? String(patient.weight) : ''
+  );
   const [weightError, setWeightError] = useState<string | null>(null);
   const [activeDosageLookup, setActiveDosageLookup] = useState<{
     medicineName: string;
@@ -217,9 +220,10 @@ export default function PrescriptionForm({ patient, consultationFee, presets }: 
     cache: dosageCacheRef,
   });
 
-  const validateWeight = (value: string): string | null => {
-    if (!value) return 'Vui lòng nhập cân nặng';
-    const num = parseFloat(value);
+  const validateWeight = (value: string | number): string | null => {
+    const str = String(value ?? '').trim();
+    if (!str) return 'Vui lòng nhập cân nặng';
+    const num = parseFloat(str);
     if (isNaN(num)) return 'Cân nặng phải là số';
     if (num <= 0) return 'Cân nặng phải lớn hơn 0';
     if (num > 500) return 'Cân nặng không hợp lệ';
@@ -238,7 +242,8 @@ export default function PrescriptionForm({ patient, consultationFee, presets }: 
     const newItem: PrescriptionItem = {
       medicine_id: medicine.id,
       medicine_name: medicine.name,
-      packing_spec: medicine.packing_spec || '',
+      packing_spec: medicine.packing_spec || medicine.unit || '',
+      unit: medicine.unit || medicine.packing_spec || '',
       quantity: 1,
       unit_price: medicine.price,
     };
@@ -311,12 +316,17 @@ export default function PrescriptionForm({ patient, consultationFee, presets }: 
     try {
       const result = await createPrescription(data);
       if (result.success) {
+        await Promise.resolve(invalidateMedicineCatalog?.()).catch((err) => {
+          console.error('Failed to invalidate medicine catalog:', err);
+        });
         bypassGuardRef.current = true;
         router.push(targetUrl || `/patients/${patient.id}`);
         router.refresh();
         return true;
       } else {
         setError(result.error || 'Có lỗi xảy ra khi lưu đơn thuốc');
+        // Trigger background revalidation to sync freshest inventory stock
+        Promise.resolve(invalidateMedicineCatalog?.()).catch(() => {});
         return false;
       }
     } catch {
@@ -493,7 +503,7 @@ export default function PrescriptionForm({ patient, consultationFee, presets }: 
                   <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
                     <span>{patient.gender}</span>
                     <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-700" />
-                    <span>{formatAge(patient.dob || '') || 'Không rõ tuổi'}</span>
+                    <span>{patient.dob ? formatAge(patient.dob) : ((patient as any).age ? `${(patient as any).age} tuổi` : 'Không rõ tuổi')}</span>
                   </p>
                   
                   {/* Weight Input - Bắt buộc */}
